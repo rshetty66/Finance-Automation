@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Finance Agentic AI – Orchestrator (Demo)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      background: #0b1020;
+      color: #f5f7ff;
+    }
+    header {
+      padding: 24px 32px;
+      border-bottom: 1px solid #252b46;
+      background: radial-gradient(circle at top left, #203a9a 0, #0b1020 55%);
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 24px;
+    }
+    .subtitle {
+      font-size: 14px;
+      opacity: 0.8;
+    }
+    main {
+      padding: 24px 32px 40px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 2.1fr 1.2fr;
+      gap: 20px;
+    }
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+    .card {
+      background: linear-gradient(145deg, #11152a, #050715);
+      border-radius: 16px;
+      padding: 16px 18px 18px;
+      border: 1px solid #252b46;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+      gap: 12px;
+    }
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .tiny-label {
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      opacity: 0.7;
+      margin-top: 2px;
+    }
+    .scenario-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .scenario-tab {
+      border-radius: 999px;
+      border: 1px solid #374151;
+      padding: 5px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      background: transparent;
+      color: #e5e7eb;
+      box-shadow: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .scenario-tab.active {
+      background: linear-gradient(135deg, #3b82f6, #22c1c3);
+      color: #030712;
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.55);
+      border-color: transparent;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 4px;
+      font-size: 13px;
+      align-items: center;
+      justify-content: flex-end;
+    }
+    button {
+      border-radius: 999px;
+      border: none;
+      padding: 7px 16px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      background: linear-gradient(135deg, #3b82f6, #22c1c3);
+      color: #030712;
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.55);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    button.secondary {
+      background: transparent;
+      color: #e5e7eb;
+      border: 1px solid #374151;
+      box-shadow: none;
+    }
+    button:disabled {
+      opacity: 0.55;
+      cursor: default;
+      box-shadow: none;
+    }
+    .summary {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+      font-size: 12px;
+    }
+    .summary-pill {
+      border-radius: 999px;
+      padding: 5px 12px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid #1f2937;
+      display: flex;
+      gap: 6px;
+      align-items: baseline;
+    }
+    .summary-label {
+      opacity: 0.65;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .summary-value {
+      font-weight: 600;
+      font-size: 13px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 13px;
+    }
+    th, td {
+      padding: 8px 6px;
+      text-align: left;
+    }
+    th {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      opacity: 0.7;
+      border-bottom: 1px solid #1f2937;
+    }
+    tr:not(:last-child) td {
+      border-bottom: 1px solid #111827;
+    }
+    tr:nth-child(2n) {
+      background: rgba(15, 23, 42, 0.55);
+    }
+    .status-pill {
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 500;
+    }
+    .status-pending {
+      background: rgba(31, 41, 55, 0.9);
+      color: #e5e7eb;
+    }
+    .status-running {
+      background: rgba(59, 130, 246, 0.18);
+      color: #bfdbfe;
+      border: 1px solid rgba(59, 130, 246, 0.7);
+    }
+    .status-completed {
+      background: rgba(16, 185, 129, 0.18);
+      color: #bbf7d0;
+      border: 1px solid rgba(16, 185, 129, 0.7);
+    }
+    .log-container {
+      max-height: 340px;
+      overflow-y: auto;
+      font-size: 12px;
+      padding-right: 4px;
+    }
+    .log-entry {
+      padding: 6px 6px 6px 0;
+      border-bottom: 1px dashed #1f2937;
+      display: flex;
+      gap: 6px;
+      align-items: flex-start;
+    }
+    .log-time {
+      font-size: 10px;
+      opacity: 0.6;
+      min-width: 52px;
+    }
+    .log-tag {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-radius: 999px;
+      padding: 2px 6px;
+      background: rgba(15, 23, 42, 1);
+      border: 1px solid #1d283a;
+      opacity: 0.9;
+    }
+    .log-text {
+      flex: 1;
+    }
+    .badge {
+      font-size: 10px;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.15);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      margin-right: 6px;
+    }
+    .hint {
+      font-size: 11px;
+      opacity: 0.7;
+      margin-top: 6px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      align-items: baseline;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Finance Agentic AI – Orchestrator (Demo)</h1>
+    <div class="subtitle">
+      Synthetic visualization of FinanceGPT orchestrating a <strong>BMO-style 7-day close</strong> and <strong>MD&amp;A automation</strong>.<br />
+      Use this to show which process is running, completed, and pending – same agentic fabric, different use cases.
+    </div>
+  </header>
+
+  <main>
+    <div class="layout">
+      <!-- LEFT: Workflow board -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Workflow Status</div>
+            <div class="tiny-label" id="scenario-description">
+              Loading scenario…
+            </div>
+            <div class="scenario-tabs">
+              <button class="scenario-tab active" data-scenario="close_bmo">
+                7-Day Close (BMO-style)
+              </button>
+              <button class="scenario-tab" data-scenario="mda">
+                MD&amp;A Automation
+              </button>
+            </div>
+          </div>
+          <div class="controls">
+            <button id="start-btn">
+              ▶ Start Demo Run
+            </button>
+            <button id="reset-btn" class="secondary">
+              Reset
+            </button>
+          </div>
+        </div>
+
+        <div class="summary">
+          <div class="summary-pill">
+            <span class="summary-label">Total Steps</span>
+            <span class="summary-value" id="summary-total">0</span>
+          </div>
+          <div class="summary-pill">
+            <span class="summary-label">Completed</span>
+            <span class="summary-value" id="summary-completed">0</span>
+          </div>
+          <div class="summary-pill">
+            <span class="summary-label">Running</span>
+            <span class="summary-value" id="summary-running">0</span>
+          </div>
+          <div class="summary-pill">
+            <span class="summary-label">Pending</span>
+            <span class="summary-value" id="summary-pending">0</span>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Process Step</th>
+              <th>Owner</th>
+              <th>ETA (synthetic)</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="steps-body"></tbody>
+        </table>
+
+        <div class="hint">
+          <span class="badge">How to narrate</span>
+          <span id="scenario-hint-text">
+            Each step is an agent or micro-workflow. In production, the status would be driven by events from core finance systems.
+          </span>
+        </div>
+      </section>
+
+      <!-- RIGHT: Agent log -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Agent Activity Log</div>
+            <div class="tiny-label">What the CFO sees as the ‘brain’ of FinanceGPT</div>
+          </div>
+        </div>
+        <div id="log" class="log-container"></div>
+        <div class="hint">
+          <span class="badge">Narration</span>
+          Use this panel to say: “This is the orchestration layer – every background call to SAP, FIS, BlackLine, Anaplan or Bedrock would be traceable here.”
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const scenarios = {
+      close_bmo: {
+        label: "7-Day Close (BMO-style)",
+        description:
+          "BMO-style 7-day financial close – from pre-close checks through SAP / FIS / BlackLine / Anaplan to CFO pack publishing.",
+        hint:
+          "Each row is a micro-agent in the 7-day close. In production, status would be driven by SAP S/4HANA, FIS, BlackLine and Anaplan events in real time.",
+        steps: [
+          {
+            name: "Day 0 – Pre-close readiness (open items, interface health, freeze calendar)",
+            owner: "R2R / GL Operations"
+          },
+          {
+            name: "Day 1 – Ingest SAP S/4HANA actuals (GL, products, cost centres)",
+            owner: "GL / Finance Technology"
+          },
+          {
+            name: "Day 1 – Load FIS consolidated trial balance & eliminations",
+            owner: "Consolidation (FIS)"
+          },
+          {
+            name: "Day 2 – BlackLine balance sheet reconciliations & certification status",
+            owner: "R2R / Financial Controls"
+          },
+          {
+            name: "Day 3 – Intercompany, FX & hedge result validation",
+            owner: "Treasury / R2R"
+          },
+          {
+            name: "Day 4 – Anaplan budget & forecast alignment by segment / product",
+            owner: "FP&A / Segment Finance"
+          },
+          {
+            name: "Day 5 – Variance and driver analysis (Retail, Wealth, Capital Markets, US vs CA)",
+            owner: "FP&A / Business Finance"
+          },
+          {
+            name: "Day 6 – MD&A inputs and regulatory metrics assembly (OSFI, IFRS, capital & liquidity)",
+            owner: "Corp Finance / Reg Reporting"
+          },
+          {
+            name: "Day 7 – CFO sign-off, Board pack & dashboard publication",
+            owner: "CFO Office / BI"
+          }
+        ]
+      },
+      mda: {
+        label: "MD&A Automation",
+        description:
+          "MD&A automation pipeline – from prior narrative ingestion and policies to CFO-reviewed disclosure, using the same agentic fabric.",
+        hint:
+          "Here the same orchestration fabric focuses on MD&A: pulling data, assembling narrative, applying policy checks and routing for CFO review.",
+        steps: [
+          {
+            name: "Ingest prior-period MD&A, disclosure checklists and style guide",
+            owner: "Corp Finance"
+          },
+          {
+            name: "Pull current quarter SAP / FIS financials (P&L, BS, key ratios)",
+            owner: "GL / Consolidation"
+          },
+          {
+            name: "Ingest risk, capital, liquidity and funding metrics (OSFI / internal dashboards)",
+            owner: "Treasury / Risk / Capital Management"
+          },
+          {
+            name: "Generate draft MD&A narrative by segment and key themes",
+            owner: "FinanceGPT Agent"
+          },
+          {
+            name: "Apply policy, disclosure and wording checks vs OSFI / internal playbook",
+            owner: "Reg Reporting / Policy Office"
+          },
+          {
+            name: "Produce redline vs prior MD&A and highlight material changes",
+            owner: "Corp Finance"
+          },
+          {
+            name: "Route for CFO / Controller review, capture comments and produce final pack",
+            owner: "CFO Office / Corp Finance"
+          }
+        ]
+      }
+    };
+
+    let currentScenarioKey = "close_bmo";
+    let steps = [];
+    let stepStatus = [];
+    let currentIndex = -1;
+    let timer = null;
+
+    const stepsBody = document.getElementById("steps-body");
+    const summaryTotal = document.getElementById("summary-total");
+    const summaryCompleted = document.getElementById("summary-completed");
+    const summaryRunning = document.getElementById("summary-running");
+    const summaryPending = document.getElementById("summary-pending");
+    const logContainer = document.getElementById("log");
+    const startBtn = document.getElementById("start-btn");
+    const resetBtn = document.getElementById("reset-btn");
+    const scenarioDescription = document.getElementById("scenario-description");
+    const scenarioHintText = document.getElementById("scenario-hint-text");
+    const scenarioTabs = document.querySelectorAll(".scenario-tab");
+
+    function log(tag, text) {
+      const now = new Date();
+      const time = now.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+      });
+
+      const entry = document.createElement("div");
+      entry.className = "log-entry";
+
+      entry.innerHTML = `
+        <div class="log-time">${time}</div>
+        <div class="log-tag">${tag}</div>
+        <div class="log-text">${text}</div>
+      `;
+
+      logContainer.prepend(entry);
+    }
+
+    function updateSummary() {
+      const total = steps.length;
+      const completed = stepStatus.filter((s) => s === "completed").length;
+      const running = stepStatus.filter((s) => s === "running").length;
+      const pending = stepStatus.filter((s) => s === "pending").length;
+
+      summaryTotal.textContent = total;
+      summaryCompleted.textContent = completed;
+      summaryRunning.textContent = running;
+      summaryPending.textContent = pending;
+    }
+
+    function renderSteps() {
+      stepsBody.innerHTML = "";
+      steps.forEach((step, idx) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${idx + 1}</td>
+          <td>${step.name}</td>
+          <td>${step.owner}</td>
+          <td>${10 + idx * 3}–${15 + idx * 4} sec</td>
+          <td>
+            <span class="status-pill status-pending" data-status-index="${idx}">
+              Pending
+            </span>
+          </td>
+        `;
+        stepsBody.appendChild(tr);
+      });
+      stepStatus = steps.map(() => "pending");
+      currentIndex = -1;
+      updateSummary();
+    }
+
+    function setStatus(index, status) {
+      stepStatus[index] = status;
+      const pill = document.querySelector(
+        `.status-pill[data-status-index="${index}"]`
+      );
+      if (!pill) return;
+      pill.className = "status-pill";
+      if (status === "pending") {
+        pill.classList.add("status-pending");
+        pill.textContent = "Pending";
+      } else if (status === "running") {
+        pill.classList.add("status-running");
+        pill.textContent = "Running";
+      } else if (status === "completed") {
+        pill.classList.add("status-completed");
+        pill.textContent = "Completed";
+      }
+      updateSummary();
+    }
+
+    function resetWorkflow() {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+      steps.forEach((_, idx) => setStatus(idx, "pending"));
+      currentIndex = -1;
+      startBtn.disabled = false;
+      log("SYSTEM", "Workflow reset to initial state.");
+    }
+
+    function startDemo() {
+      if (timer) return;
+      resetWorkflow();
+      const scenario = scenarios[currentScenarioKey];
+      log("SYSTEM", `Starting "${scenario.label}" synthetic run.`);
+      startBtn.disabled = true;
+
+      timer = setInterval(() => {
+        // Complete previous running step
+        if (currentIndex >= 0 && currentIndex < steps.length) {
+          setStatus(currentIndex, "completed");
+          log("STEP", `Completed: ${steps[currentIndex].name}`);
+        }
+
+        currentIndex += 1;
+
+        if (currentIndex >= steps.length) {
+          clearInterval(timer);
+          timer = null;
+          startBtn.disabled = false;
+          log("SYSTEM", "All steps completed. Synthetic workflow finished.");
+          return;
+        }
+
+        // Start next step
+        setStatus(currentIndex, "running");
+        log(
+          "AGENT",
+          `Executing: ${steps[currentIndex].name} · Owner: ${steps[currentIndex].owner}`
+        );
+      }, 2000); // adjust speed by changing this interval (ms)
+    }
+
+    function loadScenario(key) {
+      const scenario = scenarios[key];
+      currentScenarioKey = key;
+      steps = scenario.steps;
+      renderSteps();
+      scenarioDescription.textContent = scenario.description;
+      scenarioHintText.textContent = scenario.hint;
+      log("SYSTEM", `Scenario loaded: ${scenario.label}`);
+    }
+
+    startBtn.addEventListener("click", startDemo);
+    resetBtn.addEventListener("click", resetWorkflow);
+
+    scenarioTabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        scenarioTabs.forEach((t) => t.classList.remove("active"));
+        tab.classList.add("active");
+        loadScenario(tab.dataset.scenario);
+      });
+    });
+
+    // Initial load
+    loadScenario("close_bmo");
+    log("SYSTEM", "Demo ready. Choose a scenario and press 'Start Demo Run'.");
+  </script>
+</body>
+</html>
