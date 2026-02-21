@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Finance 2030: Agentic AI-Powered Transformation for AEM</title>
+  <title>Finance 2030 | AEM Executive Workshop Deck</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
@@ -12,291 +12,466 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
   <style>
-    :root { --sage:#A8BFA8; --warm:#D9D2C3; --ink:#101827; }
-    body { font-family: Inter, sans-serif; background: linear-gradient(180deg,#0f172a,#1f2937); color: #f8fafc; overflow: hidden; }
+    :root {
+      --bg: #0b1020;
+      --bg2: #161f36;
+      --sage: #afbea5;
+      --warm: #d8cdb8;
+      --cyan: #67e8f9;
+      --line: rgba(255,255,255,0.14);
+      --text: #f8fafc;
+      --muted: #9ca3af;
+    }
+    body { margin:0; font-family:Inter,sans-serif; color:var(--text); background: radial-gradient(circle at 10% 0%, #1f2f5f, #0b1020 40%, #090d17 100%); overflow:hidden; }
     .deck { height:100vh; overflow-y:auto; scroll-snap-type:y mandatory; }
-    .slide { min-height:100vh; scroll-snap-align:start; padding:3.2rem 5vw 2rem; border-bottom:1px solid rgba(255,255,255,.08); }
-    .glass { background:rgba(15,23,42,.66); border:1px solid rgba(255,255,255,.15); backdrop-filter: blur(8px); }
-    .kpi { background: linear-gradient(140deg, rgba(168,191,168,.24), rgba(217,210,195,.16)); }
-    .region { cursor:pointer; transition:.25s; } .region:hover{ transform:scale(1.05); }
-    .navdot{ width:10px;height:10px;border-radius:50%;background:#64748b;display:block;margin:7px auto; }
-    .navdot.active{ background:#22d3ee; box-shadow:0 0 0 6px rgba(34,211,238,.2); }
-    .draggable{ cursor:grab; }
+    .slide { position:relative; min-height:100vh; scroll-snap-align:start; padding:4.25rem 5vw 2.5rem; border-bottom:1px solid var(--line); overflow:hidden; }
+    .hero-title, h2 { font-family:'Playfair Display', serif; letter-spacing:.1px; }
+    .glass { background:linear-gradient(155deg, rgba(17,24,39,.74), rgba(15,23,42,.56)); border:1px solid var(--line); border-radius:18px; backdrop-filter: blur(10px); box-shadow:0 22px 55px rgba(0,0,0,.34); }
+    .bento { display:grid; gap:12px; }
+    .pill { border-radius:999px; padding:.3rem .7rem; border:1px solid var(--line); font-size:.72rem; color:#cbd5e1; }
+    .kpi { background:linear-gradient(145deg, rgba(103,232,249,.15), rgba(175,190,165,.17)); border:1px solid rgba(103,232,249,.35); }
+    .region { cursor:pointer; transition:.25s; } .region:hover{ transform:scale(1.08); filter:drop-shadow(0 0 10px rgba(103,232,249,.7)); }
+    .draggable { cursor:grab; }
+    .progress-wrap { width:220px; height:8px; border-radius:999px; background:rgba(255,255,255,.16); overflow:hidden; }
+    .progress { height:100%; background:linear-gradient(90deg,#22d3ee,#34d399); width:0%; }
+    .navdot{ width:10px; height:10px; border-radius:50%; background:#64748b; margin:7px auto; display:block; transition:.2s; }
+    .navdot.active{ background:#67e8f9; box-shadow:0 0 0 6px rgba(103,232,249,.22); transform:scale(1.05); }
+    .orb { position:absolute; border-radius:50%; pointer-events:none; filter:blur(40px); opacity:.25; }
+    .ask-card { border-left:3px solid #22d3ee; background:rgba(15,23,42,.64); }
+    @media (max-width: 900px) { .slide{padding-top:5rem;} .hero-title{font-size:2.3rem!important;} }
   </style>
 </head>
 <body>
-  <aside class="fixed right-3 top-1/2 -translate-y-1/2 z-50" aria-label="Slide navigation">
-    <div id="dots"></div>
-  </aside>
-
-  <div class="fixed left-4 top-4 z-50 flex gap-2">
-    <button id="exportPdf" class="px-3 py-2 rounded bg-cyan-500 text-slate-900 font-semibold">Export PDF</button>
-    <button id="nextBtn" class="px-3 py-2 rounded glass">Next ▶</button>
+  <aside class="fixed right-3 top-1/2 -translate-y-1/2 z-50" aria-label="Slide navigation"><div id="dots"></div></aside>
+  <div class="fixed left-4 top-4 z-50 flex gap-2 items-center">
+    <button id="exportPdf" class="px-3 py-2 rounded-md bg-cyan-400 text-slate-900 font-semibold">Export PDF</button>
+    <button id="nextBtn" class="px-3 py-2 rounded-md glass">Next ▶</button>
+    <div class="progress-wrap"><div id="deckProgress" class="progress"></div></div>
   </div>
 
   <main id="deck" class="deck" tabindex="0" aria-live="polite">
 
-    <!-- 1 Opening -->
-    <section class="slide flex flex-col justify-center" data-title="Welcome">
-      <h1 class="text-5xl md:text-6xl font-extrabold mb-5">Finance 2030: Agentic AI-Powered Transformation for Agnico Eagle</h1>
-      <p class="text-xl text-cyan-200 mb-6">Global Operations, Canadian Strength | Atelier interactif / Interactive workshop</p>
-      <div class="grid md:grid-cols-3 gap-4">
-        <div class="glass rounded-xl p-4"><h3 class="font-bold">2:00–2:10</h3><p>Introduction & objectives</p></div>
-        <div class="glass rounded-xl p-4"><h3 class="font-bold">2:10–3:15</h3><p>Recap + Art of the possible</p></div>
-        <div class="glass rounded-xl p-4"><h3 class="font-bold">3:30–5:00</h3><p>Vision, priorities, roadmap</p></div>
+    <!-- 1 HERO -->
+    <section class="slide" data-title="Welcome">
+      <div class="orb" style="width:320px;height:320px;background:#22d3ee;top:-60px;right:-60px"></div>
+      <div class="orb" style="width:300px;height:300px;background:#f59e0b;bottom:-80px;left:-70px"></div>
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+        <span class="pill">Finance 2030 | Executive Workshop | 2:00–5:00 PM</span>
+        <span class="pill">EN / FR hints enabled</span>
       </div>
-      <div class="mt-6 grid md:grid-cols-2 gap-4">
-        <div class="glass rounded-xl p-4"><h3 class="font-semibold mb-2">Participant login via QR</h3><div id="loginQR" class="bg-white inline-block p-2 rounded"></div><input id="roleInput" class="mt-2 w-full p-2 text-slate-900 rounded" placeholder="Enter role (CFO, Controller, IT Lead)"/><button id="saveRole" class="mt-2 px-3 py-2 rounded bg-emerald-400 text-slate-900 font-semibold">Save Role</button><p id="roleEcho" class="text-sm mt-2"></p></div>
-        <div class="glass rounded-xl p-4"><h3 class="font-semibold mb-2">Animated session timeline</h3><div class="h-3 bg-slate-700 rounded"><div id="timelineBar" class="h-3 bg-cyan-400 rounded w-0"></div></div><p class="text-sm mt-3 text-slate-300">Use ↑/↓ keys. Contenu disponible en anglais et avec indices en français.</p></div>
+      <h1 class="hero-title text-5xl md:text-6xl font-bold mb-4">Agentic AI-Powered Finance Transformation for Agnico Eagle</h1>
+      <p class="text-cyan-200 text-xl mb-7">Global Operations, Canadian Strength — designed for CFO-level decisions on ROI, risk, and growth.</p>
+
+      <div class="grid md:grid-cols-4 gap-3 mb-5">
+        <div class="glass p-4"><p class="text-xs text-slate-400">Core Canada Lens</p><p class="text-lg font-semibold">Quebec, Ontario, Nunavut</p></div>
+        <div class="glass p-4"><p class="text-xs text-slate-400">Global Sites</p><p class="text-lg font-semibold">Mexico, Finland, Australia</p></div>
+        <div class="glass p-4"><p class="text-xs text-slate-400">Session Goal</p><p class="text-lg font-semibold">3-Year Finance Vision</p></div>
+        <div class="glass p-4"><p class="text-xs text-slate-400">Outcome</p><p class="text-lg font-semibold">Prioritized Roadmap</p></div>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="glass p-4">
+          <h3 class="font-semibold mb-2">Participant QR login</h3>
+          <div id="loginQR" class="inline-block bg-white rounded p-2"></div>
+          <div class="mt-2 flex gap-2"><input id="roleInput" class="flex-1 p-2 rounded text-slate-900" placeholder="Role (CFO, Finance Director, Controller...)" /><button id="saveRole" class="px-3 py-2 rounded bg-emerald-400 text-slate-900 font-semibold">Save</button></div>
+          <p id="roleEcho" class="text-sm text-emerald-200 mt-2"></p>
+        </div>
+        <div class="glass p-4">
+          <h3 class="font-semibold">Agenda timeline animation</h3>
+          <div class="mt-3 h-2 rounded bg-slate-700"><div id="timelineBar" class="h-2 rounded bg-cyan-400 w-0"></div></div>
+          <p class="text-sm text-slate-300 mt-2">Use keyboard ↑/↓ to navigate. Appuyez sur les flèches pour naviguer.</p>
+          <p class="text-sm text-slate-400 mt-2">Facilitator cue: “What one decision must this workshop unlock today?”</p>
+        </div>
       </div>
     </section>
 
-    <!-- 2 Global map -->
-    <section class="slide" data-title="AEM Global Footprint">
-      <h2 class="text-4xl font-bold mb-4">AEM operating footprint and risk lens</h2>
+    <!-- 2 MAP -->
+    <section class="slide" data-title="Global Footprint">
+      <h2 class="text-4xl font-bold mb-4">AEM global operating model and regional challenge map</h2>
       <div class="grid md:grid-cols-2 gap-4">
-        <div class="glass rounded-xl p-4">
-          <svg viewBox="0 0 800 380" class="w-full">
-            <rect x="0" y="0" width="800" height="380" fill="#0b1324"/>
-            <circle class="region" cx="180" cy="120" r="12" fill="#22d3ee" data-tip="Canada: Quebec/Ontario/Nunavut core production; permitting & Indigenous partnerships"/>
-            <circle class="region" cx="180" cy="180" r="10" fill="#f59e0b" data-tip="Mexico (Pinos Altos): FX and inflation volatility"/>
-            <circle class="region" cx="440" cy="95" r="10" fill="#34d399" data-tip="Finland (Kittila): energy costs and predictive maintenance opportunity"/>
-            <circle class="region" cx="620" cy="230" r="10" fill="#fb7185" data-tip="Australia (Fosterville): labor competition and cost pressure"/>
-            <text x="200" y="120" fill="white">Canada: LaRonde, Malartic, Goldex, Meliadine, Meadowbank, Detour, Macassa</text>
+        <div class="glass p-4">
+          <svg viewBox="0 0 900 420" class="w-full">
+            <rect width="900" height="420" fill="#0d1527"/>
+            <circle class="region" cx="190" cy="130" r="13" fill="#22d3ee" data-tip="Canada (LaRonde, Malartic, Goldex, Meliadine, Meadowbank, Detour, Macassa): permitting, Indigenous partnerships, remote site economics."/>
+            <circle class="region" cx="205" cy="205" r="11" fill="#f59e0b" data-tip="Mexico (Pinos Altos): FX volatility, inflation pressure, treasury hedging cadence."/>
+            <circle class="region" cx="515" cy="108" r="11" fill="#34d399" data-tip="Finland (Kittila): energy intensity and predictive maintenance opportunities."/>
+            <circle class="region" cx="700" cy="275" r="11" fill="#f472b6" data-tip="Australia (Fosterville): labor competition and unit-cost productivity pressure."/>
+            <text x="220" y="130" fill="white">Canada-heavy production footprint</text>
           </svg>
-          <p id="mapTip" class="mt-2 text-cyan-200">Click a region marker for local challenge insights.</p>
+          <p id="mapTip" class="text-cyan-200 mt-2">Click markers to reveal regional risk and value focus.</p>
         </div>
-        <div class="glass rounded-xl p-4">
-          <h3 class="text-xl font-semibold">External trends (Canada-focused, global-aware)</h3>
-          <ul class="list-disc pl-5 space-y-2 mt-2 text-slate-200">
-            <li>Critical minerals demand: lithium/copper expected to rise 3–90x by 2050.</li>
-            <li>Govt. enablers: CAD 1.5B First & Last Mile Fund + CAD 2B Critical Minerals Sovereign Fund.</li>
-            <li>Labor gap: ~100k–220k hires needed by 2033 across mining and adjacent skills.</li>
-            <li>AISC pressure: +6.25% YoY; deeper deposits, lower grades, and remote logistics complexity.</li>
-            <li>Peer benchmark: Barrick/Newmont efficiency moves linked to ~30% EBITDA uplift archetypes.</li>
+        <div class="glass p-4">
+          <h3 class="text-xl font-semibold mb-2">Market and policy pulse</h3>
+          <ul class="list-disc pl-5 space-y-2 text-slate-200">
+            <li>Critical minerals demand (lithium/copper) projected +3x to +90x by 2050.</li>
+            <li>Canada funding tailwinds: CAD 1.5B First & Last Mile + CAD 2B Sovereign Critical Minerals fund.</li>
+            <li>Mining labor gap forecast: 100k–220k hires needed by 2033.</li>
+            <li>AISC inflation pressure: approximately +6.25% YoY across complex operating contexts.</li>
+            <li>Peer archetype benchmark: efficiency programs linked to up to ~30% EBITDA uplift.</li>
           </ul>
+          <div class="ask-card rounded-xl p-3 mt-3"><strong>Executive question:</strong> Where should AEM centralize vs localize finance decisions across four countries?</div>
         </div>
       </div>
     </section>
 
-    <!-- 3 Recap -->
+    <!-- 3 RECAP -->
     <section class="slide" data-title="Recap">
-      <h2 class="text-4xl font-bold mb-4">Recap of key themes from prior assessments</h2>
+      <h2 class="text-4xl font-bold mb-4">Recap: what we learned, what moved, what remains</h2>
       <div class="grid md:grid-cols-3 gap-4">
-        <div class="glass p-4 rounded-xl"><h3 class="font-semibold">What was identified</h3><p>Fragmented R2R close, manual FX reconciliations, inconsistent planning cadence, variable control quality.</p></div>
-        <div class="glass p-4 rounded-xl"><h3 class="font-semibold">What progressed at AEM</h3><p>Standardized templates, data governance start, selective automation pilots in close and reporting.</p></div>
-        <div class="glass p-4 rounded-xl"><h3 class="font-semibold">Lessons learned</h3><p>Technology alone is insufficient—operating model, talent, and governance drive sustained ROI.</p></div>
+        <div class="glass p-4"><h3 class="font-semibold">Opportunities identified</h3><p>R2R close fragmentation, manual journals, FX reconciliation latency, uneven policy adherence.</p></div>
+        <div class="glass p-4"><h3 class="font-semibold">Current status at AEM</h3><p>Foundational governance and selected automations started; scale and consistency not yet enterprise-wide.</p></div>
+        <div class="glass p-4"><h3 class="font-semibold">Lesson learned</h3><p>Value realization requires synchronized change in talent, process, data, and platform governance.</p></div>
       </div>
-      <div class="mt-4 glass p-4 rounded-xl"><h3 class="font-semibold">Pulse survey QR (post-recap)</h3><div id="surveyQR1" class="bg-white p-2 inline-block rounded"></div></div>
+      <div class="grid md:grid-cols-2 gap-4 mt-4">
+        <div class="glass p-4"><h3 class="font-semibold">Pulse survey QR</h3><div id="surveyQR1" class="bg-white p-2 inline-block rounded"></div></div>
+        <div class="ask-card rounded-xl p-4"><strong>Facilitator prompt:</strong> Which prior recommendation has the highest missed-opportunity cost if deferred by 12 months?</div>
+      </div>
     </section>
 
-    <!-- 4 survey -->
+    <!-- 4 SURVEY -->
     <section class="slide" data-title="Pain Point Survey">
-      <h2 class="text-4xl font-bold mb-4">Finance process pain-point polling (taxonomy aligned)</h2>
+      <h2 class="text-4xl font-bold mb-4">Live pain-point survey (taxonomy-aligned)</h2>
       <div class="grid md:grid-cols-2 gap-4">
-        <form id="painForm" class="glass rounded-xl p-4 space-y-3">
+        <form id="painForm" class="glass p-4 space-y-3">
           <label class="block">Top pain point
             <select id="painSelect" class="w-full p-2 rounded text-slate-900">
-              <option>R2R manual journal entries</option><option>A2R asset impairment delays</option><option>FP&A forecast volatility</option><option>Treasury multi-currency cash visibility</option><option>Tax/Compliance Canadian filing complexity</option><option>Investor Relations narrative lag</option><option>S2P remote site disruption</option>
+              <option>Record to Report: manual journal entries</option>
+              <option>Acquire to Retire: impairment latency</option>
+              <option>FP&A: forecast accuracy under commodity volatility</option>
+              <option>Treasury: multi-currency cash visibility</option>
+              <option>Tax & Compliance: Canadian multi-jurisdiction complexity</option>
+              <option>Investor Relations: narrative reporting cycle time</option>
+              <option>Source to Pay: remote supply disruption</option>
             </select>
           </label>
-          <label class="block">AI readiness (1-5)<input id="aiRead" type="range" min="1" max="5" value="3" class="w-full"/></label>
-          <label class="block">Open text / Texte libre<textarea id="openTxt" class="w-full p-2 rounded text-slate-900" placeholder="e.g., Multi-currency intercompany reconciliation"></textarea></label>
-          <button class="px-3 py-2 bg-cyan-400 text-slate-900 rounded font-semibold" type="submit">Submit response</button>
+          <label class="block">ERP/EPM maturity (1-5)
+            <input id="maturity" type="range" min="1" max="5" value="3" class="w-full" />
+          </label>
+          <label class="block">Open comment / Commentaire libre
+            <textarea id="openTxt" class="w-full rounded p-2 text-slate-900" placeholder="Example: Nunavut contractor cost variance + FX translation lag"></textarea>
+          </label>
+          <button type="submit" class="px-3 py-2 rounded bg-cyan-400 text-slate-900 font-semibold">Submit response</button>
         </form>
-        <div class="glass rounded-xl p-4">
-          <canvas id="painChart" height="200" aria-label="Pain chart"></canvas>
-          <p id="wordCloud" class="mt-3 text-sm text-cyan-200"></p>
+        <div class="glass p-4">
+          <canvas id="painChart" height="210" aria-label="Pain point chart"></canvas>
+          <p id="themesOut" class="text-cyan-200 text-sm mt-3"></p>
         </div>
       </div>
     </section>
 
-    <!-- 5 taxonomy pick -->
+    <!-- 5 PRIORITIZATION -->
     <section class="slide" data-title="Prioritization">
-      <h2 class="text-4xl font-bold mb-4">Pick top 3–5 pain points (impact × effort)</h2>
+      <h2 class="text-4xl font-bold mb-4">Opportunity selection: pick top 3–5 priorities</h2>
       <div class="grid md:grid-cols-2 gap-4">
-        <div class="glass rounded-xl p-4">
-          <h3 class="font-semibold mb-2">Available taxonomy cards (drag to selected)</h3>
-          <div id="pool" class="space-y-2 min-h-64">
-            <div class="draggable p-2 rounded bg-slate-700">Sourced: Invoice validation automation</div>
-            <div class="draggable p-2 rounded bg-slate-700">Retained: Policy governance consistency</div>
-            <div class="draggable p-2 rounded bg-slate-700">Treasury: Global FX exposure management</div>
-            <div class="draggable p-2 rounded bg-slate-700">FP&A: Site-level profitability forecasting</div>
-            <div class="draggable p-2 rounded bg-slate-700">Tax: ESG + Impact Assessment Act reporting</div>
+        <div class="glass p-4">
+          <h3 class="font-semibold mb-2">Drag from taxonomy pool</h3>
+          <div id="pool" class="space-y-2 min-h-56">
+            <div class="draggable p-2 rounded bg-slate-700">Sourced: AP invoice validation automation</div>
+            <div class="draggable p-2 rounded bg-slate-700">Retained: policy governance and controls</div>
+            <div class="draggable p-2 rounded bg-slate-700">Treasury: centralized FX exposure cockpit</div>
+            <div class="draggable p-2 rounded bg-slate-700">FP&A: site-level margin planning by asset</div>
+            <div class="draggable p-2 rounded bg-slate-700">Tax/ESG: Impact Assessment Act evidence trail</div>
           </div>
         </div>
-        <div class="glass rounded-xl p-4">
-          <h3 class="font-semibold mb-2">Selected priorities</h3>
-          <div id="selected" class="space-y-2 min-h-64 border border-dashed border-cyan-300 p-2 rounded"></div>
-          <p class="mt-3 text-sm">Focus notes: Nunavut logistics, Quebec/Ontario permitting cycle, Mexico/Finland FX translation.</p>
+        <div class="glass p-4">
+          <h3 class="font-semibold mb-2">Selected now</h3>
+          <div id="selected" class="space-y-2 min-h-56 border border-dashed border-cyan-300 rounded p-2"></div>
+          <p class="text-sm text-slate-300 mt-2">Filters: Canada core / global comparator / quick-win / strategic bet.</p>
         </div>
       </div>
     </section>
 
-    <!-- 6 Art of possible -->
+    <!-- 6 ART OF POSSIBLE -->
     <section class="slide" data-title="Art of Possible">
-      <h2 class="text-4xl font-bold mb-4">Art of the possible: AI/GenAI + ERP/EPM landscape</h2>
+      <h2 class="text-4xl font-bold mb-4">Art of possible: AI, GenAI, and finance platform trajectory</h2>
       <div class="grid md:grid-cols-4 gap-3">
-        <div class="kpi rounded-xl p-4"><p class="text-sm">CFO pulse</p><p class="text-3xl font-bold">57%</p><p>rethinking strategy due to tariffs</p></div>
-        <div class="kpi rounded-xl p-4"><p class="text-sm">FP&A focus</p><p class="text-3xl font-bold">58%</p><p>leaders dedicating more time to FP&A</p></div>
-        <div class="kpi rounded-xl p-4"><p class="text-sm">GenAI investment</p><p class="text-3xl font-bold">45%</p><p>investing for faster decisions</p></div>
-        <div class="kpi rounded-xl p-4"><p class="text-sm">Decision speed</p><p class="text-3xl font-bold">75%</p><p>target uplift with AI-assisted workflows</p></div>
+        <div class="kpi rounded-xl p-4"><p class="text-xs text-slate-300">CFO pulse</p><p class="text-3xl font-bold">57%</p><p class="text-sm">strategy changes due to tariffs and macro shifts</p></div>
+        <div class="kpi rounded-xl p-4"><p class="text-xs text-slate-300">FP&A time allocation</p><p class="text-3xl font-bold">58%</p><p class="text-sm">increased focus on planning & analysis</p></div>
+        <div class="kpi rounded-xl p-4"><p class="text-xs text-slate-300">GenAI investment</p><p class="text-3xl font-bold">45%</p><p class="text-sm">leaders accelerating AI programs</p></div>
+        <div class="kpi rounded-xl p-4"><p class="text-xs text-slate-300">Decision speed potential</p><p class="text-3xl font-bold">75%</p><p class="text-sm">faster cycle through AI augmentation</p></div>
       </div>
-      <p class="mt-4">Positioning for AEM: Oracle EPM Cloud + agentic finance layer to drive always-on close, predictive planning, and continuous controls.</p>
+      <div class="ask-card rounded-xl p-3 mt-4"><strong>Executive question:</strong> Which two decisions should become “always-on” at AEM: capital allocation, working capital, or cost controls?</div>
     </section>
 
     <!-- 7 Oracle EPM -->
     <section class="slide" data-title="Oracle EPM">
-      <h2 class="text-4xl font-bold mb-4">Modernized ERP/EPM platform play</h2>
+      <h2 class="text-4xl font-bold mb-4">Oracle EPM modernization play (People, Process, Performance)</h2>
       <div class="grid md:grid-cols-3 gap-4">
-        <div class="glass p-4 rounded-xl"><h3 class="font-semibold">SWP</h3><p>Headcount forecasting for remote operations (Nunavut fly-in/fly-out, skills adjacency planning).</p></div>
-        <div class="glass p-4 rounded-xl"><h3 class="font-semibold">EPBCS / Planning</h3><p>Driver-based budgeting across sites, commodity-linked scenarios, rolling forecasts.</p></div>
-        <div class="glass p-4 rounded-xl"><h3 class="font-semibold">Narrative Reporting</h3><p>Board-grade commentary with automated variance explanations and bilingual drafting support.</p></div>
+        <div class="glass p-4"><h3 class="font-semibold">People (SWP)</h3><p>Role-based workforce planning for remote operations, labor risk modeling, and succession pipeline.</p></div>
+        <div class="glass p-4"><h3 class="font-semibold">Process (EPBCS)</h3><p>Driver-based planning and integrated budgeting for site, function, and corporate scenarios.</p></div>
+        <div class="glass p-4"><h3 class="font-semibold">Performance (Narrative)</h3><p>Automated insight packs for CFO, board, and investor stakeholders with audit-ready traceability.</p></div>
       </div>
-      <div class="mt-4 glass rounded-xl p-4"><strong>Value case:</strong> 40–60% cycle-time reduction archetype, improved control consistency, auditable data lineage.</div>
+      <div class="glass p-4 mt-4"><strong>Expected value band:</strong> 40–60% cycle reduction archetype + improved control confidence + faster executive alignment.</div>
     </section>
 
-    <!-- 8 CFO dashboard -->
+    <!-- 8 DASHBOARD -->
     <section class="slide" data-title="Dashboard Demo">
-      <h2 class="text-4xl font-bold mb-4">Interactive CFO close dashboard (mock)</h2>
+      <h2 class="text-4xl font-bold mb-4">Interactive CFO dashboard mock</h2>
       <div class="grid md:grid-cols-2 gap-4">
-        <div class="glass p-4 rounded-xl"><canvas id="closeChart" height="180"></canvas></div>
-        <div class="glass p-4 rounded-xl"><canvas id="varianceChart" height="180"></canvas></div>
+        <div class="glass p-4"><canvas id="closeChart" height="190"></canvas></div>
+        <div class="glass p-4"><canvas id="siteChart" height="190"></canvas></div>
       </div>
     </section>
 
-    <!-- 9 before/after -->
+    <!-- 9 before after -->
     <section class="slide" data-title="Before-After">
-      <h2 class="text-4xl font-bold mb-4">Before/After modernization slider</h2>
-      <input id="modernSlider" type="range" min="0" max="100" value="20" class="w-full"/>
+      <h2 class="text-4xl font-bold mb-4">Before/after transformation slider</h2>
+      <input id="stateSlider" type="range" min="0" max="100" value="22" class="w-full" />
       <div class="grid md:grid-cols-2 gap-4 mt-4">
-        <div class="glass p-4 rounded-xl"><h3 class="font-semibold">Legacy state</h3><p id="legacyTxt">Manual spreadsheets for global FX and intercompany reconciliations.</p></div>
-        <div class="glass p-4 rounded-xl"><h3 class="font-semibold">Modern state</h3><p id="modernTxt">Partial automation; monthly lag in insights.</p></div>
+        <div class="glass p-4"><h3 class="font-semibold">Legacy</h3><p id="legacyText">Spreadsheet-driven FX and intercompany reconciliations with high manual effort.</p></div>
+        <div class="glass p-4"><h3 class="font-semibold">Future state</h3><p id="futureText">Early-stage automation, periodic insight latency.</p></div>
       </div>
     </section>
 
-    <!-- 10 AI operating model -->
+    <!-- 10 AI MODEL -->
     <section class="slide" data-title="AI Operating Model">
-      <h2 class="text-4xl font-bold mb-4">Agentic AI future-state finance operating model</h2>
-      <div class="glass rounded-xl p-4">
-        <p>Orchestrator agent decomposes requests → specialized agents (Reconciliation, Forecasting, Compliance, Narrative) execute with controls → human approver closes loop.</p>
-        <div class="grid md:grid-cols-4 gap-2 mt-3 text-center">
-          <div class="p-3 bg-slate-700 rounded">1. Intake</div><div class="p-3 bg-slate-700 rounded">2. Agent planning</div><div class="p-3 bg-slate-700 rounded">3. Evidence + traceability</div><div class="p-3 bg-slate-700 rounded">4. Governed approval</div>
+      <h2 class="text-4xl font-bold mb-4">Agentic AI finance operating model</h2>
+      <div class="glass p-4">
+        <p>Orchestrator decomposes objective → specialist agents execute (Reconciliation, Forecasting, Treasury, Compliance, Narrative) → evidence repository + policy guardrails → human approval.</p>
+        <div class="grid md:grid-cols-5 gap-2 mt-3 text-center">
+          <div class="p-2 rounded bg-slate-700">Intake</div>
+          <div class="p-2 rounded bg-slate-700">Plan</div>
+          <div class="p-2 rounded bg-slate-700">Execute</div>
+          <div class="p-2 rounded bg-slate-700">Validate</div>
+          <div class="p-2 rounded bg-slate-700">Approve</div>
         </div>
       </div>
     </section>
 
-    <!-- 11 AI chat -->
-    <section class="slide" data-title="AI Demo">
-      <h2 class="text-4xl font-bold mb-4">AI finance copilot (mock RAG response)</h2>
-      <div class="glass rounded-xl p-4">
-        <input id="chatInput" class="w-full p-2 rounded text-slate-900" value="Forecast headcount for Nunavut amid labor gap"/>
-        <button id="askBtn" class="mt-2 px-3 py-2 rounded bg-cyan-400 text-slate-900">Ask</button>
-        <pre id="chatOut" class="mt-3 whitespace-pre-wrap text-cyan-100"></pre>
+    <!-- 11 AI DEMO -->
+    <section class="slide" data-title="AI Copilot">
+      <h2 class="text-4xl font-bold mb-4">AI copilot demo (mock RAG)</h2>
+      <div class="glass p-4">
+        <input id="chatInput" class="w-full p-2 rounded text-slate-900" value="Forecast headcount for Nunavut amid labor shortages by 2027" />
+        <button id="askBtn" class="mt-2 px-3 py-2 rounded bg-cyan-400 text-slate-900">Run query</button>
+        <pre id="chatOut" class="text-cyan-100 mt-3 whitespace-pre-wrap"></pre>
       </div>
     </section>
 
-    <!-- 12 culture -->
-    <section class="slide" data-title="Culture Change">
-      <h2 class="text-4xl font-bold mb-4">Culture change and adoption readiness</h2>
+    <!-- 12 CHANGE -->
+    <section class="slide" data-title="Culture & Change">
+      <h2 class="text-4xl font-bold mb-4">Culture change and adoption strategy</h2>
       <div class="grid md:grid-cols-2 gap-4">
-        <div class="glass p-4 rounded-xl"><h3 class="font-semibold">Readiness quiz QR</h3><div id="surveyQR2" class="bg-white p-2 inline-block rounded"></div><p>Objective: shift SMEs toward 80% strategic decision support time.</p></div>
-        <div class="glass p-4 rounded-xl"><ul class="list-disc pl-5"><li>Role redesign for labor shortage resilience</li><li>Finance academy for data/AI literacy</li><li>Change champion network across Canada/Mexico/Finland/Australia</li></ul></div>
+        <div class="glass p-4"><h3 class="font-semibold">Readiness quiz QR</h3><div id="surveyQR2" class="bg-white p-2 inline-block rounded"></div><p class="mt-2">Target: move finance SMEs toward 80% strategic decision support contribution.</p></div>
+        <div class="glass p-4"><ul class="list-disc pl-5 space-y-1"><li>AI literacy academy and role pathways</li><li>Cross-country change champion network</li><li>Adoption KPIs: usage, quality, cycle-time, confidence</li></ul></div>
       </div>
     </section>
 
-    <!-- 13 tech adoption -->
-    <section class="slide" data-title="Tech Adoption">
-      <h2 class="text-4xl font-bold mb-4">Technology adoption roadmap (3 years)</h2>
-      <div id="roadmap" class="glass p-4 rounded-xl grid md:grid-cols-3 gap-2">
-        <div class="p-3 bg-slate-700 rounded draggable">Year 1: Standardize taxonomy + data model</div>
-        <div class="p-3 bg-slate-700 rounded draggable">Year 2: Scale agentic workflows + SWP</div>
-        <div class="p-3 bg-slate-700 rounded draggable">Year 3: Autonomous insights + continuous controls</div>
+    <!-- 13 roadmap -->
+    <section class="slide" data-title="3-Year Adoption Roadmap">
+      <h2 class="text-4xl font-bold mb-4">Technology adoption roadmap (drag to refine)</h2>
+      <div id="roadmap" class="glass p-4 grid md:grid-cols-3 gap-2">
+        <div class="draggable p-3 rounded bg-slate-700">Year 1: Data standards + process harmonization</div>
+        <div class="draggable p-3 rounded bg-slate-700">Year 2: Scale agentic workflows + SWP</div>
+        <div class="draggable p-3 rounded bg-slate-700">Year 3: Continuous controls + autonomous insighting</div>
       </div>
     </section>
 
-    <!-- 14 KPI ROI -->
-    <section class="slide" data-title="ROI Calculator">
-      <h2 class="text-4xl font-bold mb-4">Performance-driven ROI calculator</h2>
-      <div class="glass p-4 rounded-xl">
-        <label>Current annual finance OPEX (CAD M): <input id="opex" type="number" value="120" class="text-slate-900 p-1 rounded"/></label>
-        <label class="ml-4">Expected AI efficiency (%): <input id="eff" type="number" value="25" class="text-slate-900 p-1 rounded"/></label>
-        <button id="calcRoi" class="ml-4 px-3 py-2 rounded bg-emerald-400 text-slate-900">Calculate</button>
-        <p id="roiOut" class="mt-3 text-cyan-200"></p>
+    <!-- 14 ROI -->
+    <section class="slide" data-title="ROI">
+      <h2 class="text-4xl font-bold mb-4">ROI calculator (executive lens)</h2>
+      <div class="glass p-4">
+        <div class="flex flex-wrap gap-3 items-center">
+          <label>Finance OPEX (CAD M): <input id="opex" type="number" value="120" class="p-1 rounded text-slate-900 w-24" /></label>
+          <label>Efficiency gain %: <input id="eff" type="number" value="25" class="p-1 rounded text-slate-900 w-20" /></label>
+          <label>Implementation cost (CAD M): <input id="impl" type="number" value="28" class="p-1 rounded text-slate-900 w-20" /></label>
+          <button id="calcRoi" class="px-3 py-2 rounded bg-emerald-400 text-slate-900 font-semibold">Compute</button>
+        </div>
+        <p id="roiOut" class="text-cyan-200 mt-3"></p>
       </div>
     </section>
 
-    <!-- 15 risks -->
-    <section class="slide" data-title="Risk & Governance"><h2 class="text-4xl font-bold mb-4">Ethical AI governance and control tower</h2><div class="glass p-4 rounded-xl">NIST-aligned governance, model-risk controls, human-in-the-loop approvals, audit traceability-by-design, privacy-aware workforce analytics.</div></section>
+    <!-- 15 governance -->
+    <section class="slide" data-title="Governance"><h2 class="text-4xl font-bold mb-4">AI governance, risk, and controls</h2><div class="glass p-4">NIST-aligned controls, model risk inventory, policy-as-code checks, and human override paths for high-impact decisions.</div></section>
 
-    <!-- 16-20 workshop flow -->
-    <section class="slide" data-title="Vision Setting"><h2 class="text-4xl font-bold mb-4">3:30–4:00 | Define Finance vision & objectives</h2><p class="glass p-4 rounded-xl">Vision statement builder: "By 2027, AEM Finance will be always-on, AI-augmented, and control-embedded, enabling faster growth with lower risk."</p></section>
-    <section class="slide" data-title="Opportunity Lab"><h2 class="text-4xl font-bold mb-4">4:00–4:30 | Opportunity ideation lab</h2><p class="glass p-4 rounded-xl">Use selected pain points + benchmark packs to identify no-regret moves and transformation bets.</p></section>
-    <section class="slide" data-title="Impact-Effort"><h2 class="text-4xl font-bold mb-4">Impact vs effort prioritization matrix</h2><canvas id="matrixChart" class="glass rounded-xl p-2" height="170"></canvas></section>
-    <section class="slide" data-title="Roadmap Build"><h2 class="text-4xl font-bold mb-4">4:30–5:00 | Preliminary roadmap build</h2><p class="glass p-4 rounded-xl">Outputs: 90-day plan, 12-month value path, 3-year Finance 2030 blueprint with KPIs.</p></section>
-    <section class="slide" data-title="Wrap-Up"><h2 class="text-4xl font-bold mb-4">Executive wrap-up</h2><ul class="glass p-4 rounded-xl list-disc pl-5"><li>Expected value: cost efficiency, faster close, improved forecast accuracy, reduced compliance risk.</li><li>Canadian core with global leverage model.</li><li>Next step: confirm workstreams, owners, and governance cadence.</li></ul></section>
+    <!-- 16-20 agenda sections -->
+    <section class="slide" data-title="Vision Setting"><h2 class="text-4xl font-bold mb-4">3:30–4:00 | Set finance vision and objectives</h2><div class="ask-card rounded-xl p-4">Question 1: What should AEM finance stop doing? Question 2: What should AEM finance uniquely own?</div></section>
+    <section class="slide" data-title="Opportunity Lab"><h2 class="text-4xl font-bold mb-4">4:00–4:30 | Opportunities identification workshop</h2><div class="glass p-4">Build short list of opportunities across taxonomy with clear owner, value, and risk tags.</div></section>
+    <section class="slide" data-title="Impact Matrix"><h2 class="text-4xl font-bold mb-4">Impact / effort prioritization</h2><canvas id="matrixChart" class="glass p-2" height="190"></canvas></section>
+    <section class="slide" data-title="Roadmap Development"><h2 class="text-4xl font-bold mb-4">4:30–5:00 | Preliminary roadmap development</h2><div class="glass p-4">Outcome package: 90-day quick wins + 12-month platform scale + 3-year transformation arc.</div></section>
+    <section class="slide" data-title="Wrap-Up"><h2 class="text-4xl font-bold mb-4">Executive wrap-up and commitments</h2><div class="glass p-4">Commit owners, sequence value waves, establish steering cadence, and align operating model decisions.</div></section>
 
-    <!-- 21 Appendix KPI -->
-    <section class="slide" data-title="KPI Examples"><h2 class="text-4xl font-bold mb-4">AI future-of-finance KPI examples</h2><div class="grid md:grid-cols-3 gap-3"><div class="kpi rounded-xl p-4">Close duration: 8.5 → 4.0 days</div><div class="kpi rounded-xl p-4">Forecast accuracy: +12–18 pts</div><div class="kpi rounded-xl p-4">Control exceptions: -35%</div></div></section>
+    <!-- 21 KPI -->
+    <section class="slide" data-title="Future-of-Finance KPI Examples">
+      <h2 class="text-4xl font-bold mb-4">AI future-of-finance KPI examples</h2>
+      <div class="grid md:grid-cols-3 gap-3">
+        <div class="kpi p-4 rounded-xl">Close cycle: <strong>8.5 → 4.0 days</strong></div>
+        <div class="kpi p-4 rounded-xl">Forecast accuracy: <strong>+12 to +18 points</strong></div>
+        <div class="kpi p-4 rounded-xl">Control exceptions: <strong>-35%</strong></div>
+      </div>
+    </section>
 
-    <!-- 22 deployment -->
-    <section class="slide" data-title="Deployment Note"><h2 class="text-4xl font-bold mb-4">Deployment note</h2><p class="glass p-4 rounded-xl">Open <code>INDEX.HTML</code> directly in a browser, or host on GitHub Pages for easy sharing with workshop participants.</p></section>
+    <!-- 22 Deployment -->
+    <section class="slide" data-title="Deployment">
+      <h2 class="text-4xl font-bold mb-4">Deployment note</h2>
+      <div class="glass p-4">Open <code>INDEX.HTML</code> in any modern browser or host on GitHub Pages for workshop-ready distribution.</div>
+    </section>
   </main>
 
   <script>
     const deck = document.getElementById('deck');
     const slides = [...document.querySelectorAll('.slide')];
     const dots = document.getElementById('dots');
+    const deckProgress = document.getElementById('deckProgress');
     let idx = 0;
-    slides.forEach((s,i)=>{ const a=document.createElement('a'); a.href='#'; a.className='navdot'; a.onclick=(e)=>{e.preventDefault();go(i)}; dots.appendChild(a);});
-    function syncDots(){ [...dots.children].forEach((d,i)=>d.classList.toggle('active',i===idx)); }
-    function go(i){ idx=Math.max(0,Math.min(slides.length-1,i)); slides[idx].scrollIntoView({behavior:'smooth'}); syncDots(); }
-    document.getElementById('nextBtn').onclick=()=>go(idx+1);
-    deck.addEventListener('keydown',e=>{ if(e.key==='ArrowDown')go(idx+1); if(e.key==='ArrowUp')go(idx-1);});
-    deck.addEventListener('scroll',()=>{ idx = Math.round(deck.scrollTop / window.innerHeight); syncDots(); });
-    syncDots(); gsap.to('#timelineBar',{width:'100%',duration:6,repeat:-1,ease:'none'});
 
-    // QR
-    new QRCode(document.getElementById('loginQR'), {text:'https://aem-finance2030.local/login',width:100,height:100});
-    new QRCode(document.getElementById('surveyQR1'), {text:'https://forms.gle/finance2030-pulse',width:95,height:95});
-    new QRCode(document.getElementById('surveyQR2'), {text:'https://forms.gle/finance2030-culture',width:95,height:95});
-    document.getElementById('saveRole').onclick = ()=>{ const v=document.getElementById('roleInput').value||'Participant'; localStorage.setItem('aemRole',v); document.getElementById('roleEcho').textContent=`Welcome, ${v}. Content is now tuned for your role.`; };
+    slides.forEach((s, i) => {
+      const dot = document.createElement('a');
+      dot.className = 'navdot';
+      dot.href = '#';
+      dot.onclick = (e) => { e.preventDefault(); go(i); };
+      dots.appendChild(dot);
+    });
 
-    // Map tooltips
-    document.querySelectorAll('.region').forEach(r=>r.onclick=()=>document.getElementById('mapTip').textContent=r.dataset.tip);
+    function syncUi() {
+      [...dots.children].forEach((d, i) => d.classList.toggle('active', i === idx));
+      deckProgress.style.width = `${((idx + 1) / slides.length) * 100}%`;
+    }
 
-    // Survey chart
-    const painData = {labels:['R2R','A2R','FP&A','Treasury','Tax','IR','S2P'], datasets:[{label:'Votes',data:[4,2,5,3,4,1,3],backgroundColor:'#22d3ee'}]};
-    const painChart = new Chart(document.getElementById('painChart'), {type:'bar',data:painData, options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
-    const notes=[];
-    document.getElementById('painForm').onsubmit=(e)=>{ e.preventDefault(); const i=document.getElementById('painSelect').selectedIndex; painData.datasets[0].data[i]++; painChart.update(); notes.push(document.getElementById('openTxt').value); document.getElementById('wordCloud').textContent='Live themes: '+notes.filter(Boolean).slice(-5).join(' | '); };
+    function go(i) {
+      idx = Math.max(0, Math.min(slides.length - 1, i));
+      slides[idx].scrollIntoView({ behavior: 'smooth' });
+      syncUi();
+    }
 
-    // Drag and drop
-    Sortable.create(document.getElementById('pool'), {group:'shared',animation:150});
-    Sortable.create(document.getElementById('selected'), {group:'shared',animation:150});
-    Sortable.create(document.getElementById('roadmap'), {animation:150});
+    document.getElementById('nextBtn').onclick = () => go(idx + 1);
+    deck.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown') go(idx + 1);
+      if (e.key === 'ArrowUp') go(idx - 1);
+    });
+    deck.addEventListener('scroll', () => {
+      idx = Math.round(deck.scrollTop / window.innerHeight);
+      syncUi();
+    });
+    syncUi();
 
-    // Dashboard charts
-    new Chart(document.getElementById('closeChart'), {type:'line',data:{labels:['Jan','Feb','Mar','Apr','May'],datasets:[{label:'Close days',data:[8.7,8.1,7.6,6.2,5.1],borderColor:'#34d399'}]}});
-    new Chart(document.getElementById('varianceChart'), {type:'radar',data:{labels:['Nunavut','Quebec','Ontario','Finland','Mexico','Australia'],datasets:[{label:'Variance risk',data:[70,55,49,38,64,52],backgroundColor:'rgba(245,158,11,.3)',borderColor:'#f59e0b'}]}});
+    gsap.to('#timelineBar', { width: '100%', duration: 6, repeat: -1, ease: 'none' });
 
-    // Modernization slider
-    const legacyTxt=document.getElementById('legacyTxt'), modernTxt=document.getElementById('modernTxt');
-    document.getElementById('modernSlider').oninput=(e)=>{ const v=+e.target.value; modernTxt.textContent = v<40?'Partial automation; monthly lag in insights.':v<75?'Integrated close and planning; near-real-time analytics.':'Agentic AI + Oracle EPM: autonomous reconciliations, predictive controls, CFO cockpit.'; legacyTxt.textContent = v<60?'Manual spreadsheets for global FX and intercompany reconciliations.':'Legacy bottlenecks retired to exception-only handling.'; };
+    // QR blocks
+    new QRCode(document.getElementById('loginQR'), { text: 'https://aem-finance2030.local/login', width: 100, height: 100 });
+    new QRCode(document.getElementById('surveyQR1'), { text: 'https://forms.gle/finance2030-pulse', width: 95, height: 95 });
+    new QRCode(document.getElementById('surveyQR2'), { text: 'https://forms.gle/finance2030-culture', width: 95, height: 95 });
 
-    // AI chat mock
-    document.getElementById('askBtn').onclick=()=>{ const q=document.getElementById('chatInput').value; document.getElementById('chatOut').textContent = `Query: ${q}\n\nRAG result:\n- Scenario base: labor shortfall 12% by 2027 for Nunavut rotation roles.\n- Recommended SWP action: cross-train 85 FTE equivalents, automate low-value close tasks to offset 22 FTE demand.\n- Cost view: +CAD 6.4M training vs CAD 11.2M avoided contractor premium.\n- Risk: weather logistics and retention; mitigation via incentive redesign.`; };
+    document.getElementById('saveRole').onclick = () => {
+      const role = document.getElementById('roleInput').value || 'Participant';
+      localStorage.setItem('aemRole', role);
+      document.getElementById('roleEcho').textContent = `Welcome, ${role}. Slides now emphasize ${role} decisions.`;
+    };
 
-    // ROI
-    document.getElementById('calcRoi').onclick=()=>{ const o=+document.getElementById('opex').value; const e=+document.getElementById('eff').value/100; const save=(o*e).toFixed(1); document.getElementById('roiOut').textContent=`Estimated annual savings: CAD ${save}M. 3-year gross benefit: CAD ${(save*3).toFixed(1)}M (before implementation cost).`; };
+    // regional markers
+    document.querySelectorAll('.region').forEach(n => {
+      n.addEventListener('click', () => document.getElementById('mapTip').textContent = n.dataset.tip);
+    });
 
-    // Matrix chart
-    new Chart(document.getElementById('matrixChart'), {type:'bubble', data:{datasets:[{label:'Tax automation',data:[{x:8,y:6,r:10}],backgroundColor:'#22d3ee'},{label:'AI close copilot',data:[{x:9,y:9,r:12}],backgroundColor:'#34d399'},{label:'S2P resilience',data:[{x:6,y:8,r:11}],backgroundColor:'#f59e0b'}]}, options:{scales:{x:{title:{display:true,text:'Impact'}},y:{title:{display:true,text:'Ease'}}}}});
+    // pain chart
+    const painState = {
+      labels: ['R2R', 'A2R', 'FP&A', 'Treasury', 'Tax', 'IR', 'S2P'],
+      datasets: [{ data: [5, 3, 6, 4, 5, 2, 4], backgroundColor: '#67e8f9' }]
+    };
+    const painChart = new Chart(document.getElementById('painChart'), {
+      type: 'bar',
+      data: painState,
+      options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { color: '#cbd5e1' } }, x: { ticks: { color: '#cbd5e1' } } } }
+    });
+    const themes = [];
+    document.getElementById('painForm').onsubmit = (e) => {
+      e.preventDefault();
+      const i = document.getElementById('painSelect').selectedIndex;
+      painState.datasets[0].data[i] += 1;
+      painChart.update();
+      const txt = document.getElementById('openTxt').value.trim();
+      if (txt) themes.push(txt);
+      document.getElementById('themesOut').textContent = `Live themes: ${themes.slice(-4).join(' | ') || 'No open comments yet.'}`;
+    };
 
-    // PDF export
-    document.getElementById('exportPdf').onclick=()=>{ const { jsPDF } = window.jspdf; const doc = new jsPDF(); doc.text('Finance 2030 - AEM Workshop Deck', 12, 16); slides.forEach((s,i)=>{ if(i>0)doc.addPage(); doc.setFontSize(18); doc.text(s.dataset.title || `Slide ${i+1}`, 12, 20); doc.setFontSize(10); doc.text(s.innerText.slice(0,2500), 12, 30); }); doc.save('AEM_Finance2030_Workshop.pdf'); };
+    // drag/drop
+    Sortable.create(document.getElementById('pool'), { group: 'shared', animation: 150 });
+    Sortable.create(document.getElementById('selected'), { group: 'shared', animation: 150 });
+    Sortable.create(document.getElementById('roadmap'), { animation: 150 });
+
+    // charts
+    new Chart(document.getElementById('closeChart'), {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{ label: 'Financial close days', data: [8.8, 8.2, 7.6, 6.4, 5.5, 4.9], borderColor: '#34d399', tension: .35 }]
+      },
+      options: { plugins: { legend: { labels: { color: '#cbd5e1' } } }, scales: { y: { ticks: { color: '#cbd5e1' } }, x: { ticks: { color: '#cbd5e1' } } } }
+    });
+
+    new Chart(document.getElementById('siteChart'), {
+      type: 'radar',
+      data: {
+        labels: ['Nunavut', 'Quebec', 'Ontario', 'Finland', 'Mexico', 'Australia'],
+        datasets: [{ label: 'Variance risk index', data: [72, 52, 48, 41, 66, 55], backgroundColor: 'rgba(245,158,11,.28)', borderColor: '#f59e0b' }]
+      },
+      options: { plugins: { legend: { labels: { color: '#cbd5e1' } } }, scales: { r: { pointLabels: { color: '#cbd5e1' }, ticks: { color: '#cbd5e1', backdropColor: 'transparent' } } } }
+    });
+
+    // before after slider
+    const legacyText = document.getElementById('legacyText');
+    const futureText = document.getElementById('futureText');
+    document.getElementById('stateSlider').oninput = (e) => {
+      const v = +e.target.value;
+      futureText.textContent = v < 35 ? 'Early-stage automation, periodic insight latency.' :
+        v < 75 ? 'Integrated close-planning stack with near-real-time forecasting.' :
+        'Agentic AI + Oracle EPM with autonomous reconciliation and continuous controls.';
+      legacyText.textContent = v < 60 ?
+        'Spreadsheet-driven FX and intercompany reconciliations with high manual effort.' :
+        'Legacy bottlenecks reduced to exception-only workflows.';
+    };
+
+    // ai copilot
+    document.getElementById('askBtn').onclick = () => {
+      const q = document.getElementById('chatInput').value;
+      document.getElementById('chatOut').textContent = `Query: ${q}\n\nResponse:\n1) Base case indicates 12% labor shortfall risk in Nunavut by 2027.\n2) SWP recommendation: cross-train 85 FTE-equivalent roles and automate low-value close activities (22 FTE offset).\n3) Economic effect: CAD 6.4M enablement cost vs CAD 11.2M avoided contractor premium.\n4) Risk controls: retention incentives, weather-contingency staffing pool, and monthly variance watchlist.`;
+    };
+
+    // roi
+    document.getElementById('calcRoi').onclick = () => {
+      const opex = +document.getElementById('opex').value;
+      const eff = (+document.getElementById('eff').value) / 100;
+      const impl = +document.getElementById('impl').value;
+      const annual = opex * eff;
+      const threeYr = annual * 3;
+      const net = threeYr - impl;
+      document.getElementById('roiOut').textContent = `Estimated annual gross savings: CAD ${annual.toFixed(1)}M | 3-year gross: CAD ${threeYr.toFixed(1)}M | 3-year net after implementation: CAD ${net.toFixed(1)}M.`;
+    };
+
+    // matrix
+    new Chart(document.getElementById('matrixChart'), {
+      type: 'bubble',
+      data: {
+        datasets: [
+          { label: 'AI close copilot', data: [{ x: 9, y: 8, r: 12 }], backgroundColor: '#34d399' },
+          { label: 'Tax automation', data: [{ x: 8, y: 6, r: 10 }], backgroundColor: '#67e8f9' },
+          { label: 'S2P resilience', data: [{ x: 7, y: 7, r: 11 }], backgroundColor: '#f59e0b' }
+        ]
+      },
+      options: {
+        scales: {
+          x: { title: { display: true, text: 'Impact', color: '#cbd5e1' }, ticks: { color: '#cbd5e1' } },
+          y: { title: { display: true, text: 'Ease of Execution', color: '#cbd5e1' }, ticks: { color: '#cbd5e1' } }
+        },
+        plugins: { legend: { labels: { color: '#cbd5e1' } } }
+      }
+    });
+
+    // pdf
+    document.getElementById('exportPdf').onclick = () => {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      slides.forEach((s, i) => {
+        if (i > 0) doc.addPage();
+        doc.setFontSize(18);
+        doc.text(s.dataset.title || `Slide ${i + 1}`, 12, 18);
+        doc.setFontSize(10);
+        doc.text(s.innerText.slice(0, 2600), 12, 28);
+      });
+      doc.save('AEM_Finance2030_Executive_Workshop.pdf');
+    };
   </script>
 </body>
 </html>
