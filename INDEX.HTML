@@ -2,591 +2,967 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Finance Agentic AI – Orchestrator (Demo)</title>
+  <title>FinanceSmith AI – Multi-Industry Finance Orchestrator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f0f4ff;
+      --surface: #ffffff;
+      --surface-alt: #f8f9ff;
+      --border: #e2e8f0;
+      --text: #1e1b4b;
+      --text-mid: #4b5563;
+      --text-light: #9ca3af;
+      --blue: #4361ee;
+      --blue-light: #eef2ff;
+      --violet: #7c3aed;
+      --violet-light: #f5f3ff;
+      --teal: #0d9488;
+      --teal-light: #f0fdfa;
+      --amber: #d97706;
+      --amber-light: #fffbeb;
+      --sky: #0284c7;
+      --sky-light: #e0f2fe;
+      --cyan: #0891b2;
+      --emerald: #059669;
+      --emerald-light: #ecfdf5;
+      --radius: 12px;
+      --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(67,97,238,0.07);
+    }
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      margin: 0;
-      background: #0b1020;
-      color: #f5f7ff;
+      font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+      background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 50%, #f0fdf9 100%);
+      background-attachment: fixed;
+      color: var(--text);
+      min-height: 100vh;
     }
-    header {
-      padding: 24px 32px;
-      border-bottom: 1px solid #252b46;
-      background: radial-gradient(circle at top left, #203a9a 0, #0b1020 55%);
+    /* ── HEADER ── */
+    .hdr {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      box-shadow: 0 2px 12px rgba(67,97,238,0.08);
+      position: sticky; top: 0; z-index: 50;
     }
-    h1 {
-      margin: 0 0 8px;
-      font-size: 24px;
+    .hdr-inner {
+      max-width: 1280px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px;
     }
-    .subtitle {
-      font-size: 14px;
-      opacity: 0.8;
+    .logo { display: flex; align-items: center; gap: 12px; }
+    .logo-icon {
+      width: 38px; height: 38px; border-radius: 11px;
+      background: linear-gradient(135deg, #4361ee, #7c3aed);
+      display: flex; align-items: center; justify-content: center; font-size: 20px;
     }
-    main {
-      padding: 24px 32px 40px;
-      max-width: 1100px;
-      margin: 0 auto;
+    .logo-title { font-weight: 800; font-size: 17px; letter-spacing: -0.3px; }
+    .logo-sub { font-size: 11px; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.05em; }
+    /* ── BUTTONS ── */
+    .btn {
+      padding: 7px 14px; border-radius: 999px; font-size: 12px; font-weight: 600;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
+      border: 1px solid var(--border); background: white; color: var(--text-mid);
+      transition: all 0.15s;
     }
-    .layout {
-      display: grid;
-      grid-template-columns: 2.1fr 1.2fr;
-      gap: 20px;
+    .btn:hover { opacity: 0.85; }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-primary {
+      border: none; background: linear-gradient(135deg, #4361ee, #7c3aed);
+      color: white; box-shadow: 0 4px 12px rgba(67,97,238,0.3);
     }
-    @media (max-width: 900px) {
-      .layout {
-        grid-template-columns: 1fr;
-      }
+    .btn-emerald {
+      border-color: var(--emerald); background: var(--emerald-light); color: var(--emerald);
     }
+    .btn-run {
+      border: none; color: white; font-weight: 700; font-size: 13px;
+      box-shadow: 0 4px 12px rgba(67,97,238,0.25);
+    }
+    .btn-reset { border: 1px solid var(--border); background: white; color: var(--text-mid); }
+    /* ── INDUSTRY TABS ── */
+    .ind-tabs {
+      background: white; border-bottom: 1px solid var(--border);
+      padding: 0 32px; overflow-x: auto;
+    }
+    .ind-tabs-inner { max-width: 1280px; margin: 0 auto; display: flex; gap: 0; }
+    .ind-tab {
+      padding: 14px 18px; border: none; background: transparent; cursor: pointer;
+      font-size: 13px; font-weight: 500; color: var(--text-mid);
+      border-bottom: 2.5px solid transparent; white-space: nowrap;
+      display: flex; align-items: center; gap: 7px; transition: all 0.15s;
+      font-family: inherit;
+    }
+    .ind-tab.active { font-weight: 700; }
+    .ind-tab-icon { font-size: 17px; }
+    /* ── MAIN ── */
+    .main { max-width: 1280px; margin: 0 auto; padding: 24px 32px 48px; }
+    /* ── KPI ROW ── */
+    .kpi-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 18px; }
+    .ind-title-block h2 { font-size: 22px; font-weight: 800; margin: 0; display: flex; align-items: center; gap: 8px; }
+    .ind-title-block p { margin: 4px 0 0; font-size: 13px; color: var(--text-mid); }
+    .kpi-cards { display: flex; gap: 10px; flex-wrap: wrap; }
+    .kpi-card {
+      background: white; border: 1px solid var(--border); border-radius: 10px;
+      padding: 8px 16px; text-align: center; min-width: 72px;
+    }
+    .kpi-val { font-size: 22px; font-weight: 800; }
+    .kpi-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-light); margin-top: 1px; }
+    /* ── PROGRESS ── */
+    .progress-bar-wrap {
+      background: white; border-radius: 10px; border: 1px solid var(--border);
+      padding: 10px 16px; margin-bottom: 18px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .progress-lbl { font-size: 12px; font-weight: 600; color: var(--text-mid); white-space: nowrap; }
+    .progress-track { flex: 1; height: 8px; background: var(--surface-alt); border-radius: 999px; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 999px; transition: width 0.4s ease; }
+    .progress-pct { font-size: 13px; font-weight: 700; min-width: 38px; }
+    /* ── SUBCAT TABS ── */
+    .sub-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+    .sub-tab {
+      padding: 7px 14px; border-radius: 999px; font-size: 12px; font-weight: 500;
+      border: 1.5px solid var(--border); background: white; color: var(--text-mid);
+      cursor: pointer; display: flex; align-items: center; gap: 6px;
+      transition: all 0.15s; font-family: inherit;
+    }
+    .sub-tab.active { font-weight: 700; }
+    /* ── GRID ── */
+    .grid { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
+    @media (max-width: 960px) { .grid { grid-template-columns: 1fr; } }
+    /* ── CARD ── */
     .card {
-      background: linear-gradient(145deg, #11152a, #050715);
-      border-radius: 16px;
-      padding: 16px 18px 18px;
-      border: 1px solid #252b46;
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+      background: white; border-radius: 16px; border: 1px solid var(--border);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(67,97,238,0.06);
+      overflow: hidden;
     }
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 10px;
-      gap: 12px;
+    .card-hdr {
+      padding: 16px 20px 14px; border-bottom: 1px solid var(--border);
+      background: linear-gradient(135deg, #fafbff, #f8f0ff);
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
     }
-    .card-title {
-      font-size: 15px;
-      font-weight: 600;
-    }
-    .tiny-label {
-      font-size: 11px;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      opacity: 0.7;
-      margin-top: 2px;
-    }
-    .scenario-tabs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 10px;
-    }
-    .scenario-tab {
-      border-radius: 999px;
-      border: 1px solid #374151;
-      padding: 5px 12px;
-      font-size: 12px;
-      cursor: pointer;
-      background: transparent;
-      color: #e5e7eb;
-      box-shadow: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .scenario-tab.active {
-      background: linear-gradient(135deg, #3b82f6, #22c1c3);
-      color: #030712;
-      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.55);
-      border-color: transparent;
-    }
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 4px;
-      font-size: 13px;
-      align-items: center;
-      justify-content: flex-end;
-    }
-    button {
-      border-radius: 999px;
-      border: none;
-      padding: 7px 16px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 500;
-      background: linear-gradient(135deg, #3b82f6, #22c1c3);
-      color: #030712;
-      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.55);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    button.secondary {
-      background: transparent;
-      color: #e5e7eb;
-      border: 1px solid #374151;
-      box-shadow: none;
-    }
-    button:disabled {
-      opacity: 0.55;
-      cursor: default;
-      box-shadow: none;
-    }
-    .summary {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 10px;
-      font-size: 12px;
-    }
-    .summary-pill {
-      border-radius: 999px;
-      padding: 5px 12px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid #1f2937;
-      display: flex;
-      gap: 6px;
-      align-items: baseline;
-    }
-    .summary-label {
-      opacity: 0.65;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    .summary-value {
-      font-weight: 600;
-      font-size: 13px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      font-size: 13px;
-    }
-    th, td {
-      padding: 8px 6px;
-      text-align: left;
-    }
+    .card-title { font-weight: 700; font-size: 15px; }
+    .card-sub { font-size: 11px; color: var(--text-light); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .card-actions { display: flex; gap: 8px; }
+    /* ── TABLE ── */
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
     th {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      opacity: 0.7;
-      border-bottom: 1px solid #1f2937;
+      padding: 9px 10px; text-align: left; font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-light);
+      border-bottom: 1px solid var(--border); background: var(--surface-alt);
+      white-space: nowrap;
     }
-    tr:not(:last-child) td {
-      border-bottom: 1px solid #111827;
+    td { padding: 9px 10px; border-bottom: 1px solid var(--border); }
+    tr.row-alt td { background: var(--surface-alt); }
+    tr.row-running td { background: rgba(2,132,199,0.06); }
+    /* ── PILLS ── */
+    .pill {
+      border-radius: 999px; padding: 2px 8px; font-size: 10px;
+      font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+      display: inline-flex; align-items: center; gap: 3px;
     }
-    tr:nth-child(2n) {
-      background: rgba(15, 23, 42, 0.55);
+    .pill-critical { background: rgba(124,58,237,0.09); border: 1px solid rgba(124,58,237,0.3); color: #5b21b6; }
+    .pill-high     { background: rgba(217,119,6,0.09);  border: 1px solid rgba(217,119,6,0.3);  color: #92400e; }
+    .pill-medium   { background: rgba(8,145,178,0.09);  border: 1px solid rgba(8,145,178,0.3);  color: #164e63; }
+    .pill-completed { background: rgba(5,150,105,0.09); border: 1px solid rgba(5,150,105,0.35); color: #065f46; }
+    .pill-running   { background: rgba(2,132,199,0.1);  border: 1px solid rgba(2,132,199,0.4);  color: #0369a1; }
+    .pill-pending   { background: #f8f9ff; border: 1px solid #e2e8f0; color: #6b7280; }
+    .badge-output {
+      background: var(--blue-light); color: var(--blue);
+      border-radius: 6px; padding: 2px 7px; font-size: 11px; font-weight: 600;
     }
-    .status-pill {
-      border-radius: 999px;
-      padding: 2px 8px;
-      font-size: 11px;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      font-weight: 500;
+    /* ── PULSE DOT ── */
+    .pulse-dot {
+      display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--sky); margin-right: 6px;
+      animation: pulse 1s ease-in-out infinite;
     }
-    .status-pending {
-      background: rgba(31, 41, 55, 0.9);
-      color: #e5e7eb;
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
+    /* ── LOG PANEL ── */
+    .log-wrap { display: flex; flex-direction: column; gap: 12px; }
+    .log-card { background: white; border-radius: 16px; border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden; }
+    .log-hdr { padding: 14px 16px 12px; border-bottom: 1px solid var(--border); background: linear-gradient(135deg,#fafbff,#f0f4ff); }
+    .log-title { font-weight: 700; font-size: 14px; }
+    .log-sub { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+    .log-body { overflow-y: auto; max-height: 420px; }
+    .log-empty { padding: 24px 16px; text-align: center; color: var(--text-light); font-size: 12px; }
+    .log-entry { padding: 7px 14px; border-bottom: 1px solid var(--border); display: flex; gap: 8px; align-items: flex-start; }
+    .log-time { font-size: 10px; color: var(--text-light); min-width: 52px; padding-top: 2px; }
+    .log-tag { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 6px; border-radius: 4px; white-space: nowrap; margin-top: 2px; }
+    .log-text { font-size: 12px; color: var(--text-mid); flex: 1; line-height: 1.4; }
+    .tag-system { background: var(--violet-light); color: var(--violet); }
+    .tag-agent  { background: var(--sky-light); color: var(--sky); }
+    .tag-step   { background: var(--teal-light); color: var(--teal); }
+    /* ── EXPORT CARD ── */
+    .export-card { background: white; border-radius: 16px; border: 1px solid var(--border); box-shadow: var(--shadow); padding: 16px; }
+    .export-title { font-weight: 700; font-size: 13px; margin-bottom: 10px; }
+    .export-btns { display: flex; flex-direction: column; gap: 8px; }
+    .export-btn {
+      padding: 9px 12px; border-radius: 10px; cursor: pointer; text-align: left;
+      display: flex; align-items: center; gap: 8px; font-family: inherit;
+      transition: all 0.15s;
     }
-    .status-running {
-      background: rgba(59, 130, 246, 0.18);
-      color: #bfdbfe;
-      border: 1px solid rgba(59, 130, 246, 0.7);
-    }
-    .status-completed {
-      background: rgba(16, 185, 129, 0.18);
-      color: #bbf7d0;
-      border: 1px solid rgba(16, 185, 129, 0.7);
-    }
-    .log-container {
-      max-height: 340px;
-      overflow-y: auto;
-      font-size: 12px;
-      padding-right: 4px;
-    }
-    .log-entry {
-      padding: 6px 6px 6px 0;
-      border-bottom: 1px dashed #1f2937;
-      display: flex;
-      gap: 6px;
-      align-items: flex-start;
-    }
-    .log-time {
-      font-size: 10px;
-      opacity: 0.6;
-      min-width: 52px;
-    }
-    .log-tag {
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      border-radius: 999px;
-      padding: 2px 6px;
-      background: rgba(15, 23, 42, 1);
-      border: 1px solid #1d283a;
-      opacity: 0.9;
-    }
-    .log-text {
-      flex: 1;
-    }
-    .badge {
-      font-size: 10px;
-      text-transform: uppercase;
-      padding: 2px 6px;
-      border-radius: 999px;
-      background: rgba(148, 163, 184, 0.15);
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      margin-right: 6px;
-    }
-    .hint {
-      font-size: 11px;
-      opacity: 0.7;
-      margin-top: 6px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-      align-items: baseline;
+    .export-btn:hover { opacity: 0.85; }
+    .export-btn-label { font-size: 12px; font-weight: 600; display: block; }
+    .export-btn-sub { font-size: 10px; font-weight: 400; display: block; margin-top: 1px; }
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: #f8f9ff; }
+    ::-webkit-scrollbar-thumb { background: #c7d2fe; border-radius: 999px; }
+    /* ── PRINT ── */
+    @media print {
+      .no-print, .ind-tabs, .sub-tabs, .card-actions, .log-wrap, .export-card, .hdr-export-btns { display: none !important; }
+      .hdr { position: static; box-shadow: none; border-bottom: 2px solid #4361ee; }
+      body { background: white !important; }
+      .main { padding: 16px; }
+      .card { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
+      tr { page-break-inside: avoid; }
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Finance Agentic AI – Orchestrator (Demo)</h1>
-    <div class="subtitle">
-      Synthetic visualization of FinanceGPT orchestrating a <strong>BMO-style 7-day close</strong> and <strong>MD&amp;A automation</strong>.<br />
-      Use this to show which process is running, completed, and pending – same agentic fabric, different use cases.
+
+  <!-- HEADER -->
+  <header class="hdr">
+    <div class="hdr-inner">
+      <div class="logo">
+        <div class="logo-icon">💡</div>
+        <div>
+          <div class="logo-title">FinanceSmith AI</div>
+          <div class="logo-sub">Multi-Industry Finance Orchestrator</div>
+        </div>
+      </div>
+      <div class="hdr-export-btns no-print" style="display:flex;gap:8px">
+        <button class="btn" onclick="handleDownloadCSV()">⬇ CSV</button>
+        <button class="btn btn-emerald" onclick="handleDownloadExcel()">⬇ Excel</button>
+        <button class="btn btn-primary" onclick="handleDownloadPDF()">⬇ PDF</button>
+      </div>
     </div>
   </header>
 
-  <main>
-    <div class="layout">
-      <!-- LEFT: Workflow board -->
-      <section class="card">
-        <div class="card-header">
+  <!-- INDUSTRY TABS -->
+  <div class="ind-tabs no-print">
+    <div class="ind-tabs-inner" id="ind-tabs"></div>
+  </div>
+
+  <!-- MAIN -->
+  <main class="main">
+    <!-- KPI ROW -->
+    <div class="kpi-row">
+      <div class="ind-title-block">
+        <h2 id="ind-title"></h2>
+        <p id="ind-desc"></p>
+      </div>
+      <div class="kpi-cards">
+        <div class="kpi-card"><div class="kpi-val" id="kpi-total" style="color:#4361ee">0</div><div class="kpi-lbl">Total</div></div>
+        <div class="kpi-card"><div class="kpi-val" id="kpi-done" style="color:#059669">0</div><div class="kpi-lbl">Completed</div></div>
+        <div class="kpi-card"><div class="kpi-val" id="kpi-run" style="color:#0284c7">0</div><div class="kpi-lbl">Running</div></div>
+        <div class="kpi-card"><div class="kpi-val" id="kpi-pend" style="color:#9ca3af">0</div><div class="kpi-lbl">Pending</div></div>
+      </div>
+    </div>
+    <!-- PROGRESS -->
+    <div class="progress-bar-wrap">
+      <span class="progress-lbl">Progress</span>
+      <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+      <span class="progress-pct" id="prog-pct">0%</span>
+    </div>
+    <!-- SUB-CATEGORY TABS -->
+    <div class="sub-tabs no-print" id="sub-tabs"></div>
+    <!-- GRID -->
+    <div class="grid">
+      <!-- WORKFLOW CARD -->
+      <div class="card">
+        <div class="card-hdr">
           <div>
-            <div class="card-title">Workflow Status</div>
-            <div class="tiny-label" id="scenario-description">
-              Loading scenario…
-            </div>
-            <div class="scenario-tabs">
-              <button class="scenario-tab active" data-scenario="close_bmo">
-                7-Day Close (BMO-style)
-              </button>
-              <button class="scenario-tab" data-scenario="mda">
-                MD&amp;A Automation
-              </button>
-            </div>
+            <div class="card-title" id="sub-title"></div>
+            <div class="card-sub" id="sub-meta"></div>
           </div>
-          <div class="controls">
-            <button id="start-btn">
-              ▶ Start Demo Run
+          <div class="card-actions no-print">
+            <button class="btn btn-reset" id="reset-btn" onclick="handleReset()">↺ Reset</button>
+            <button class="btn btn-run btn-primary" id="run-btn" onclick="handleRun()">▶ Run Workflow</button>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead>
+              <tr><th>#</th><th>Deliverable</th><th>Owner</th><th>Output Package</th><th>Priority</th><th>Status</th></tr>
+            </thead>
+            <tbody id="steps-body"></tbody>
+          </table>
+        </div>
+      </div>
+      <!-- LOG + EXPORT -->
+      <div class="log-wrap">
+        <div class="log-card">
+          <div class="log-hdr">
+            <div class="log-title">Agent Activity Log</div>
+            <div class="log-sub">Live orchestration feed</div>
+          </div>
+          <div class="log-body" id="log-body">
+            <div class="log-empty" id="log-empty">No events yet. Press Run Workflow to start.</div>
+          </div>
+        </div>
+        <div class="export-card">
+          <div class="export-title">Export Deliverables</div>
+          <div class="export-btns">
+            <button class="export-btn" style="border:1px solid var(--border);background:var(--surface-alt);color:var(--text-mid)" onclick="handleDownloadCSV()">
+              <span style="font-size:18px">📄</span>
+              <div><span class="export-btn-label">Download CSV</span><span class="export-btn-sub" style="color:var(--text-light)">Comma-separated values</span></div>
             </button>
-            <button id="reset-btn" class="secondary">
-              Reset
+            <button class="export-btn" style="border:1px solid var(--emerald);background:var(--emerald-light);color:var(--emerald)" onclick="handleDownloadExcel()">
+              <span style="font-size:18px">📊</span>
+              <div><span class="export-btn-label">Download Excel</span><span class="export-btn-sub" style="color:var(--teal)">Formatted .xls workbook</span></div>
+            </button>
+            <button class="export-btn" style="border:none;background:linear-gradient(135deg,#4361ee,#7c3aed);color:white" onclick="handleDownloadPDF()">
+              <span style="font-size:18px">🖨️</span>
+              <div><span class="export-btn-label">Download PDF</span><span class="export-btn-sub" style="color:rgba(255,255,255,0.7)">Print-optimised layout</span></div>
             </button>
           </div>
         </div>
-
-        <div class="summary">
-          <div class="summary-pill">
-            <span class="summary-label">Total Steps</span>
-            <span class="summary-value" id="summary-total">0</span>
-          </div>
-          <div class="summary-pill">
-            <span class="summary-label">Completed</span>
-            <span class="summary-value" id="summary-completed">0</span>
-          </div>
-          <div class="summary-pill">
-            <span class="summary-label">Running</span>
-            <span class="summary-value" id="summary-running">0</span>
-          </div>
-          <div class="summary-pill">
-            <span class="summary-label">Pending</span>
-            <span class="summary-value" id="summary-pending">0</span>
-          </div>
-        </div>
-
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Process Step</th>
-              <th>Owner</th>
-              <th>ETA (synthetic)</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="steps-body"></tbody>
-        </table>
-
-        <div class="hint">
-          <span class="badge">How to narrate</span>
-          <span id="scenario-hint-text">
-            Each step is an agent or micro-workflow. In production, the status would be driven by events from core finance systems.
-          </span>
-        </div>
-      </section>
-
-      <!-- RIGHT: Agent log -->
-      <section class="card">
-        <div class="card-header">
-          <div>
-            <div class="card-title">Agent Activity Log</div>
-            <div class="tiny-label">What the CFO sees as the ‘brain’ of FinanceGPT</div>
-          </div>
-        </div>
-        <div id="log" class="log-container"></div>
-        <div class="hint">
-          <span class="badge">Narration</span>
-          Use this panel to say: “This is the orchestration layer – every background call to SAP, FIS, BlackLine, Anaplan or Bedrock would be traceable here.”
-        </div>
-      </section>
+      </div>
     </div>
   </main>
 
-  <script>
-    const scenarios = {
-      close_bmo: {
-        label: "7-Day Close (BMO-style)",
-        description:
-          "BMO-style 7-day financial close – from pre-close checks through SAP / FIS / BlackLine / Anaplan to CFO pack publishing.",
-        hint:
-          "Each row is a micro-agent in the 7-day close. In production, status would be driven by SAP S/4HANA, FIS, BlackLine and Anaplan events in real time.",
-        steps: [
-          {
-            name: "Day 0 – Pre-close readiness (open items, interface health, freeze calendar)",
-            owner: "R2R / GL Operations"
-          },
-          {
-            name: "Day 1 – Ingest SAP S/4HANA actuals (GL, products, cost centres)",
-            owner: "GL / Finance Technology"
-          },
-          {
-            name: "Day 1 – Load FIS consolidated trial balance & eliminations",
-            owner: "Consolidation (FIS)"
-          },
-          {
-            name: "Day 2 – BlackLine balance sheet reconciliations & certification status",
-            owner: "R2R / Financial Controls"
-          },
-          {
-            name: "Day 3 – Intercompany, FX & hedge result validation",
-            owner: "Treasury / R2R"
-          },
-          {
-            name: "Day 4 – Anaplan budget & forecast alignment by segment / product",
-            owner: "FP&A / Segment Finance"
-          },
-          {
-            name: "Day 5 – Variance and driver analysis (Retail, Wealth, Capital Markets, US vs CA)",
-            owner: "FP&A / Business Finance"
-          },
-          {
-            name: "Day 6 – MD&A inputs and regulatory metrics assembly (OSFI, IFRS, capital & liquidity)",
-            owner: "Corp Finance / Reg Reporting"
-          },
-          {
-            name: "Day 7 – CFO sign-off, Board pack & dashboard publication",
-            owner: "CFO Office / BI"
-          }
-        ]
-      },
-      mda: {
-        label: "MD&A Automation",
-        description:
-          "MD&A automation pipeline – from prior narrative ingestion and policies to CFO-reviewed disclosure, using the same agentic fabric.",
-        hint:
-          "Here the same orchestration fabric focuses on MD&A: pulling data, assembling narrative, applying policy checks and routing for CFO review.",
-        steps: [
-          {
-            name: "Ingest prior-period MD&A, disclosure checklists and style guide",
-            owner: "Corp Finance"
-          },
-          {
-            name: "Pull current quarter SAP / FIS financials (P&L, BS, key ratios)",
-            owner: "GL / Consolidation"
-          },
-          {
-            name: "Ingest risk, capital, liquidity and funding metrics (OSFI / internal dashboards)",
-            owner: "Treasury / Risk / Capital Management"
-          },
-          {
-            name: "Generate draft MD&A narrative by segment and key themes",
-            owner: "FinanceGPT Agent"
-          },
-          {
-            name: "Apply policy, disclosure and wording checks vs OSFI / internal playbook",
-            owner: "Reg Reporting / Policy Office"
-          },
-          {
-            name: "Produce redline vs prior MD&A and highlight material changes",
-            owner: "Corp Finance"
-          },
-          {
-            name: "Route for CFO / Controller review, capture comments and produce final pack",
-            owner: "CFO Office / Corp Finance"
-          }
-        ]
-      }
-    };
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────────────
+const INDUSTRIES = [
+  { id:'banking', name:'Banking & Finance', icon:'🏦', color:'#4361ee', bg:'#eef2ff',
+    description:'End-to-end financial close, MD&A and compliance automation for banks.',
+    subs:[
+      { id:'retail-banking', name:'Retail Banking', icon:'👤', steps:[
+        {n:'7-Day Close — Pre-close Readiness & Interface Health',o:'R2R / GL Operations',out:'Close Readiness Pack',p:'critical'},
+        {n:'Daily GL Reconciliation & Exception Flagging',o:'GL Operations',out:'Reconciliation Report',p:'critical'},
+        {n:'Customer Deposit & Loan Portfolio Snapshot',o:'Retail Finance',out:'Portfolio Dashboard',p:'high'},
+        {n:'NIM (Net Interest Margin) Variance Analysis',o:'FP&A',out:'NIM Report',p:'high'},
+        {n:'Branch P&L Attribution by Region',o:'Business Finance',out:'Branch P&L Pack',p:'medium'},
+        {n:'IFRS 9 Credit Loss Provision Calculation (ECL)',o:'Credit Risk',out:'ECL Workbook',p:'critical'},
+        {n:'Delinquency & Charge-Off Tracking Dashboard',o:'Collections Finance',out:'Delinquency Report',p:'high'},
+        {n:'Mortgage Pipeline & Origination Report',o:'Home Financing',out:'Pipeline Tracker',p:'high'},
+        {n:'Fee Income & Non-Interest Revenue Summary',o:'Retail Finance',out:'Fee Report',p:'medium'},
+        {n:'ATM & Digital Channel Cost Allocation',o:'Technology Finance',out:'Cost Allocation Model',p:'medium'},
+        {n:'Customer Profitability Segmentation (CPS)',o:'Segment Finance',out:'CPS Model',p:'medium'},
+        {n:'Month-End Close Pack & CFO Narrative',o:'Controller / CFO Office',out:'Close Pack',p:'critical'},
+      ]},
+      { id:'wealth', name:'Wealth Management', icon:'💎', steps:[
+        {n:'AUM Reconciliation & Daily NAV Validation',o:'Fund Operations',out:'AUM Report',p:'critical'},
+        {n:'Fee Revenue Accrual (AUM-Based & Fixed)',o:'Revenue Finance',out:'Fee Accrual Schedule',p:'high'},
+        {n:'Portfolio Performance vs Benchmark Attribution',o:'Investment Finance',out:'Performance Report',p:'high'},
+        {n:'Client Tier Segmentation & Revenue Ranking',o:'Wealth Finance',out:'Client Analytics',p:'medium'},
+        {n:'Advisor Productivity & Revenue Dashboard',o:'Sales Finance',out:'Advisor Scorecard',p:'medium'},
+        {n:'Tax Lot & Capital Gains Reporting',o:'Tax Operations',out:'Tax Report',p:'high'},
+        {n:'Alternative Investments Valuation Memo',o:'Valuation Team',out:'Alt Inv Memo',p:'high'},
+        {n:'Regulatory Capital Allocation by Book',o:'Risk & Compliance',out:'Capital Report',p:'critical'},
+        {n:'Client Attrition & Retention Metrics',o:'CRM Finance',out:'Retention Dashboard',p:'medium'},
+        {n:'Wealth Board Pack & Investor Deck',o:'CFO Office',out:'Board Pack',p:'critical'},
+      ]},
+      { id:'capital-markets', name:'Capital Markets', icon:'📈', steps:[
+        {n:'Daily Trading P&L Attribution by Desk',o:'Front Office Finance',out:'Daily P&L Flash',p:'critical'},
+        {n:'Mark-to-Market Positions & Fair Value Adjustment',o:'Valuation Control',out:'MTM Report',p:'critical'},
+        {n:'VaR / CVaR Limit Utilisation Report',o:'Market Risk',out:'Risk Limits Dashboard',p:'critical'},
+        {n:'Repo & Securities Financing Summary',o:'Treasury',out:'SFT Report',p:'high'},
+        {n:'Derivatives Margining & Collateral Report',o:'Collateral Management',out:'Margin Report',p:'high'},
+        {n:'FRTB IMA / SA Capital Calculation',o:'Market Risk Capital',out:'FRTB Pack',p:'critical'},
+        {n:'Revenue by Product Hierarchy (Rates/FX/Credit)',o:'Product Control',out:'Revenue Tree',p:'high'},
+        {n:'Counterparty Credit Exposure (CVA / XVA)',o:'Credit Risk',out:'CVA Report',p:'high'},
+        {n:'Trade Reconciliation & Break Resolution',o:'Middle Office',out:'Break Report',p:'medium'},
+        {n:'Month-End Capital Markets Close Pack',o:'Finance Controller',out:'CM Close Pack',p:'critical'},
+      ]},
+      { id:'risk-compliance', name:'Risk & Compliance', icon:'🛡️', steps:[
+        {n:'Basel III / OSFI Capital Adequacy Calculation',o:'Capital Management',out:'CAR Report',p:'critical'},
+        {n:'LCR & NSFR Liquidity Metrics Monitoring',o:'Treasury / ALM',out:'Liquidity Report',p:'critical'},
+        {n:'ICAAP Stress Test Scenarios & Results',o:'Enterprise Risk',out:'Stress Test Pack',p:'critical'},
+        {n:'AML / KYC Compliance Monitoring Report',o:'Compliance',out:'AML Dashboard',p:'high'},
+        {n:'Internal Audit Finding Remediation Tracker',o:'Internal Audit',out:'Audit Tracker',p:'high'},
+        {n:'Operational Risk Loss Event Register',o:'Op Risk',out:'OR Register',p:'high'},
+        {n:'IFRS 9 Staging & Expected Credit Loss Update',o:'Credit Risk',out:'ECL Update',p:'critical'},
+        {n:'Regulatory Submission (FINREP / FR Y-9C)',o:'Reg Reporting',out:'Reg Submission',p:'critical'},
+        {n:'Model Risk Validation Summary',o:'Model Risk',out:'Model Risk Report',p:'medium'},
+        {n:'Board Risk Committee Deck',o:'CRO Office',out:'BRC Pack',p:'high'},
+      ]},
+      { id:'corporate-banking', name:'Corporate Banking', icon:'🏢', steps:[
+        {n:'Corporate Loan Portfolio Review & Internal Grading',o:'Corporate Credit',out:'Portfolio Review',p:'critical'},
+        {n:'Syndicated Loan Participation & Agent Fee Tracking',o:'Syndication Finance',out:'Syndication Report',p:'high'},
+        {n:'Cash Management & Treasury Services Revenue',o:'TM Finance',out:'TM Revenue Report',p:'high'},
+        {n:'Trade Finance Utilisation & Exposure Report',o:'Trade Finance',out:'TF Dashboard',p:'high'},
+        {n:'Project Finance Drawdown & Covenant Monitoring',o:'Project Finance',out:'Covenant Tracker',p:'high'},
+        {n:'Corporate FX Hedging Program P&L Analysis',o:'FX Structuring',out:'Hedge Report',p:'medium'},
+        {n:'Client Wallet & Share-of-Wallet Analysis',o:'Relationship Finance',out:'Wallet Analysis',p:'medium'},
+        {n:'Cross-Sell Revenue Attribution Model',o:'Corporate Finance',out:'Cross-Sell Dashboard',p:'medium'},
+        {n:'Committed vs Drawn Facility Utilisation',o:'Credit Operations',out:'Facility Report',p:'high'},
+        {n:'RM P&L, Pipeline & Deal Closure Report',o:'Sales Finance',out:'RM Dashboard',p:'medium'},
+        {n:'Corporate Banking Segment Close Pack',o:'Segment Controller',out:'Segment Close Pack',p:'critical'},
+      ]},
+    ]
+  },
+  { id:'healthcare', name:'Healthcare & Life Sciences', icon:'🏥', color:'#0d9488', bg:'#f0fdfa',
+    description:'Finance automation for hospitals, pharma, medical devices and health insurance.',
+    subs:[
+      { id:'hospital-finance', name:'Hospital Finance', icon:'🏨', steps:[
+        {n:'Daily Patient Revenue Recognition & Payer Mix',o:'Revenue Cycle',out:'Revenue Flash',p:'critical'},
+        {n:'Denial Management & AR Aging Report',o:'RCM Team',out:'Denial Dashboard',p:'high'},
+        {n:'DRG / Case Mix Index Financial Analysis',o:'Finance Analytics',out:'CMI Report',p:'high'},
+        {n:'OR Utilisation & Surgical Volume Revenue',o:'Surgical Finance',out:'OR Dashboard',p:'high'},
+        {n:'Supply Chain & Drug Cost Per Adjusted Patient Day',o:'Supply Finance',out:'Cost Per Patient',p:'medium'},
+        {n:'Labor Productivity (FTE per Adjusted Discharge)',o:'Workforce Finance',out:'Labor Dashboard',p:'high'},
+        {n:'Capital Equipment Depreciation & Replacement Plan',o:'Asset Finance',out:'Capex Plan',p:'medium'},
+        {n:'Charity Care & Bad Debt Reserve Estimation',o:'Community Finance',out:'Charity Report',p:'medium'},
+        {n:'Clinical Service Line Profitability Analysis',o:'Service Line Finance',out:'SL P&L',p:'high'},
+        {n:'CMS Cost Report & Regulatory Filing',o:'Compliance Finance',out:'CMS Filing',p:'critical'},
+        {n:'Monthly CFO Dashboard & Board Pack',o:'CFO Office',out:'CFO Pack',p:'critical'},
+      ]},
+      { id:'pharma', name:'Pharma & Biotech', icon:'💊', steps:[
+        {n:'R&D Spend Tracking by Compound & Clinical Phase',o:'R&D Finance',out:'R&D Dashboard',p:'critical'},
+        {n:'Clinical Trial Budget vs Actual Variance',o:'Clinical Finance',out:'Trial Finance Report',p:'high'},
+        {n:'Drug COGS & Gross Margin by SKU / Formulation',o:'Manufacturing Finance',out:'COGS Report',p:'high'},
+        {n:'Patent Amortisation & IP Valuation Schedule',o:'IP Finance',out:'IP Schedule',p:'medium'},
+        {n:'Milestone Payment Trigger Tracking',o:'Licensing Finance',out:'Milestone Tracker',p:'high'},
+        {n:'Revenue by Product, Geography & Channel',o:'Commercial Finance',out:'Revenue Tree',p:'high'},
+        {n:'Market Access & Rebate Reserve Calculation',o:'Pricing Finance',out:'Rebate Model',p:'high'},
+        {n:'Pipeline NPV & Portfolio Valuation Model',o:'Strategy Finance',out:'Pipeline NPV',p:'medium'},
+        {n:'SR&ED / R&D Tax Credit Claim Preparation',o:'Tax Finance',out:'Tax Credit Claim',p:'high'},
+        {n:'Quarterly Investor Pack & Guidance Update',o:'Corp Finance',out:'Investor Pack',p:'critical'},
+      ]},
+      { id:'health-insurance', name:'Health Insurance', icon:'📋', steps:[
+        {n:'Medical Loss Ratio (MLR) Calculation & Reporting',o:'Actuarial Finance',out:'MLR Report',p:'critical'},
+        {n:'Premium Revenue vs Claims Incurred Flash',o:'Underwriting Finance',out:'P&L Flash',p:'critical'},
+        {n:'IBNR Reserve Adequacy Assessment',o:'Actuarial',out:'Reserve Report',p:'critical'},
+        {n:'Member Enrollment & Attrition Analysis',o:'Membership Finance',out:'Enrollment Report',p:'high'},
+        {n:'Provider Contract & Network Cost Analysis',o:'Network Finance',out:'Provider Report',p:'high'},
+        {n:'Risk Adjustment & ACA Corridor Calculation',o:'Risk Finance',out:'Risk Adj Report',p:'high'},
+        {n:'Pharmacy Benefit Management Analytics',o:'PBM Finance',out:'PBM Dashboard',p:'medium'},
+        {n:'Star Ratings ROI & Quality Bonus Accrual',o:'Quality Finance',out:'Star Rating Report',p:'medium'},
+        {n:'State Filing & Regulatory Capital Surplus',o:'Compliance Finance',out:'State Filing',p:'critical'},
+        {n:'Annual Report to Board & Audit Committee',o:'CFO Office',out:'Annual Report Pack',p:'critical'},
+      ]},
+      { id:'medtech', name:'Medical Devices', icon:'🔬', steps:[
+        {n:'Product Revenue by SKU & Procedure Code',o:'Commercial Finance',out:'Revenue Report',p:'high'},
+        {n:'Manufacturing Variance & Standard Cost Update',o:'Operations Finance',out:'Mfg Variance',p:'high'},
+        {n:'FDA Clearance Capex Tracking (510k / PMA)',o:'Regulatory Finance',out:'Reg Capex Tracker',p:'high'},
+        {n:'Capital Equipment Placement Profitability',o:'Capital Finance',out:'Placement P&L',p:'high'},
+        {n:'Field Inventory & Consignment Valuation',o:'Inventory Finance',out:'Field Inv Report',p:'medium'},
+        {n:'Service & Repair Revenue Recognition',o:'Service Finance',out:'Service Revenue',p:'medium'},
+        {n:'Tender Pricing & Government Contract Margins',o:'Pricing Finance',out:'Tender Analysis',p:'medium'},
+        {n:'Supply Chain Risk & Sole-Source Exposure',o:'Supply Finance',out:'Risk Register',p:'high'},
+        {n:'Post-Market Surveillance Cost Tracking',o:'Quality Finance',out:'PMS Cost Report',p:'medium'},
+        {n:'Earnings Release & Analyst Guidance Pack',o:'IR / Corp Finance',out:'Earnings Pack',p:'critical'},
+      ]},
+      { id:'cro', name:'Life Sciences / CRO', icon:'🧬', steps:[
+        {n:'Contract Revenue Recognition (ASC 606 / IFRS 15)',o:'Revenue Finance',out:'Rev Rec Schedule',p:'critical'},
+        {n:'Backlog & Pipeline Conversion Analysis',o:'Sales Finance',out:'Pipeline Report',p:'high'},
+        {n:'Study-Level Profitability & Burn Rate',o:'Study Finance',out:'Study P&L',p:'high'},
+        {n:'Pass-Through & Investigator Grant Tracking',o:'Grants Finance',out:'Grant Tracker',p:'medium'},
+        {n:'FTE Utilisation & Billable Hours Analysis',o:'Resource Finance',out:'Utilisation Report',p:'high'},
+        {n:'Client Change Order & Out-of-Scope Billing',o:'Contract Finance',out:'CO Dashboard',p:'medium'},
+        {n:'Regulatory Milestone Billing Schedule',o:'Billing Finance',out:'Billing Schedule',p:'high'},
+        {n:'Annual Operating Plan vs Actuals Variance',o:'FP&A',out:'AOP Report',p:'high'},
+        {n:'Investor / Sponsor Financial Status Report',o:'Corp Finance',out:'Sponsor Report',p:'critical'},
+        {n:'Site Activation & Enrollment Spend Forecast',o:'Clinical Finance',out:'Enrollment Forecast',p:'medium'},
+      ]},
+    ]
+  },
+  { id:'retail', name:'Retail & E-Commerce', icon:'🛒', color:'#d97706', bg:'#fffbeb',
+    description:'Retail finance automation from omnichannel revenue to margin and inventory analytics.',
+    subs:[
+      { id:'omnichannel', name:'Omnichannel Revenue', icon:'🌐', steps:[
+        {n:'Daily Sales Flash by Channel (In-Store/Online/App)',o:'Sales Finance',out:'Daily Flash',p:'critical'},
+        {n:'Comparable Store Sales vs Prior Year',o:'Retail Analytics',out:'SSSG Report',p:'high'},
+        {n:'Online GMV, Returns & Net Revenue Reconciliation',o:'E-Comm Finance',out:'GMV Dashboard',p:'high'},
+        {n:'Basket Size, UPT & Conversion Metrics',o:'Merchandising Finance',out:'Basket Analytics',p:'medium'},
+        {n:'Loyalty Program Revenue Attribution',o:'Loyalty Finance',out:'Loyalty Report',p:'medium'},
+        {n:'Promotion ROI & Markdown Effectiveness',o:'Pricing Finance',out:'Promo ROI Report',p:'high'},
+        {n:'Returns & Refund Rate by Category',o:'Returns Finance',out:'Returns Dashboard',p:'high'},
+        {n:'Gift Card Breakage & Liability Tracking',o:'Revenue Finance',out:'Gift Card Report',p:'medium'},
+        {n:'Revenue by Geography / Store Format',o:'Regional Finance',out:'Geo Revenue Map',p:'medium'},
+        {n:'Weekly Sales Forecast vs Actuals',o:'FP&A',out:'Forecast Report',p:'high'},
+        {n:'Monthly Retail P&L & Board Pack',o:'CFO Office',out:'Retail P&L Pack',p:'critical'},
+      ]},
+      { id:'supply-chain-retail', name:'Supply Chain & Inventory', icon:'📦', steps:[
+        {n:'Inventory Valuation (FIFO/AVCO) Reconciliation',o:'Inventory Finance',out:'Inv Valuation Report',p:'critical'},
+        {n:'Stock Turnover & Days Inventory Outstanding',o:'Supply Chain Finance',out:'DIO Dashboard',p:'high'},
+        {n:'Vendor Cost Price Variance Tracking',o:'Procurement Finance',out:'CPV Report',p:'high'},
+        {n:'Shrinkage, Waste & Obsolescence Reserve',o:'Inventory Control',out:'Loss Report',p:'high'},
+        {n:'DC / Warehouse Cost Allocation per Unit',o:'Logistics Finance',out:'Fulfilment Cost',p:'medium'},
+        {n:'Inbound Freight & Landed Cost Analysis',o:'Procurement Finance',out:'Landed Cost Model',p:'medium'},
+        {n:'Category Margin After Supply Costs',o:'Category Finance',out:'Category Margin',p:'high'},
+        {n:'Seasonal Buy Plan Budget vs Actuals',o:'Planning Finance',out:'Buy Plan Report',p:'medium'},
+        {n:'Supplier Scorecard & Payment Terms Analysis',o:'AP Finance',out:'Supplier Scorecard',p:'medium'},
+        {n:'Working Capital & Cash Conversion Cycle',o:'Treasury',out:'CCC Dashboard',p:'high'},
+      ]},
+      { id:'store-ops', name:'Store Operations', icon:'🏪', steps:[
+        {n:'Store-Level P&L by Format & Tenure',o:'Store Finance',out:'Store P&L',p:'high'},
+        {n:'Labor % of Sales & Scheduling Efficiency',o:'Workforce Finance',out:'Labor Analytics',p:'high'},
+        {n:'Occupancy Cost & Rent-to-Sales Ratio',o:'Real Estate Finance',out:'Rent Analytics',p:'medium'},
+        {n:'Shrink Rate by Store vs Network Benchmark',o:'Loss Prevention Finance',out:'Shrink Report',p:'high'},
+        {n:'New Store ROI & Payback Period Analysis',o:'Development Finance',out:'New Store ROI',p:'medium'},
+        {n:'Store Capex vs Maintenance Budget',o:'Facilities Finance',out:'Capex Report',p:'medium'},
+        {n:'Sales per Sq Ft & Productivity Metrics',o:'Strategy Finance',out:'Productivity Report',p:'medium'},
+        {n:'Store Closure / Rightsizing Financial Impact',o:'Strategy Finance',out:'Closure Analysis',p:'high'},
+        {n:'Energy & Utilities Cost per Store',o:'Facilities Finance',out:'Energy Report',p:'medium'},
+        {n:'Regional Manager P&L Accountability Report',o:'Retail Finance',out:'RM P&L Pack',p:'high'},
+      ]},
+      { id:'ecomm', name:'E-Commerce & Digital', icon:'💻', steps:[
+        {n:'Customer Acquisition Cost (CAC) by Marketing Channel',o:'Digital Finance',out:'CAC Dashboard',p:'high'},
+        {n:'ROAS by Ad Platform (Google/Meta/TikTok)',o:'Marketing Finance',out:'ROAS Report',p:'high'},
+        {n:'Contribution Margin per Order (Net of Shipping)',o:'E-Comm Finance',out:'Per-Order P&L',p:'critical'},
+        {n:'Subscription / Membership Revenue Tracking',o:'Subscription Finance',out:'Sub Revenue Report',p:'high'},
+        {n:'Last-Mile Delivery Cost Optimisation',o:'Logistics Finance',out:'LMD Analysis',p:'high'},
+        {n:'Cart Abandonment & Checkout Conversion Value',o:'CRO Finance',out:'Conversion Report',p:'medium'},
+        {n:'Payment Processing Fees & Chargeback Rate',o:'Payments Finance',out:'Payment Report',p:'medium'},
+        {n:'Mobile App Monetisation & In-App Revenue',o:'Product Finance',out:'App Revenue Report',p:'medium'},
+        {n:'Influencer & Affiliate Commission Accrual',o:'Marketing Finance',out:'Commission Accrual',p:'medium'},
+        {n:'LTV Cohort Analysis & CAC Payback Period',o:'Growth Finance',out:'LTV Report',p:'high'},
+      ]},
+      { id:'merchandise', name:'Merchandising & Buying', icon:'🏷️', steps:[
+        {n:'Category Gross Margin % vs Plan',o:'Merchandising Finance',out:'Category GM Report',p:'critical'},
+        {n:'Initial Markup (IMU) vs Realised Margin Bridge',o:'Buying Finance',out:'IMU Report',p:'high'},
+        {n:'Private Label vs National Brand Margin Mix',o:'PL Finance',out:'Brand Mix Report',p:'high'},
+        {n:'Markdown Cadence & Sell-Through Rate Analysis',o:'Planning Finance',out:'Markdown Report',p:'high'},
+        {n:'OTB (Open-to-Buy) vs Actuals Dashboard',o:'Planning',out:'OTB Dashboard',p:'medium'},
+        {n:'Supplier Rebate & Volume Discount Accrual',o:'Procurement Finance',out:'Rebate Tracker',p:'medium'},
+        {n:'New Product Launch ROI & 90-Day Performance',o:'Launch Finance',out:'Launch ROI',p:'high'},
+        {n:'Seasonal Clearance & End-of-Life Cost',o:'Inventory Finance',out:'Clearance Report',p:'medium'},
+        {n:'Range Rationalisation Financial Impact',o:'Strategy Finance',out:'Range Analysis',p:'medium'},
+        {n:'Buying Season Recap & Next Season Budget',o:'FP&A',out:'Season Budget',p:'high'},
+      ]},
+    ]
+  },
+  { id:'technology', name:'Technology & SaaS', icon:'🚀', color:'#7c3aed', bg:'#f5f3ff',
+    description:'ARR/MRR tracking, R&D capitalisation, FinOps and investor-ready reporting for SaaS.',
+    subs:[
+      { id:'saas-metrics', name:'SaaS Core Metrics', icon:'📊', steps:[
+        {n:'ARR / MRR Waterfall (New, Expansion, Churn, Contraction)',o:'Revenue Finance',out:'ARR Waterfall',p:'critical'},
+        {n:'Net Revenue Retention (NRR) & Gross Retention',o:'Customer Finance',out:'NRR Dashboard',p:'critical'},
+        {n:'CAC by Channel & CAC Payback Period',o:'Growth Finance',out:'CAC Report',p:'high'},
+        {n:'LTV / CAC Ratio by Cohort & Segment',o:'Analytics Finance',out:'LTV:CAC Model',p:'high'},
+        {n:'Churn Analysis by Segment, Size & Tenure',o:'CS Finance',out:'Churn Report',p:'critical'},
+        {n:'Magic Number & Sales Efficiency Score',o:'Sales Finance',out:'Efficiency Report',p:'medium'},
+        {n:'Deferred Revenue & Revenue Recognition Schedule',o:'Revenue Finance',out:'Rev Rec Schedule',p:'critical'},
+        {n:'Rule of 40 Tracking (Growth + FCF Margin)',o:'FP&A',out:'Rule of 40 Report',p:'high'},
+        {n:'GAAP Financial Statements & Month-End Close',o:'Controller',out:'GAAP Financials',p:'critical'},
+        {n:'Board Metrics Pack & Investor Update',o:'CFO Office',out:'Board Pack',p:'critical'},
+        {n:'Product-Led Growth (PLG) Funnel Revenue',o:'PLG Finance',out:'PLG Dashboard',p:'high'},
+      ]},
+      { id:'rd-finance', name:'R&D Finance', icon:'🔧', steps:[
+        {n:'R&D Capitalisation vs Expensing (ASC 730 / IAS 38)',o:'Technical Finance',out:'R&D Cap Schedule',p:'critical'},
+        {n:'Engineering Headcount & Fully-Loaded Cost',o:'Engineering Finance',out:'Headcount Report',p:'high'},
+        {n:'Cloud Infrastructure Spend by Environment',o:'FinOps',out:'Cloud Cost Report',p:'high'},
+        {n:'R&D % of Revenue vs Industry Benchmark',o:'FP&A',out:'R&D Efficiency',p:'medium'},
+        {n:'Product Roadmap Investment by Feature Cluster',o:'Product Finance',out:'Roadmap Finance',p:'medium'},
+        {n:'SR&ED / R&D Tax Credit Claim',o:'Tax Finance',out:'Tax Credit Claim',p:'high'},
+        {n:'FinOps Unit Economics (Cost per API Call / User)',o:'FinOps',out:'Unit Economics',p:'high'},
+        {n:'Technical Debt Cost Estimation',o:'Engineering Finance',out:'Tech Debt Report',p:'medium'},
+        {n:'Technology Depreciation & Amortisation Schedule',o:'Asset Finance',out:'Dep Schedule',p:'medium'},
+        {n:'Annual R&D Budget vs Plan Review',o:'R&D Finance',out:'AOP Review',p:'high'},
+      ]},
+      { id:'go-to-market', name:'Go-to-Market Finance', icon:'🎯', steps:[
+        {n:'Pipeline Coverage & Weighted Revenue Forecast',o:'Sales Finance',out:'Pipeline Report',p:'critical'},
+        {n:'Sales Quota Attainment & Commission Accrual',o:'Sales Comp Finance',out:'Attainment Report',p:'high'},
+        {n:'Marketing Spend ROI by Campaign & Channel',o:'Marketing Finance',out:'Marketing ROI',p:'high'},
+        {n:'Win / Loss Cost Analysis by Segment',o:'Revenue Finance',out:'Win/Loss Report',p:'high'},
+        {n:'Account Expansion & Upsell Revenue Tracking',o:'Account Finance',out:'Expansion Report',p:'high'},
+        {n:'Partnership & Channel Revenue Reporting',o:'Partner Finance',out:'Partner Revenue',p:'medium'},
+        {n:'Territory Profitability Analysis',o:'Sales Finance',out:'Territory P&L',p:'medium'},
+        {n:'Event & Field Marketing Cost Attribution',o:'Field Finance',out:'Event ROI',p:'medium'},
+        {n:'SDR / BDR Productivity & Cost per Meeting',o:'Demand Gen Finance',out:'SDR Productivity',p:'medium'},
+        {n:'GTM Efficiency Dashboard for CEO Review',o:'FP&A',out:'GTM Dashboard',p:'high'},
+      ]},
+      { id:'fp-and-a', name:'FP&A & Planning', icon:'📐', steps:[
+        {n:'Rolling 12-Month Revenue Forecast',o:'FP&A',out:'Rolling Forecast',p:'critical'},
+        {n:'Headcount Plan vs Actuals by Department',o:'HC Finance',out:'Headcount Dashboard',p:'high'},
+        {n:'Burn Rate & Cash Runway Projection',o:'Treasury / FP&A',out:'Runway Report',p:'critical'},
+        {n:'Operating Leverage & Margin Expansion Analysis',o:'FP&A',out:'Margin Bridge',p:'high'},
+        {n:'Scenario Planning (Base / Bull / Bear)',o:'Strategy Finance',out:'Scenario Models',p:'high'},
+        {n:'Fundraising Data Room Financial Model',o:'Corp Finance',out:'Data Room Model',p:'critical'},
+        {n:'Investor KPI Reporting (Monthly / Quarterly)',o:'CFO Office',out:'Investor Report',p:'high'},
+        {n:'Department Budget Review & Variance Commentary',o:'FP&A',out:'Budget Review',p:'high'},
+        {n:'Cohort-Based Revenue Forecast',o:'Analytics Finance',out:'Cohort Forecast',p:'medium'},
+        {n:'Annual Operating Plan (AOP) Build & Sign-Off',o:'FP&A / CFO',out:'AOP Deck',p:'critical'},
+      ]},
+      { id:'finops', name:'Cloud & FinOps', icon:'☁️', steps:[
+        {n:'Cloud Spend Allocation by Team & Product',o:'FinOps',out:'Cloud Allocation',p:'high'},
+        {n:'Reserved Instance / Savings Plan Optimisation',o:'FinOps',out:'RI Optimisation Report',p:'high'},
+        {n:'COGS vs R&D Cloud Split for Gross Margin',o:'Revenue Finance',out:'Cloud COGS Split',p:'critical'},
+        {n:'Cost per Customer / Cost per Transaction',o:'FinOps',out:'Unit Cost Report',p:'high'},
+        {n:'Cloud Waste & Idle Resource Detection',o:'FinOps',out:'Waste Report',p:'medium'},
+        {n:'SaaS Vendor Spend & Renewal Tracker',o:'Procurement Finance',out:'Vendor Tracker',p:'medium'},
+        {n:'Multi-Cloud Cost Comparison (AWS/Azure/GCP)',o:'Architecture Finance',out:'Multi-Cloud Report',p:'medium'},
+        {n:'Data Egress & Transfer Cost Anomaly Detection',o:'FinOps',out:'Anomaly Report',p:'medium'},
+        {n:'FinOps Maturity Assessment & Savings Realised',o:'FinOps',out:'Maturity Report',p:'medium'},
+        {n:'Cloud Capex vs Opex Treatment Analysis',o:'Technical Finance',out:'Capex/Opex Report',p:'high'},
+      ]},
+    ]
+  },
+  { id:'energy', name:'Energy & Utilities', icon:'⚡', color:'#0284c7', bg:'#e0f2fe',
+    description:'Project finance, commodity risk, ESG reporting and regulatory compliance for energy companies.',
+    subs:[
+      { id:'oil-gas', name:'Oil & Gas', icon:'🛢️', steps:[
+        {n:'Production Volume vs Budget by Field & Well',o:'Operations Finance',out:'Production Report',p:'critical'},
+        {n:'Lifting Cost per BOE Analysis',o:'Lifting Cost Team',out:'Lifting Cost Report',p:'high'},
+        {n:'Commodity Price Sensitivity & Hedging P&L',o:'Treasury / Commodity',out:'Hedge Report',p:'critical'},
+        {n:'Royalty & Production Tax Calculation',o:'Tax Finance',out:'Royalty Report',p:'high'},
+        {n:'Capex Drilling Programme vs AFE',o:'Projects Finance',out:'Capex Tracker',p:'high'},
+        {n:'Decommissioning Reserve & ARO Update',o:'Accounting',out:'ARO Schedule',p:'high'},
+        {n:'Reservoir Depletion & Reserve Certification',o:'Engineering Finance',out:'Reserve Report',p:'critical'},
+        {n:'JV Partner Cost & Revenue Reconciliation',o:'JV Finance',out:'JV Report',p:'high'},
+        {n:'Pipeline Tariff & Midstream Revenue',o:'Midstream Finance',out:'Midstream Report',p:'medium'},
+        {n:'Quarterly Investor & SEC / SEDAR Filing',o:'Corp Finance',out:'SEC Filing Pack',p:'critical'},
+      ]},
+      { id:'renewables', name:'Renewables', icon:'🌱', steps:[
+        {n:'Generation Output vs P50 / P90 Forecast',o:'Asset Finance',out:'Generation Report',p:'critical'},
+        {n:'Revenue per MWh by PPA / Merchant Mix',o:'Commercial Finance',out:'Revenue Per MWh',p:'high'},
+        {n:'ITC / PTC Tax Credit Monetisation',o:'Tax Finance',out:'Tax Credit Report',p:'critical'},
+        {n:'LCOE (Levelised Cost of Energy) by Project',o:'Project Finance',out:'LCOE Model',p:'high'},
+        {n:'Project Equity IRR & Debt Service Coverage',o:'Project Finance',out:'DSCR Report',p:'critical'},
+        {n:'Green Certificate / REC Inventory & Revenue',o:'Environmental Finance',out:'REC Report',p:'medium'},
+        {n:'O&M Cost per MW vs Budget',o:'Operations Finance',out:'O&M Report',p:'high'},
+        {n:'Transmission Access & Curtailment Cost',o:'Grid Finance',out:'Curtailment Report',p:'medium'},
+        {n:'Battery Storage Dispatch & Revenue Optimisation',o:'Trading Finance',out:'Storage Report',p:'medium'},
+        {n:'ESG Impact Metrics & Carbon Avoidance Report',o:'ESG Finance',out:'ESG Report',p:'high'},
+        {n:'Developer Pipeline & Land Rights Valuation',o:'Development Finance',out:'Pipeline Valuation',p:'medium'},
+      ]},
+      { id:'utilities', name:'Regulated Utilities', icon:'🔌', steps:[
+        {n:'Allowed Revenue vs Actual Revenue Requirement',o:'Regulatory Finance',out:'Revenue Req Report',p:'critical'},
+        {n:'Rate Case Filing & Regulatory Asset Tracking',o:'Regulatory Affairs',out:'Rate Case Pack',p:'critical'},
+        {n:'Capital Programme Delivery & CWIP Tracking',o:'Capital Finance',out:'CWIP Report',p:'high'},
+        {n:'Depreciation & Return on Rate Base (RAB)',o:'RAB Finance',out:'RAB Report',p:'high'},
+        {n:'SAIDI / SAIFI Reliability Metrics & Cost',o:'Reliability Finance',out:'Reliability KPIs',p:'medium'},
+        {n:'Load Forecasting & Demand Response Revenue',o:'Grid Finance',out:'Load Forecast',p:'high'},
+        {n:'Pension & OPEB Obligation Update',o:'Benefits Finance',out:'Pension Report',p:'medium'},
+        {n:'Environmental Compliance Cost Tracking',o:'ESG Finance',out:'Compliance Cost',p:'high'},
+        {n:'Customer Affordability & Bad Debt Provision',o:'Retail Finance',out:'Affordability Report',p:'medium'},
+        {n:'FERC / Regulatory Annual Report Submission',o:'Regulatory Finance',out:'FERC Report',p:'critical'},
+      ]},
+      { id:'esg', name:'ESG & Carbon Finance', icon:'🌍', steps:[
+        {n:'Scope 1 / 2 / 3 GHG Emissions Inventory',o:'ESG Team',out:'GHG Inventory',p:'critical'},
+        {n:'Carbon Credit Purchase & Retirement Tracking',o:'Carbon Finance',out:'Carbon Registry',p:'high'},
+        {n:'Carbon Price Sensitivity on Operating Costs',o:'Risk Finance',out:'Carbon Sensitivity',p:'high'},
+        {n:'Net Zero Roadmap Capex & Opex Modelling',o:'Strategy Finance',out:'NZ Finance Model',p:'high'},
+        {n:'TCFD Climate Risk Financial Disclosure',o:'ESG Finance',out:'TCFD Report',p:'critical'},
+        {n:'Green Bond / Sustainability-Linked Loan Report',o:'Treasury / ESG',out:'GSL Report',p:'high'},
+        {n:'ISSB / CSRD Sustainability Financial Inputs',o:'Corp Finance',out:'ISSB Pack',p:'critical'},
+        {n:'Water & Waste Cost per Unit of Production',o:'Ops Finance',out:'Resource Cost Report',p:'medium'},
+        {n:'ESG Score Improvement ROI Analysis',o:'Strategy Finance',out:'ESG ROI',p:'medium'},
+        {n:'Nature & Biodiversity Risk Financial Impact',o:'Environmental Finance',out:'Nature Risk Report',p:'medium'},
+      ]},
+      { id:'energy-trading', name:'Energy Trading', icon:'📉', steps:[
+        {n:'Daily Trading P&L by Commodity & Book',o:'Trading Finance',out:'Daily P&L',p:'critical'},
+        {n:'Mark-to-Market Positions (Power / Gas / LNG)',o:'Valuation Control',out:'MTM Report',p:'critical'},
+        {n:'Commodity VaR & Stress Test Results',o:'Risk Management',out:'VaR Report',p:'critical'},
+        {n:'Spark Spread & Dark Spread Analysis',o:'Analytics Finance',out:'Spread Report',p:'high'},
+        {n:'Counterparty Credit Limit Utilisation',o:'Credit Risk',out:'Credit Report',p:'high'},
+        {n:'Physical & Financial Position Reconciliation',o:'Middle Office',out:'Position Report',p:'high'},
+        {n:'Options Portfolio Greeks & Premium P&L',o:'Structuring Finance',out:'Options Report',p:'high'},
+        {n:'Margin Call & Collateral Management',o:'Collateral',out:'Margin Report',p:'high'},
+        {n:'Forward Curve Update & Price Consensus',o:'Analytics',out:'Curve Update',p:'medium'},
+        {n:'Monthly Trading Book P&L Attribution',o:'Finance Controller',out:'Book Recon',p:'critical'},
+      ]},
+    ]
+  },
+  { id:'manufacturing', name:'Manufacturing', icon:'🏭', color:'#0891b2', bg:'#ecfeff',
+    description:'Standard costing, production variance, supply chain finance and operational efficiency.',
+    subs:[
+      { id:'cost-accounting', name:'Cost Accounting', icon:'💰', steps:[
+        {n:'Standard Cost Roll-Up & Product Cost Card',o:'Cost Accounting',out:'Cost Card',p:'critical'},
+        {n:'Manufacturing Variance Analysis (MPV/MUV/Labor)',o:'Cost Accounting',out:'Variance Report',p:'critical'},
+        {n:'COGS Reconciliation to General Ledger',o:'Controller',out:'COGS Recon',p:'critical'},
+        {n:'Overhead Absorption & Under/Over-Absorption',o:'Cost Accounting',out:'Absorption Report',p:'high'},
+        {n:'Plant P&L by Cost Centre',o:'Plant Finance',out:'Plant P&L',p:'high'},
+        {n:'Bill of Materials (BOM) Cost Accuracy Review',o:'Engineering Finance',out:'BOM Review',p:'high'},
+        {n:'Work-in-Progress (WIP) Valuation',o:'Production Finance',out:'WIP Valuation',p:'high'},
+        {n:'Scrap & Rework Cost Tracking',o:'Quality Finance',out:'Scrap Report',p:'medium'},
+        {n:'Standard vs Actual Production Hours Analysis',o:'Operations Finance',out:'Hours Analysis',p:'medium'},
+        {n:'Annual Standard Cost Update & Financial Impact',o:'Cost Accounting',out:'Standard Cost Update',p:'critical'},
+      ]},
+      { id:'operations-finance', name:'Operations Finance', icon:'⚙️', steps:[
+        {n:'OEE (Overall Equipment Effectiveness) Cost Impact',o:'Ops Finance',out:'OEE Report',p:'high'},
+        {n:'Capacity Utilisation & Idle Cost Analysis',o:'Production Finance',out:'Capacity Report',p:'high'},
+        {n:'Capex Authorisation & Project Spend Tracking',o:'Capital Finance',out:'Capex Dashboard',p:'critical'},
+        {n:'Maintenance Capex vs Opex Classification',o:'Asset Finance',out:'Maintenance Report',p:'medium'},
+        {n:'Energy Cost per Unit of Production',o:'Utilities Finance',out:'Energy Report',p:'medium'},
+        {n:'Make vs Buy Economic Analysis',o:'Strategy Finance',out:'Make vs Buy',p:'high'},
+        {n:'Throughput & Bottleneck Cost Analysis',o:'IE Finance',out:'Throughput Report',p:'high'},
+        {n:'Lean / Kaizen & CI Savings Tracking',o:'CI Finance',out:'Savings Tracker',p:'medium'},
+        {n:'Asset Utilisation & Replacement Decision Model',o:'Asset Finance',out:'Asset Model',p:'medium'},
+        {n:'Plant Productivity Benchmarking vs Peers',o:'Operations Finance',out:'Benchmark Report',p:'medium'},
+      ]},
+      { id:'procurement-finance', name:'Procurement Finance', icon:'🤝', steps:[
+        {n:'Purchase Price Variance (PPV) Report',o:'Procurement Finance',out:'PPV Report',p:'high'},
+        {n:'Supplier Spend Cube & Category Analysis',o:'Spend Analytics',out:'Spend Cube',p:'high'},
+        {n:'Contract Savings Realisation vs Target',o:'Procurement',out:'Savings Report',p:'high'},
+        {n:'Sole-Source & Single-Source Risk Register',o:'Risk Finance',out:'Risk Register',p:'high'},
+        {n:'Payment Terms Optimisation (DPO / Early Pay)',o:'AP Finance',out:'Payment Analytics',p:'medium'},
+        {n:'Supplier Financial Health Scorecard',o:'Supplier Finance',out:'Supplier Score',p:'medium'},
+        {n:'Raw Material Commodity Hedge Programme',o:'Treasury',out:'Commodity Hedge',p:'high'},
+        {n:'Freight & Logistics Cost per Unit',o:'Logistics Finance',out:'Freight Report',p:'medium'},
+        {n:'Spend vs Budget by Category & Business Unit',o:'Procurement Finance',out:'Spend vs Budget',p:'high'},
+        {n:'Annual Category Strategy Financial Business Case',o:'Category Finance',out:'Category BCA',p:'medium'},
+      ]},
+      { id:'supply-chain-mfg', name:'Supply Chain', icon:'🔗', steps:[
+        {n:'Inventory Days on Hand (DOH) by Category',o:'Inventory Finance',out:'DOH Report',p:'high'},
+        {n:'Slow-Moving & Obsolete (SLOB) Reserve Analysis',o:'Inventory Finance',out:'SLOB Report',p:'high'},
+        {n:'Working Capital Bridge (Inventory / AR / AP)',o:'Treasury Finance',out:'WC Bridge',p:'critical'},
+        {n:'Demand Forecast Accuracy & Cost of Error',o:'SC Finance',out:'Forecast Accuracy',p:'high'},
+        {n:'Safety Stock Cost vs Service Level Trade-off',o:'Planning Finance',out:'Safety Stock Model',p:'medium'},
+        {n:'DC Network Cost Modelling',o:'Logistics Finance',out:'DC Network Model',p:'medium'},
+        {n:'Carrier Performance & Freight Rate Analysis',o:'Logistics Finance',out:'Carrier Report',p:'medium'},
+        {n:'Inbound Freight & Customs Duty Tracking',o:'Trade Finance',out:'Duty Report',p:'medium'},
+        {n:'End-to-End Supply Chain Finance Simulation',o:'SC Finance',out:'SC Simulation',p:'high'},
+        {n:'Supply Chain Resilience Capex Business Case',o:'Strategy Finance',out:'Resilience BCA',p:'high'},
+      ]},
+      { id:'product-profitability', name:'Product Profitability', icon:'📊', steps:[
+        {n:'SKU-Level Gross Margin Analysis',o:'Product Finance',out:'SKU Margin Report',p:'critical'},
+        {n:'Product Line P&L (Gross to Operating Margin)',o:'Product Finance',out:'Product P&L',p:'critical'},
+        {n:'Activity-Based Costing (ABC) by Product',o:'Cost Accounting',out:'ABC Model',p:'high'},
+        {n:'New Product Introduction (NPI) ROI & Break-Even',o:'NPI Finance',out:'NPI ROI',p:'high'},
+        {n:'Transfer Pricing Policy & Intercompany Margins',o:'Tax Finance',out:'TP Study',p:'high'},
+        {n:'Price Elasticity & Volume / Price Bridge',o:'Pricing Finance',out:'Price Bridge',p:'high'},
+        {n:'Channel Profitability (Direct vs Distributor)',o:'Channel Finance',out:'Channel P&L',p:'high'},
+        {n:'End-of-Life (EOL) Product Financial Wind-Down',o:'Portfolio Finance',out:'EOL Analysis',p:'medium'},
+        {n:'Product Portfolio Rationalisation Analysis',o:'Strategy Finance',out:'Portfolio Analysis',p:'medium'},
+        {n:'Quarterly Product Review with Sales & Ops',o:'Product Finance',out:'Product Review Deck',p:'high'},
+      ]},
+    ]
+  },
+];
 
-    let currentScenarioKey = "close_bmo";
-    let steps = [];
-    let stepStatus = [];
-    let currentIndex = -1;
-    let timer = null;
+// ─── STATE ──────────────────────────────────────────────────────────────────
+let industryId = 'banking';
+let subCatId = 'retail-banking';
+let statuses = [];
+let isRunning = false;
+let timer = null;
+let logCount = 0;
 
-    const stepsBody = document.getElementById("steps-body");
-    const summaryTotal = document.getElementById("summary-total");
-    const summaryCompleted = document.getElementById("summary-completed");
-    const summaryRunning = document.getElementById("summary-running");
-    const summaryPending = document.getElementById("summary-pending");
-    const logContainer = document.getElementById("log");
-    const startBtn = document.getElementById("start-btn");
-    const resetBtn = document.getElementById("reset-btn");
-    const scenarioDescription = document.getElementById("scenario-description");
-    const scenarioHintText = document.getElementById("scenario-hint-text");
-    const scenarioTabs = document.querySelectorAll(".scenario-tab");
+// ─── HELPERS ────────────────────────────────────────────────────────────────
+const getInd = () => INDUSTRIES.find(i => i.id === industryId);
+const getSub = () => { const ind = getInd(); return ind.subs.find(s => s.id === subCatId) || ind.subs[0]; };
+const getSteps = () => getSub().steps;
 
-    function log(tag, text) {
-      const now = new Date();
-      const time = now.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit"
-      });
+function nowTime() {
+  return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
 
-      const entry = document.createElement("div");
-      entry.className = "log-entry";
+// ─── RENDER ─────────────────────────────────────────────────────────────────
+function renderAll() {
+  const ind = getInd();
+  const sub = getSub();
+  const steps = getSteps();
 
-      entry.innerHTML = `
-        <div class="log-time">${time}</div>
-        <div class="log-tag">${tag}</div>
-        <div class="log-text">${text}</div>
-      `;
+  // Industry tabs
+  const tabsEl = document.getElementById('ind-tabs');
+  tabsEl.innerHTML = INDUSTRIES.map(i => {
+    const active = i.id === industryId;
+    return '<button class="ind-tab' + (active ? ' active' : '') + '" '
+      + 'style="color:' + (active ? i.color : '') + ';border-bottom-color:' + (active ? i.color : 'transparent') + '"'
+      + ' onclick="selectIndustry('' + i.id + '')">'
+      + '<span class="ind-tab-icon">' + i.icon + '</span>' + i.name
+      + '</button>';
+  }).join('');
 
-      logContainer.prepend(entry);
+  // Industry title & desc
+  document.getElementById('ind-title').innerHTML = ind.icon + ' ' + ind.name;
+  document.getElementById('ind-title').style.color = ind.color;
+  document.getElementById('ind-desc').textContent = ind.description;
+
+  // Progress fill colour
+  document.getElementById('prog-fill').style.background = 'linear-gradient(90deg,' + ind.color + ',#7c3aed)';
+  document.getElementById('prog-pct').style.color = ind.color;
+
+  // Sub-category tabs
+  const subsEl = document.getElementById('sub-tabs');
+  subsEl.innerHTML = ind.subs.map(s => {
+    const active = s.id === subCatId;
+    return '<button class="sub-tab' + (active ? ' active' : '') + '" '
+      + 'style="border-color:' + (active ? ind.color : '') + ';background:' + (active ? ind.bg : 'white') + ';color:' + (active ? ind.color : '') + '"'
+      + ' onclick="selectSub('' + s.id + '')">'
+      + s.icon + ' ' + s.name
+      + '</button>';
+  }).join('');
+
+  // Card header
+  document.getElementById('sub-title').textContent = sub.icon + ' ' + sub.name;
+  document.getElementById('sub-meta').textContent = steps.length + ' deliverables · ' + ind.name;
+
+  // Run button style
+  const runBtn = document.getElementById('run-btn');
+  runBtn.style.background = isRunning ? '#e2e8f0' : 'linear-gradient(135deg,' + ind.color + ',#7c3aed)';
+  runBtn.style.color = isRunning ? '#9ca3af' : 'white';
+  runBtn.disabled = isRunning;
+  runBtn.textContent = isRunning ? '⏳ Running…' : '▶ Run Workflow';
+  document.getElementById('reset-btn').disabled = isRunning;
+
+  renderTable();
+  updateKPIs();
+}
+
+function renderTable() {
+  const steps = getSteps();
+  const tbody = document.getElementById('steps-body');
+  tbody.innerHTML = steps.map((s, i) => {
+    const st = statuses[i] || 'pending';
+    const isActive = st === 'running';
+    const rowClass = isActive ? 'row-running' : (i % 2 === 1 ? 'row-alt' : '');
+    return '<tr class="' + rowClass + '">'
+      + '<td style="color:#9ca3af;font-weight:600;font-size:12px">' + (i + 1) + '</td>'
+      + '<td style="color:#1e1b4b;font-weight:' + (isActive ? '600' : '400') + ';max-width:320px">'
+      + (isActive ? '<span class="pulse-dot"></span>' : '') + escHtml(s.n) + '</td>'
+      + '<td style="color:#4b5563;font-size:12px;white-space:nowrap">' + escHtml(s.o) + '</td>'
+      + '<td><span class="badge-output">' + escHtml(s.out) + '</span></td>'
+      + '<td><span class="pill pill-' + s.p + '">' + s.p + '</span></td>'
+      + '<td><span class="pill pill-' + st + '">'
+      + (st === 'completed' ? '✓ ' : st === 'running' ? '⟳ ' : '') + st
+      + '</span></td>'
+      + '</tr>';
+  }).join('');
+}
+
+function updateKPIs() {
+  const steps = getSteps();
+  const done = statuses.filter(s => s === 'completed').length;
+  const run  = statuses.filter(s => s === 'running').length;
+  const pend = statuses.filter(s => s === 'pending').length;
+  const pct = steps.length ? Math.round((done / steps.length) * 100) : 0;
+  document.getElementById('kpi-total').textContent = steps.length;
+  document.getElementById('kpi-done').textContent = done;
+  document.getElementById('kpi-run').textContent = run;
+  document.getElementById('kpi-pend').textContent = pend;
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-pct').textContent = pct + '%';
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ─── LOG ────────────────────────────────────────────────────────────────────
+function addLog(tag, text) {
+  const logBody = document.getElementById('log-body');
+  const empty = document.getElementById('log-empty');
+  if (empty) empty.remove();
+  const tagClass = tag === 'SYSTEM' ? 'tag-system' : tag === 'AGENT' ? 'tag-agent' : 'tag-step';
+  const div = document.createElement('div');
+  div.className = 'log-entry';
+  div.innerHTML = '<span class="log-time">' + nowTime() + '</span>'
+    + '<span class="log-tag ' + tagClass + '">' + tag + '</span>'
+    + '<span class="log-text">' + escHtml(text) + '</span>';
+  logBody.prepend(div);
+  if (++logCount > 60) { logBody.lastChild && logBody.removeChild(logBody.lastChild); }
+}
+
+// ─── ACTIONS ────────────────────────────────────────────────────────────────
+function selectIndustry(id) {
+  const ind = INDUSTRIES.find(i => i.id === id);
+  industryId = id;
+  subCatId = ind.subs[0].id;
+  statuses = getSteps().map(() => 'pending');
+  if (timer) { clearInterval(timer); timer = null; isRunning = false; }
+  addLog('SYSTEM', 'Loaded: ' + ind.name + ' › ' + ind.subs[0].name + ' — ' + ind.subs[0].steps.length + ' deliverables');
+  renderAll();
+}
+
+function selectSub(id) {
+  subCatId = id;
+  statuses = getSteps().map(() => 'pending');
+  if (timer) { clearInterval(timer); timer = null; isRunning = false; }
+  const sub = getSub();
+  addLog('SYSTEM', 'Loaded: ' + sub.name + ' — ' + sub.steps.length + ' deliverables');
+  renderAll();
+}
+
+function handleRun() {
+  if (isRunning) return;
+  isRunning = true;
+  const steps = getSteps();
+  statuses = steps.map(() => 'pending');
+  addLog('SYSTEM', 'Starting workflow: ' + getSub().name);
+  renderAll();
+  let idx = -1;
+  timer = setInterval(() => {
+    if (idx >= 0 && idx < steps.length) {
+      statuses[idx] = 'completed';
+      addLog('STEP', 'Completed: ' + steps[idx].out);
     }
-
-    function updateSummary() {
-      const total = steps.length;
-      const completed = stepStatus.filter((s) => s === "completed").length;
-      const running = stepStatus.filter((s) => s === "running").length;
-      const pending = stepStatus.filter((s) => s === "pending").length;
-
-      summaryTotal.textContent = total;
-      summaryCompleted.textContent = completed;
-      summaryRunning.textContent = running;
-      summaryPending.textContent = pending;
+    idx++;
+    if (idx >= steps.length) {
+      clearInterval(timer); timer = null; isRunning = false;
+      addLog('SYSTEM', 'All ' + steps.length + ' deliverables completed.');
+      renderAll();
+      return;
     }
+    statuses[idx] = 'running';
+    addLog('AGENT', '→ Executing: ' + steps[idx].n);
+    renderTable();
+    updateKPIs();
+  }, 1300);
+}
 
-    function renderSteps() {
-      stepsBody.innerHTML = "";
-      steps.forEach((step, idx) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${idx + 1}</td>
-          <td>${step.name}</td>
-          <td>${step.owner}</td>
-          <td>${10 + idx * 3}–${15 + idx * 4} sec</td>
-          <td>
-            <span class="status-pill status-pending" data-status-index="${idx}">
-              Pending
-            </span>
-          </td>
-        `;
-        stepsBody.appendChild(tr);
-      });
-      stepStatus = steps.map(() => "pending");
-      currentIndex = -1;
-      updateSummary();
-    }
+function handleReset() {
+  if (timer) { clearInterval(timer); timer = null; }
+  isRunning = false;
+  statuses = getSteps().map(() => 'pending');
+  addLog('SYSTEM', 'Workflow reset.');
+  renderAll();
+}
 
-    function setStatus(index, status) {
-      stepStatus[index] = status;
-      const pill = document.querySelector(
-        `.status-pill[data-status-index="${index}"]`
-      );
-      if (!pill) return;
-      pill.className = "status-pill";
-      if (status === "pending") {
-        pill.classList.add("status-pending");
-        pill.textContent = "Pending";
-      } else if (status === "running") {
-        pill.classList.add("status-running");
-        pill.textContent = "Running";
-      } else if (status === "completed") {
-        pill.classList.add("status-completed");
-        pill.textContent = "Completed";
-      }
-      updateSummary();
-    }
+// ─── EXPORTS ────────────────────────────────────────────────────────────────
+function handleDownloadCSV() {
+  const ind = getInd(); const sub = getSub(); const steps = getSteps();
+  const hdr = ['#','Deliverable','Owner','Output Package','Priority','Status'];
+  const rows = steps.map((s,i) => [i+1, s.n, s.o, s.out, s.p, statuses[i]||'pending']);
+  const csv = [hdr,...rows].map(r => r.map(c => '"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
+  triggerDownload(new Blob([csv],{type:'text/csv;charset=utf-8;'}),
+    'FinanceSmith-'+ind.name.replace(/\s+/g,'-')+'-'+sub.name.replace(/\s+/g,'-')+'-'+today()+'.csv');
+  addLog('EXPORT', 'CSV downloaded: ' + steps.length + ' rows');
+}
 
-    function resetWorkflow() {
-      if (timer) {
-        clearInterval(timer);
-        timer = null;
-      }
-      steps.forEach((_, idx) => setStatus(idx, "pending"));
-      currentIndex = -1;
-      startBtn.disabled = false;
-      log("SYSTEM", "Workflow reset to initial state.");
-    }
+function handleDownloadExcel() {
+  const ind = getInd(); const sub = getSub(); const steps = getSteps();
+  const trs = steps.map((s,i) => '<tr style="background:' + (i%2===0?'#f8f9ff':'#fff') + '">'
+    + '<td style="padding:6px 10px;border:1px solid #e2e8f0;color:#4b5563;font-weight:600">' + (i+1) + '</td>'
+    + '<td style="padding:6px 10px;border:1px solid #e2e8f0;color:#1e1b4b">' + escHtml(s.n) + '</td>'
+    + '<td style="padding:6px 10px;border:1px solid #e2e8f0;color:#4b5563">' + escHtml(s.o) + '</td>'
+    + '<td style="padding:6px 10px;border:1px solid #e2e8f0;color:#4b5563">' + escHtml(s.out) + '</td>'
+    + '<td style="padding:6px 10px;border:1px solid #e2e8f0;font-weight:700;text-transform:uppercase;font-size:11px;color:'
+      + (s.p==='critical'?'#5b21b6':s.p==='high'?'#92400e':'#164e63') + '">' + s.p + '</td>'
+    + '<td style="padding:6px 10px;border:1px solid #e2e8f0;font-weight:700;text-transform:uppercase;font-size:11px;color:#059669">'
+      + (statuses[i]||'pending').toUpperCase() + '</td>'
+    + '</tr>'
+  ).join('');
+  const html = '<!DOCTYPE html><html><head><meta charset="UTF-8">'
+    + '<style>body{font-family:Calibri,Arial,sans-serif;}</style></head><body>'
+    + '<h2 style="color:#4361ee;margin:0 0 4px">' + escHtml(ind.name) + ' › ' + escHtml(sub.name) + '</h2>'
+    + '<p style="color:#6b7280;margin:0 0 14px;font-size:12px">Generated: ' + new Date().toLocaleString() + ' | Deliverables: ' + steps.length + '</p>'
+    + '<table style="border-collapse:collapse;width:100%"><thead><tr style="background:#4361ee">'
+    + ['#','Deliverable','Owner','Output Package','Priority','Status'].map(h =>
+        '<th style="padding:8px 10px;border:1px solid #3652c7;color:white;text-align:left;font-size:12px">' + h + '</th>').join('')
+    + '</tr></thead><tbody>' + trs + '</tbody></table></body></html>';
+  triggerDownload(new Blob([html],{type:'application/vnd.ms-excel;charset=utf-8;'}),
+    'FinanceSmith-'+ind.name.replace(/\s+/g,'-')+'-'+sub.name.replace(/\s+/g,'-')+'-'+today()+'.xls');
+  addLog('EXPORT', 'Excel downloaded: ' + steps.length + ' rows');
+}
 
-    function startDemo() {
-      if (timer) return;
-      resetWorkflow();
-      const scenario = scenarios[currentScenarioKey];
-      log("SYSTEM", `Starting "${scenario.label}" synthetic run.`);
-      startBtn.disabled = true;
+function handleDownloadPDF() {
+  addLog('EXPORT', 'Printing PDF...');
+  window.print();
+}
 
-      timer = setInterval(() => {
-        // Complete previous running step
-        if (currentIndex >= 0 && currentIndex < steps.length) {
-          setStatus(currentIndex, "completed");
-          log("STEP", `Completed: ${steps[currentIndex].name}`);
-        }
+function triggerDownload(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
 
-        currentIndex += 1;
+function today() { return new Date().toISOString().split('T')[0]; }
 
-        if (currentIndex >= steps.length) {
-          clearInterval(timer);
-          timer = null;
-          startBtn.disabled = false;
-          log("SYSTEM", "All steps completed. Synthetic workflow finished.");
-          return;
-        }
+// ─── INIT ───────────────────────────────────────────────────────────────────
+statuses = getSteps().map(() => 'pending');
+renderAll();
+addLog('SYSTEM', 'FinanceSmith AI ready. Select an industry and press Run Workflow.');
 
-        // Start next step
-        setStatus(currentIndex, "running");
-        log(
-          "AGENT",
-          `Executing: ${steps[currentIndex].name} · Owner: ${steps[currentIndex].owner}`
-        );
-      }, 2000); // adjust speed by changing this interval (ms)
-    }
-
-    function loadScenario(key) {
-      const scenario = scenarios[key];
-      currentScenarioKey = key;
-      steps = scenario.steps;
-      renderSteps();
-      scenarioDescription.textContent = scenario.description;
-      scenarioHintText.textContent = scenario.hint;
-      log("SYSTEM", `Scenario loaded: ${scenario.label}`);
-    }
-
-    startBtn.addEventListener("click", startDemo);
-    resetBtn.addEventListener("click", resetWorkflow);
-
-    scenarioTabs.forEach((tab) => {
-      tab.addEventListener("click", () => {
-        scenarioTabs.forEach((t) => t.classList.remove("active"));
-        tab.classList.add("active");
-        loadScenario(tab.dataset.scenario);
-      });
-    });
-
-    // Initial load
-    loadScenario("close_bmo");
-    log("SYSTEM", "Demo ready. Choose a scenario and press 'Start Demo Run'.");
-  </script>
+</script>
 </body>
 </html>
