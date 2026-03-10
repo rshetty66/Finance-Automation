@@ -1,0 +1,2477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Journal & Recon Variance Analysis | PCC Integrated Diagnostic</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0b1020;
+      color: #f5f7ff;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    /* ── Header ── */
+    .site-header {
+      padding: 18px 32px 14px;
+      border-bottom: 1px solid #252b46;
+      background: radial-gradient(circle at top left, #203a9a 0, #0b1020 55%);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .site-header h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.01em; }
+    .site-header .sub { font-size: 11px; opacity: 0.7; margin-top: 2px; }
+    /* ── KPI Banner ── */
+    .kpi-banner {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      padding: 12px 32px;
+      background: linear-gradient(90deg, #0d1228 0%, #050d1a 100%);
+      border-bottom: 1px solid #1e2540;
+    }
+    .kpi-chip {
+      background: linear-gradient(145deg, #11152a, #050715);
+      border: 1px solid #252b46;
+      border-radius: 8px;
+      padding: 8px 14px;
+      min-width: 130px;
+      flex: 1 1 130px;
+    }
+    .kpi-chip .label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.65; }
+    .kpi-chip .value { font-size: 18px; font-weight: 700; margin-top: 2px; }
+    .kpi-chip .value.critical { color: #ef4444; }
+    .kpi-chip .value.amber { color: #f59e0b; }
+    .kpi-chip .value.blue { color: #3b82f6; }
+    .kpi-chip .value.green { color: #10b981; }
+    .kpi-chip .value.teal { color: #22c1c3; }
+    .kpi-chip .sub-val { font-size: 10px; opacity: 0.6; margin-top: 1px; }
+    /* ── Tab Nav ── */
+    .tab-nav {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      padding: 14px 32px 0;
+      border-bottom: 1px solid #252b46;
+      background: #0b1020;
+      position: sticky; top: 56px; z-index: 90;
+    }
+    .tab-btn {
+      padding: 8px 18px;
+      border-radius: 8px 8px 0 0;
+      border: 1px solid transparent;
+      background: transparent;
+      color: #9ca3af;
+      font-size: 12px; font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+      letter-spacing: 0.02em;
+    }
+    .tab-btn:hover { color: #e5e7eb; border-color: #252b46; background: #11152a; }
+    .tab-btn.active {
+      background: linear-gradient(135deg, #3b82f6, #22c1c3);
+      color: #030712; border-color: transparent;
+      box-shadow: 0 4px 18px rgba(59,130,246,0.4);
+    }
+    /* ── Tab Content ── */
+    .tab-content { display: none; padding: 24px 32px 48px; max-width: 1400px; margin: 0 auto; }
+    .tab-content.active { display: block; }
+    /* ── Section Titles ── */
+    .section-title {
+      font-size: 14px; font-weight: 700; letter-spacing: 0.04em;
+      text-transform: uppercase; color: #7dd3fc;
+      margin-bottom: 14px; margin-top: 28px;
+      padding-bottom: 6px; border-bottom: 1px solid #1e2540;
+    }
+    .section-title:first-of-type { margin-top: 0; }
+    /* ── Cards ── */
+    .card {
+      background: linear-gradient(145deg, #11152a, #050715);
+      border-radius: 14px;
+      padding: 18px 20px;
+      border: 1px solid #252b46;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.45);
+    }
+    .card-title {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.05em; color: #94a3b8; margin-bottom: 12px;
+    }
+    /* ── Grids ── */
+    .grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; }
+    .grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; }
+    .grid-1-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 14px; }
+    @media(max-width:900px){
+      .grid-4,.grid-3,.grid-2,.grid-2-1,.grid-1-2 { grid-template-columns:1fr; }
+      .tab-nav { top: 0; }
+    }
+    /* ── Stat Card ── */
+    .stat-card {
+      background: linear-gradient(145deg, #11152a, #050715);
+      border: 1px solid #252b46;
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+    .stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.6; }
+    .stat-value { font-size: 22px; font-weight: 700; margin-top: 4px; }
+    .stat-sub { font-size: 11px; opacity: 0.55; margin-top: 2px; }
+    /* ── Tables ── */
+    .data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .data-table th {
+      text-align: left; padding: 8px 10px;
+      font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em;
+      color: #64748b; border-bottom: 1px solid #252b46; white-space: nowrap;
+    }
+    .data-table td { padding: 7px 10px; border-bottom: 1px solid #1a1f38; vertical-align: middle; }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: rgba(59,130,246,0.05); }
+    .data-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+    .data-table .total-row td { font-weight: 700; border-top: 1px solid #3b4268; color: #7dd3fc; }
+    /* Variance colors */
+    .var-pos { color: #10b981; }
+    .var-neg { color: #ef4444; }
+    .var-neutral { color: #94a3b8; }
+    /* ── Severity Pills ── */
+    .pill {
+      display: inline-block; border-radius: 999px;
+      padding: 2px 10px; font-size: 10px; font-weight: 700;
+      letter-spacing: 0.04em; white-space: nowrap;
+    }
+    .pill-critical { background: rgba(239,68,68,0.18); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+    .pill-high { background: rgba(245,158,11,0.18); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); }
+    .pill-medium-high { background: rgba(59,130,246,0.18); color: #3b82f6; border: 1px solid rgba(59,130,246,0.3); }
+    .pill-medium { background: rgba(99,102,241,0.18); color: #818cf8; border: 1px solid rgba(99,102,241,0.3); }
+    .pill-low { background: rgba(16,185,129,0.18); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+    .pill-p0 { background: rgba(239,68,68,0.22); color: #fca5a5; border: 1px solid rgba(239,68,68,0.4); font-weight:800; }
+    .pill-p1 { background: rgba(245,158,11,0.18); color: #fcd34d; border: 1px solid rgba(245,158,11,0.3); }
+    .pill-p2 { background: rgba(59,130,246,0.15); color: #93c5fd; border: 1px solid rgba(59,130,246,0.3); }
+    /* ── CSS Bar Charts ── */
+    .bar-chart { display: flex; flex-direction: column; gap: 8px; }
+    .bar-row { display: flex; align-items: center; gap: 8px; }
+    .bar-label { font-size: 11px; min-width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .bar-track { flex: 1; height: 16px; background: #1a1f38; border-radius: 4px; overflow: hidden; }
+    .bar-fill {
+      height: 100%; border-radius: 4px;
+      background: linear-gradient(90deg, #3b82f6, #22c1c3);
+      transition: width 0.6s ease;
+    }
+    .bar-fill.amber { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+    .bar-fill.red { background: linear-gradient(90deg, #ef4444, #f87171); }
+    .bar-fill.green { background: linear-gradient(90deg, #10b981, #34d399); }
+    .bar-fill.purple { background: linear-gradient(90deg, #6366f1, #818cf8); }
+    .bar-val { font-size: 11px; min-width: 60px; text-align: right; color: #94a3b8; }
+    /* ── Progress Ring / Donut ── */
+    .donut-wrap { display: flex; align-items: center; gap: 20px; }
+    .donut-legend { display: flex; flex-direction: column; gap: 6px; }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    /* ── Canvas Wrapper ── */
+    .chart-wrap { position: relative; }
+    /* ── Accent box ── */
+    .accent-box {
+      border-left: 3px solid #3b82f6;
+      background: rgba(59,130,246,0.07);
+      border-radius: 0 8px 8px 0;
+      padding: 10px 14px;
+      font-size: 12px;
+    }
+    .accent-box.amber { border-left-color: #f59e0b; background: rgba(245,158,11,0.07); }
+    .accent-box.red { border-left-color: #ef4444; background: rgba(239,68,68,0.07); }
+    .accent-box.green { border-left-color: #10b981; background: rgba(16,185,129,0.07); }
+    /* ── Roadmap ── */
+    .roadmap { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-top: 4px; }
+    .wave-card {
+      border-radius: 10px; padding: 14px 16px;
+      border: 1px solid;
+    }
+    .wave-card.w0 { border-color: #ef444466; background: rgba(239,68,68,0.07); }
+    .wave-card.w1 { border-color: #f59e0b66; background: rgba(245,158,11,0.07); }
+    .wave-card.w2 { border-color: #3b82f666; background: rgba(59,130,246,0.07); }
+    .wave-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; margin-bottom: 8px; }
+    .wave-card.w0 .wave-label { color: #ef4444; }
+    .wave-card.w1 .wave-label { color: #f59e0b; }
+    .wave-card.w2 .wave-label { color: #3b82f6; }
+    .wave-item { font-size: 11px; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .wave-item:last-child { border-bottom: none; }
+    /* ── Heat Map ── */
+    .heat-grid { display: grid; grid-template-columns: 1fr auto auto; gap: 0; }
+    .heat-cell { padding: 6px 10px; border-bottom: 1px solid #1a1f38; font-size: 11px; display: flex; align-items: center; }
+    .heat-cell.header { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; font-weight: 600; border-bottom: 2px solid #252b46; }
+    /* ── Footer ── */
+    footer {
+      text-align: center; font-size: 10px; color: #374151;
+      padding: 16px 32px; border-top: 1px solid #1a1f38;
+      line-height: 1.8;
+    }
+    /* ── Agent badge ── */
+    .agent-badge {
+      display: inline-block;
+      background: rgba(34,193,195,0.12);
+      border: 1px solid rgba(34,193,195,0.3);
+      border-radius: 4px;
+      padding: 1px 6px; font-size: 10px; color: #22c1c3;
+      font-family: monospace;
+    }
+    /* ── Correlation row ── */
+    .corr-tag {
+      display: inline-block; border-radius: 4px; padding: 2px 7px;
+      font-size: 10px; font-weight: 700;
+    }
+    .corr-vs { background: rgba(239,68,68,0.2); color: #ef4444; }
+    .corr-s { background: rgba(245,158,11,0.2); color: #f59e0b; }
+    .corr-ms { background: rgba(59,130,246,0.2); color: #3b82f6; }
+    .corr-m { background: rgba(99,102,241,0.2); color: #818cf8; }
+    /* ── SPOF highlight ── */
+    .spof-bar {
+      background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3);
+      border-radius: 8px; padding: 10px 14px; margin-top: 10px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .spof-label { color: #ef4444; font-weight: 700; font-size: 11px; }
+    .spof-pct { font-size: 28px; font-weight: 800; color: #ef4444; }
+    /* ── Summary Value Cards ── */
+    .value-summary-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
+    @media(max-width:900px){ .value-summary-grid{ grid-template-columns: 1fr 1fr; } .roadmap{ grid-template-columns:1fr; } }
+    .val-card {
+      border-radius: 12px; padding: 16px;
+      border: 1px solid;
+      text-align: center;
+    }
+    .val-card.green { border-color: #10b98144; background: rgba(16,185,129,0.08); }
+    .val-card.blue { border-color: #3b82f644; background: rgba(59,130,246,0.08); }
+    .val-card.amber { border-color: #f59e0b44; background: rgba(245,158,11,0.08); }
+    .val-card.red { border-color: #ef444444; background: rgba(239,68,68,0.08); }
+    .val-card .vnum { font-size: 26px; font-weight: 800; }
+    .val-card .vtag { font-size: 11px; opacity: 0.7; margin-top: 4px; }
+    /* Scroll helper */
+    .table-scroll { overflow-x: auto; }
+    /* inline icon-ish */
+    .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     HEADER
+══════════════════════════════════════════════ -->
+<header class="site-header">
+  <h1>Journal &amp; Recon Variance Analysis</h1>
+  <div class="sub">Source: PCC_Integrated_Diagnostic_JE_FAA_Rec_Correlation.xlsx &nbsp;|&nbsp; Rudra Principal Oversight &nbsp;|&nbsp; Agents:
+    <span class="agent-badge">fc-003</span>
+    <span class="agent-badge">fc-004</span>
+    <span class="agent-badge">da-003</span>
+    <span class="agent-badge">do-001</span>
+    <span class="agent-badge">ri-002</span>
+    <span class="agent-badge">da-002</span>
+    <span class="agent-badge">ri-001</span>
+    <span class="agent-badge">do-002</span>
+    &nbsp;| Report Date: March 10, 2026
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════════
+     EXECUTIVE KPI BANNER
+══════════════════════════════════════════════ -->
+<div class="kpi-banner">
+  <div class="kpi-chip">
+    <div class="label">Total JEs</div>
+    <div class="value critical">143,556</div>
+    <div class="sub-val">100% Manual</div>
+  </div>
+  <div class="kpi-chip">
+    <div class="label">Total JE Amount</div>
+    <div class="value amber">$219.3B</div>
+    <div class="sub-val">SAP S4 + SAP FC</div>
+  </div>
+  <div class="kpi-chip">
+    <div class="label">JE Preparers</div>
+    <div class="value blue">144</div>
+    <div class="sub-val">997 JEs/preparer avg</div>
+  </div>
+  <div class="kpi-chip">
+    <div class="label">SPOF: SAP_WFRT</div>
+    <div class="value critical">65.3%</div>
+    <div class="sub-val">93,700 JEs — Single User</div>
+  </div>
+  <div class="kpi-chip">
+    <div class="label">Total Recs</div>
+    <div class="value amber">21,151</div>
+    <div class="sub-val">30.2% Not Completed</div>
+  </div>
+  <div class="kpi-chip">
+    <div class="label">Rec Automation</div>
+    <div class="value critical">19.0%</div>
+    <div class="sub-val">vs 40%+ target</div>
+  </div>
+  <div class="kpi-chip">
+    <div class="label">Unexplained Diff</div>
+    <div class="value critical">$5.2B</div>
+    <div class="sub-val">65.3% unexplained %</div>
+  </div>
+  <div class="kpi-chip">
+    <div class="label">R2R Labor</div>
+    <div class="value amber">$15.6M</div>
+    <div class="sub-val">49.5% of $31.5M total</div>
+  </div>
+  <div class="kpi-chip">
+    <div class="label">FTE (Finance)</div>
+    <div class="value blue">218.1</div>
+    <div class="sub-val">195 unique employees</div>
+  </div>
+  <div class="kpi-chip">
+    <div class="label">Elimination Opp.</div>
+    <div class="value green">33,600 JEs</div>
+    <div class="sub-val">23.4% | $2.4M impact</div>
+  </div>
+  <div class="kpi-chip">
+    <div class="label">Total Savings Opp.</div>
+    <div class="value green">$12-19M</div>
+    <div class="sub-val">10 initiatives | ROI 2.5-4x</div>
+  </div>
+  <div class="kpi-chip">
+    <div class="label">Agentic AI Potential</div>
+    <div class="value teal">76.5%</div>
+    <div class="sub-val">$18.4M savings | Agent-Driven</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TAB NAVIGATION
+══════════════════════════════════════════════ -->
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('tab-je', this)">JE Variance Analysis</button>
+  <button class="tab-btn" onclick="showTab('tab-rec', this)">Rec Diagnostic</button>
+  <button class="tab-btn" onclick="showTab('tab-faa', this)">FAA Insights</button>
+  <button class="tab-btn" onclick="showTab('tab-corr', this)">Cross-Correlation</button>
+  <button class="tab-btn" onclick="showTab('tab-rudra', this)">Rudra Findings</button>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TAB 1: JE VARIANCE ANALYSIS
+══════════════════════════════════════════════ -->
+<div id="tab-je" class="tab-content active">
+
+  <div class="section-title">Journal Entry Key Metrics</div>
+  <div class="grid-4" style="margin-bottom:16px;">
+    <div class="stat-card">
+      <div class="stat-label">Total JE Count</div>
+      <div class="stat-value" style="color:#ef4444;">143,556</div>
+      <div class="stat-sub">100% Manual — No Auto-Posting</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Amount</div>
+      <div class="stat-value" style="color:#f59e0b;">$219.3B</div>
+      <div class="stat-sub">SAP S4: $212.2B | SAP FC: $7.1B</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Count of Preparers</div>
+      <div class="stat-value" style="color:#3b82f6;">144</div>
+      <div class="stat-sub">Avg 996.9 JEs/Preparer (2× benchmark)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Pre-Close JEs</div>
+      <div class="stat-value" style="color:#f59e0b;">102,000</div>
+      <div class="stat-sub">71% | July peak: 30,600 (+24% MoM)</div>
+    </div>
+  </div>
+
+  <!-- SPOF Alert -->
+  <div class="spof-bar" style="margin-bottom:20px;">
+    <div>
+      <div class="spof-label">⚠ SINGLE POINT OF FAILURE — SAP_WFRT</div>
+      <div style="font-size:11px;color:#94a3b8;margin-top:2px;">One user ID controls 93,700 of 143,556 JEs representing an estimated $143B+ in postings</div>
+    </div>
+    <div style="margin-left:auto;text-align:right;">
+      <span class="spof-pct">65.3%</span>
+      <div style="font-size:10px;color:#94a3b8;">of total JE volume</div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:20px;">
+    <!-- Preparer Concentration -->
+    <div class="card">
+      <div class="card-title">Preparer / User Concentration</div>
+      <div class="bar-chart">
+        <div class="bar-row">
+          <div class="bar-label">SAP_WFRT</div>
+          <div class="bar-track"><div class="bar-fill red" style="width:65.3%"></div></div>
+          <div class="bar-val">93,700 (65.3%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">MKAZI02</div>
+          <div class="bar-track"><div class="bar-fill amber" style="width:16.1%"></div></div>
+          <div class="bar-val">23,100 (16.1%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">S4BATCH</div>
+          <div class="bar-track"><div class="bar-fill" style="width:9.7%"></div></div>
+          <div class="bar-val">13,900 (9.7%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Other (141 users)</div>
+          <div class="bar-track"><div class="bar-fill green" style="width:8.9%"></div></div>
+          <div class="bar-val">12,856 (9.0%)</div>
+        </div>
+      </div>
+      <div class="accent-box red" style="margin-top:12px;">Top 3 users = <strong>91%</strong> of all JEs. 997 JEs/preparer vs 500 benchmark = <strong>2× overloaded</strong>.</div>
+    </div>
+
+    <!-- JE by Line Count -->
+    <div class="card">
+      <div class="card-title">JE Volume by Line Count &amp; Source</div>
+      <div class="bar-chart">
+        <div class="bar-row">
+          <div class="bar-label">Lines 2–4 (Simple)</div>
+          <div class="bar-track"><div class="bar-fill green" style="width:60.9%"></div></div>
+          <div class="bar-val">87,400 (60.9%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Lines 5–10</div>
+          <div class="bar-track"><div class="bar-fill" style="width:17.1%"></div></div>
+          <div class="bar-val">24,500 (17.1%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Lines 11–20</div>
+          <div class="bar-track"><div class="bar-fill amber" style="width:9.9%"></div></div>
+          <div class="bar-val">14,200 (9.9%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Lines 20+ (Complex)</div>
+          <div class="bar-track"><div class="bar-fill red" style="width:12.1%"></div></div>
+          <div class="bar-val">17,456 (12.2%)</div>
+        </div>
+      </div>
+      <div style="margin-top:12px;font-size:11px;color:#94a3b8;">60.9% simple 2-4 line JEs — high automation potential. SAP S4: $212.2B | SAP FC: $7.1B</div>
+    </div>
+  </div>
+
+  <!-- JE by Period + Company Code -->
+  <div class="grid-2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-title">JE Volume by Period (Apr–Oct)</div>
+      <div class="chart-wrap" style="height:220px;">
+        <canvas id="jePeriodChart"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">JE Elimination Opportunity by Period (%)</div>
+      <div class="chart-wrap" style="height:220px;">
+        <canvas id="jeEliminationChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- JE by Company Code -->
+  <div class="section-title">JE by Company Code</div>
+  <div class="card" style="margin-bottom:20px;">
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Company Code</th>
+            <th class="num">JE Count</th>
+            <th class="num">% of Total</th>
+            <th class="num">Amount ($M)</th>
+            <th>Risk Profile</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Bank of Montreal X Fgn Br</td>
+            <td class="num">51,200</td>
+            <td class="num">35.7%</td>
+            <td class="num">$9,607,232M</td>
+            <td><span class="pill pill-critical">CRITICAL</span></td>
+          </tr>
+          <tr>
+            <td>BMO Bank N.A.</td>
+            <td class="num">43,800</td>
+            <td class="num">30.5%</td>
+            <td class="num">$190,286,611M</td>
+            <td><span class="pill pill-critical">CRITICAL</span></td>
+          </tr>
+          <tr>
+            <td>NESBITT BURNS</td>
+            <td class="num">9,200</td>
+            <td class="num">6.4%</td>
+            <td class="num">—</td>
+            <td><span class="pill pill-high">HIGH</span></td>
+          </tr>
+          <tr>
+            <td>LONDON BRANCH</td>
+            <td class="num">5,400</td>
+            <td class="num">3.8%</td>
+            <td class="num">—</td>
+            <td><span class="pill pill-medium">MEDIUM</span></td>
+          </tr>
+          <tr>
+            <td>BMO CAPITAL MARKETS CORP</td>
+            <td class="num">4,200</td>
+            <td class="num">2.9%</td>
+            <td class="num">—</td>
+            <td><span class="pill pill-medium">MEDIUM</span></td>
+          </tr>
+          <tr>
+            <td>CHICAGO BRANCH</td>
+            <td class="num">3,500</td>
+            <td class="num">2.4%</td>
+            <td class="num">—</td>
+            <td><span class="pill pill-medium">MEDIUM</span></td>
+          </tr>
+          <tr>
+            <td>Other Company Codes</td>
+            <td class="num">26,256</td>
+            <td class="num">18.3%</td>
+            <td class="num">—</td>
+            <td><span class="pill pill-low">LOWER</span></td>
+          </tr>
+          <tr class="total-row">
+            <td>TOTAL</td>
+            <td class="num">143,556</td>
+            <td class="num">100%</td>
+            <td class="num">$219,253,072M</td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="accent-box" style="margin-top:10px;">Top 2 company codes (Bank of Montreal Fgn + BMO Bank N.A.) = <strong>66.2%</strong> of total JE volume. BMO Bank N.A. = highest $ amount at $190.3B.</div>
+  </div>
+
+  <!-- FSLI Breakdown -->
+  <div class="grid-2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-title">JE by FSLI</div>
+      <div class="bar-chart">
+        <div class="bar-row">
+          <div class="bar-label">Asset</div>
+          <div class="bar-track"><div class="bar-fill" style="width:40.6%"></div></div>
+          <div class="bar-val">102,000 (40.6%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Liability</div>
+          <div class="bar-track"><div class="bar-fill amber" style="width:28.9%"></div></div>
+          <div class="bar-val">72,700 (28.9%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Revenue</div>
+          <div class="bar-track"><div class="bar-fill green" style="width:14.4%"></div></div>
+          <div class="bar-val">36,300 (14.4%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Expense</div>
+          <div class="bar-track"><div class="bar-fill purple" style="width:14.0%"></div></div>
+          <div class="bar-val">35,200 (14.0%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Equity</div>
+          <div class="bar-track"><div class="bar-fill red" style="width:1.6%"></div></div>
+          <div class="bar-val">3,900 (1.6%)</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">JE by Category</div>
+      <div class="bar-chart">
+        <div class="bar-row">
+          <div class="bar-label">Other</div>
+          <div class="bar-track"><div class="bar-fill amber" style="width:45.4%"></div></div>
+          <div class="bar-val">65,200K (45.4%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Reclass</div>
+          <div class="bar-track"><div class="bar-fill purple" style="width:12.1%"></div></div>
+          <div class="bar-val">17,400K (12.1%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">No Header</div>
+          <div class="bar-track"><div class="bar-fill red" style="width:8.3%"></div></div>
+          <div class="bar-val">11,900K (8.3%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Accrual &amp; Other</div>
+          <div class="bar-track"><div class="bar-fill green" style="width:34.2%"></div></div>
+          <div class="bar-val">49,056K (34.2%)</div>
+        </div>
+      </div>
+      <div class="accent-box amber" style="margin-top:10px;"><strong>45.4%</strong> classified as "Other" — poor metadata quality. <strong>8.3%</strong> have no header. Data quality remediation required (Finding F9).</div>
+    </div>
+  </div>
+
+  <!-- Materiality -->
+  <div class="section-title">Manual JE Materiality Threshold Breakdown</div>
+  <div class="card" style="margin-bottom:20px;">
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Materiality Band</th>
+            <th class="num">JE Count</th>
+            <th class="num">% of Total</th>
+            <th>Risk / Automation Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Above $10M</td>
+            <td class="num">30,258</td>
+            <td class="num var-neg">21.1%</td>
+            <td>High-value — requires senior review; manual risk</td>
+          </tr>
+          <tr>
+            <td>$1M – $10M</td>
+            <td class="num">24,083</td>
+            <td class="num var-neg">16.8%</td>
+            <td>Significant — risk of mis-classification</td>
+          </tr>
+          <tr>
+            <td>$500K – $1M</td>
+            <td class="num">9,203</td>
+            <td class="num">6.4%</td>
+            <td>Material — automation templating candidate</td>
+          </tr>
+          <tr>
+            <td>$100K – $500K</td>
+            <td class="num">18,359</td>
+            <td class="num">12.8%</td>
+            <td>Moderate — rule-based auto-posting candidate</td>
+          </tr>
+          <tr>
+            <td>$50K – $100K</td>
+            <td class="num">7,271</td>
+            <td class="num">5.1%</td>
+            <td>Low-risk — high automation potential</td>
+          </tr>
+          <tr>
+            <td>Below $50K</td>
+            <td class="num">54,382</td>
+            <td class="num var-pos">37.9%</td>
+            <td><span class="pill pill-low">PRIME ELIMINATION</span> — 37.9% small-value JEs</td>
+          </tr>
+          <tr class="total-row">
+            <td>TOTAL</td>
+            <td class="num">143,556</td>
+            <td class="num">100%</td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Income Statement Variance -->
+  <div class="section-title">Income Statement Variance — Reported vs Projected W|JE Elimination</div>
+  <div class="card" style="margin-bottom:20px;">
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Line Item</th>
+            <th class="num">Reported ($M)</th>
+            <th class="num">Projected ($M)</th>
+            <th class="num">Variance ($M)</th>
+            <th class="num">Variance %</th>
+            <th>Assessment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Revenue</strong></td>
+            <td class="num">$300,208M</td>
+            <td class="num">$300,208M</td>
+            <td class="num var-neg">-$0.4M</td>
+            <td class="num var-neg">-0.0%</td>
+            <td><span class="pill pill-low">IMMATERIAL</span></td>
+          </tr>
+          <tr>
+            <td>&nbsp;&nbsp;&nbsp;Operating Revenue</td>
+            <td class="num">$300,208M</td>
+            <td class="num">$300,208M</td>
+            <td class="num var-neg">-$0.4M</td>
+            <td class="num var-neg">-0.0%</td>
+            <td><span class="pill pill-low">IMMATERIAL</span></td>
+          </tr>
+          <tr>
+            <td><strong>Expense</strong></td>
+            <td class="num">-$57,788M</td>
+            <td class="num">-$57,791M</td>
+            <td class="num var-pos">$2.8M</td>
+            <td class="num var-pos">-0.0%</td>
+            <td><span class="pill pill-low">IMMATERIAL</span></td>
+          </tr>
+          <tr>
+            <td>&nbsp;&nbsp;&nbsp;Operating Expenses</td>
+            <td class="num">-$57,788M</td>
+            <td class="num">-$57,791M</td>
+            <td class="num var-pos">$2.8M</td>
+            <td class="num var-pos">-0.0%</td>
+            <td><span class="pill pill-low">IMMATERIAL</span></td>
+          </tr>
+          <tr class="total-row">
+            <td>NET INCOME</td>
+            <td class="num">$242,419M</td>
+            <td class="num">$242,417M</td>
+            <td class="num var-pos">$2.4M</td>
+            <td class="num var-pos">0.0%</td>
+            <td><span class="pill pill-low">IMMATERIAL</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="accent-box green" style="margin-top:10px;">Net Income Statement Impact of JE Elimination: <strong>$2.4M</strong>. Variance is immaterial (0.0%) — confirming elimination opportunity does not distort reported financials.</div>
+  </div>
+
+  <!-- Balance Sheet Variance -->
+  <div class="section-title">Balance Sheet Variance — Reported vs Projected W|JE Elimination</div>
+  <div class="card" style="margin-bottom:20px;">
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Line Item</th>
+            <th class="num">Reported ($M)</th>
+            <th class="num">Projected ($M)</th>
+            <th class="num">Variance ($M)</th>
+            <th class="num">Variance %</th>
+            <th>Assessment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Asset (Net)</strong></td>
+            <td class="num">-$118,869M</td>
+            <td class="num">-$118,874M</td>
+            <td class="num var-pos">$5.6M</td>
+            <td class="num var-pos">-0.00%</td>
+            <td><span class="pill pill-low">IMMATERIAL</span></td>
+          </tr>
+          <tr>
+            <td>&nbsp;&nbsp;&nbsp;Current Assets</td>
+            <td class="num">$270,828M</td>
+            <td class="num">$270,823M</td>
+            <td class="num var-pos">$4.8M</td>
+            <td class="num var-pos">0.00%</td>
+            <td><span class="pill pill-low">IMMATERIAL</span></td>
+          </tr>
+          <tr>
+            <td>&nbsp;&nbsp;&nbsp;Non-Current Assets</td>
+            <td class="num">-$395,132M</td>
+            <td class="num">-$395,133M</td>
+            <td class="num var-pos">$0.7M</td>
+            <td class="num var-pos">0.00%</td>
+            <td><span class="pill pill-low">IMMATERIAL</span></td>
+          </tr>
+          <tr>
+            <td>&nbsp;&nbsp;&nbsp;Off Balance Sheet</td>
+            <td class="num">-$641M</td>
+            <td class="num">-$641M</td>
+            <td class="num var-neutral">$0.0M</td>
+            <td class="num var-neutral">0.00%</td>
+            <td><span class="pill pill-low">NONE</span></td>
+          </tr>
+          <tr>
+            <td>&nbsp;&nbsp;&nbsp;Not Defined</td>
+            <td class="num">$6,076M</td>
+            <td class="num">$6,076M</td>
+            <td class="num var-neutral">$0.0M</td>
+            <td class="num var-neutral">0.00%</td>
+            <td><span class="pill pill-low">NONE</span></td>
+          </tr>
+          <tr>
+            <td><strong>Liability</strong></td>
+            <td class="num">-$764,551M</td>
+            <td class="num">-$764,554M</td>
+            <td class="num var-pos">$3.2M</td>
+            <td class="num var-pos">-0.00%</td>
+            <td><span class="pill pill-low">IMMATERIAL</span></td>
+          </tr>
+          <tr class="total-row">
+            <td>TOTAL BS VARIANCE</td>
+            <td class="num">-$480,157M</td>
+            <td class="num">-$480,165M</td>
+            <td class="num var-pos">$8.8M</td>
+            <td class="num var-pos">-0.00%</td>
+            <td><span class="pill pill-low">IMMATERIAL</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Elimination Opportunity -->
+  <div class="section-title">Manual JE Elimination Opportunity</div>
+  <div class="grid-3" style="margin-bottom:20px;">
+    <div class="stat-card" style="border-left:3px solid #10b981;">
+      <div class="stat-label">Elimination Candidates</div>
+      <div class="stat-value" style="color:#10b981;">33,600</div>
+      <div class="stat-sub">23.4% of 143,556 total JEs</div>
+    </div>
+    <div class="stat-card" style="border-left:3px solid #3b82f6;">
+      <div class="stat-label">Net P&amp;L Impact</div>
+      <div class="stat-value" style="color:#3b82f6;">$2.4M</div>
+      <div class="stat-sub">Net Income Statement impact — immaterial</div>
+    </div>
+    <div class="stat-card" style="border-left:3px solid #f59e0b;">
+      <div class="stat-label">Avg Elimination % / Period</div>
+      <div class="stat-value" style="color:#f59e0b;">23.4%</div>
+      <div class="stat-sub">Range: 21.1% (Jun) to 26.4% (Jul)</div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">Manual JE Elimination Tracking by Period (%)</div>
+    <div class="bar-chart">
+      <div class="bar-row">
+        <div class="bar-label">April</div>
+        <div class="bar-track"><div class="bar-fill green" style="width:23.5%"></div></div>
+        <div class="bar-val">23.5%</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">May</div>
+        <div class="bar-track"><div class="bar-fill green" style="width:21.8%"></div></div>
+        <div class="bar-val">21.8%</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">June</div>
+        <div class="bar-track"><div class="bar-fill green" style="width:21.1%"></div></div>
+        <div class="bar-val">21.1%</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">July (Peak)</div>
+        <div class="bar-track"><div class="bar-fill amber" style="width:26.4%"></div></div>
+        <div class="bar-val">26.4%</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">August</div>
+        <div class="bar-track"><div class="bar-fill green" style="width:23.1%"></div></div>
+        <div class="bar-val">23.1%</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">September</div>
+        <div class="bar-track"><div class="bar-fill green" style="width:23.8%"></div></div>
+        <div class="bar-val">23.8%</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">October</div>
+        <div class="bar-track"><div class="bar-fill" style="width:25.2%"></div></div>
+        <div class="bar-val">25.2%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- P&L Impact Breakdown -->
+  <div class="section-title">P&amp;L Impact Breakdown by JE Source</div>
+  <div class="card" style="margin-bottom:20px;">
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Source System</th>
+            <th class="num">Amount ($M)</th>
+            <th class="num">% of Total</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>SAP S4 — Intercompany + Non-IC</td>
+            <td class="num">$212,164,023.3M</td>
+            <td class="num var-neg">96.8%</td>
+            <td><span class="pill pill-critical">PRIMARY SOURCE</span></td>
+          </tr>
+          <tr>
+            <td>SAP FC (Financial Consolidation)</td>
+            <td class="num">$7,088,073.9M</td>
+            <td class="num">3.2%</td>
+            <td><span class="pill pill-medium">SECONDARY</span></td>
+          </tr>
+          <tr class="total-row">
+            <td>TOTAL</td>
+            <td class="num">$219,253,072M</td>
+            <td class="num">100%</td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- end tab-je -->
+
+<!-- ══════════════════════════════════════════════
+     TAB 2: REC DIAGNOSTIC
+══════════════════════════════════════════════ -->
+<div id="tab-rec" class="tab-content">
+
+  <div class="section-title">Reconciliation Key Metrics</div>
+  <div class="grid-4" style="margin-bottom:16px;">
+    <div class="stat-card">
+      <div class="stat-label">Total Reconciliations</div>
+      <div class="stat-value" style="color:#f59e0b;">21,151</div>
+      <div class="stat-sub">Avg 207 recs/preparer | 102 preparers</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">% Not Completed</div>
+      <div class="stat-value" style="color:#ef4444;">30.2%</div>
+      <div class="stat-sub">6,391 recs not completed</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Avg Days Late</div>
+      <div class="stat-value" style="color:#ef4444;">56 days</div>
+      <div class="stat-sub">11.6% avg % late | 2,464 late recs</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Automation Rate</div>
+      <div class="stat-value" style="color:#ef4444;">19.0%</div>
+      <div class="stat-sub">Target: 40%+ | 4,015 auto recs</div>
+    </div>
+  </div>
+  <div class="grid-3" style="margin-bottom:20px;">
+    <div class="stat-card">
+      <div class="stat-label">Unexplained Diff %</div>
+      <div class="stat-value" style="color:#ef4444;">65.3%</div>
+      <div class="stat-sub">$5,208.2B total unexplained</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Aged Req Adj Items (&gt;60d)</div>
+      <div class="stat-value" style="color:#f59e0b;">1,356</div>
+      <div class="stat-sub">$20.6M | of 31.3K total items</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Action Plan Coverage</div>
+      <div class="stat-value" style="color:#ef4444;">2.0%</div>
+      <div class="stat-sub">98% of req adj items have NO action plan</div>
+    </div>
+  </div>
+
+  <!-- Rec Efficiency by FSLI -->
+  <div class="section-title">Reconciliation Efficiency by FSLI</div>
+  <div class="card" style="margin-bottom:20px;">
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>FSLI</th>
+            <th class="num">Rec Count</th>
+            <th class="num">% Late</th>
+            <th class="num">% Not Completed</th>
+            <th class="num">Avg Days Late</th>
+            <th class="num">% Automated</th>
+            <th>Risk Rating</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Asset</strong></td>
+            <td class="num">12,367</td>
+            <td class="num" style="color:#f59e0b;">11.1%</td>
+            <td class="num" style="color:#ef4444;">33.7%</td>
+            <td class="num" style="color:#ef4444;">62 days</td>
+            <td class="num" style="color:#f59e0b;">18.1%</td>
+            <td><span class="pill pill-high">HIGH — Manual</span></td>
+          </tr>
+          <tr>
+            <td><strong>Liability</strong></td>
+            <td class="num">7,006</td>
+            <td class="num" style="color:#ef4444;">14.7%</td>
+            <td class="num" style="color:#f59e0b;">28.6%</td>
+            <td class="num" style="color:#f59e0b;">55 days</td>
+            <td class="num" style="color:#ef4444;">11.7%</td>
+            <td><span class="pill pill-critical">CRITICAL</span></td>
+          </tr>
+          <tr>
+            <td><strong>Equity</strong></td>
+            <td class="num">1,778</td>
+            <td class="num" style="color:#10b981;">3.6%</td>
+            <td class="num" style="color:#3b82f6;">12.3%</td>
+            <td class="num" style="color:#10b981;">23 days</td>
+            <td class="num" style="color:#10b981;">53.9%</td>
+            <td><span class="pill pill-medium">MODERATE</span></td>
+          </tr>
+          <tr class="total-row">
+            <td>TOTAL / AVG</td>
+            <td class="num">21,151</td>
+            <td class="num">11.6%</td>
+            <td class="num">30.2%</td>
+            <td class="num">56 days</td>
+            <td class="num">19.0%</td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="accent-box red" style="margin-top:10px;">Liability FSLI is <strong>CRITICAL</strong>: 11.7% automated (lowest), 14.7% late, $293,145.6M unexplained difference (94.6% unexplained %). Immediate intervention required.</div>
+  </div>
+
+  <!-- Timeliness + Auto Trend -->
+  <div class="grid-2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-title">Timeliness Breakdown — Total 21,151 Recs</div>
+      <div class="bar-chart">
+        <div class="bar-row">
+          <div class="bar-label"><span class="dot" style="background:#10b981;"></span>Auto Reconciled</div>
+          <div class="bar-track"><div class="bar-fill green" style="width:19.0%"></div></div>
+          <div class="bar-val">4,015 (19.0%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span class="dot" style="background:#3b82f6;"></span>On Time</div>
+          <div class="bar-track"><div class="bar-fill" style="width:39.2%"></div></div>
+          <div class="bar-val">8,281 (39.2%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span class="dot" style="background:#f59e0b;"></span>Late</div>
+          <div class="bar-track"><div class="bar-fill amber" style="width:11.6%"></div></div>
+          <div class="bar-val">2,464 (11.6%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span class="dot" style="background:#ef4444;"></span>Not Completed</div>
+          <div class="bar-track"><div class="bar-fill red" style="width:30.2%"></div></div>
+          <div class="bar-val">6,391 (30.2%)</div>
+        </div>
+      </div>
+      <div style="margin-top:12px;">
+        <canvas id="recTimelinessDoughnut" style="max-height:180px;"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Auto Reconciliation Trend by Period</div>
+      <div class="chart-wrap" style="height:220px;">
+        <canvas id="autoRecTrendChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Unexplained Differences -->
+  <div class="section-title">Unexplained Differences — Detail</div>
+  <div class="card" style="margin-bottom:20px;">
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>FSLI</th>
+            <th class="num">Unexplained Diff ($)</th>
+            <th class="num">Unexplained Diff %</th>
+            <th>Risk</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Asset</td>
+            <td class="num" style="color:#f59e0b;">$557,657M</td>
+            <td class="num" style="color:#f59e0b;">64.1%</td>
+            <td><span class="pill pill-high">HIGH</span></td>
+          </tr>
+          <tr>
+            <td>Liability</td>
+            <td class="num" style="color:#ef4444;">$293,145.6M</td>
+            <td class="num" style="color:#ef4444;">94.6%</td>
+            <td><span class="pill pill-critical">CRITICAL</span></td>
+          </tr>
+          <tr>
+            <td>Equity</td>
+            <td class="num" style="color:#10b981;">$17,226.9M</td>
+            <td class="num" style="color:#10b981;">11.5%</td>
+            <td><span class="pill pill-low">LOWER</span></td>
+          </tr>
+          <tr class="total-row">
+            <td>TOTAL</td>
+            <td class="num">$5,208.2B</td>
+            <td class="num">65.3%</td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-title">Unexplained Diff ($M) by Period</div>
+      <div class="chart-wrap" style="height:200px;">
+        <canvas id="unexplainedDiffChart"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Avg Unexplained Diff % by Period</div>
+      <div class="bar-chart" style="margin-top:8px;">
+        <div class="bar-row">
+          <div class="bar-label">April</div>
+          <div class="bar-track"><div class="bar-fill amber" style="width:68.2%"></div></div>
+          <div class="bar-val">68.2%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">June</div>
+          <div class="bar-track"><div class="bar-fill amber" style="width:68.4%"></div></div>
+          <div class="bar-val">68.4%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">July</div>
+          <div class="bar-track"><div class="bar-fill amber" style="width:69.6%"></div></div>
+          <div class="bar-val">69.6%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">August</div>
+          <div class="bar-track"><div class="bar-fill red" style="width:72.2%"></div></div>
+          <div class="bar-val">72.2% ▲ peak</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">September</div>
+          <div class="bar-track"><div class="bar-fill amber" style="width:69.4%"></div></div>
+          <div class="bar-val">69.4%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preparer Team Timeliness -->
+  <div class="section-title">Timeliness by Preparer Team</div>
+  <div class="card" style="margin-bottom:20px;">
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Preparer Team</th>
+            <th class="num">Avg Days Late</th>
+            <th>Performance</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Unassigned</strong></td>
+            <td class="num" style="color:#ef4444;">186 days</td>
+            <td><span class="pill pill-critical">CRITICAL</span></td>
+            <td>~6,500+ recs with no ownership — governance gap</td>
+          </tr>
+          <tr>
+            <td>Private Wealth</td>
+            <td class="num" style="color:#f59e0b;">65 days</td>
+            <td><span class="pill pill-high">HIGH RISK</span></td>
+            <td>Significant delay — process review needed</td>
+          </tr>
+          <tr>
+            <td>US Branches</td>
+            <td class="num" style="color:#f59e0b;">56 days</td>
+            <td><span class="pill pill-high">HIGH RISK</span></td>
+            <td>$46.8M unexplained diff in IC recs</td>
+          </tr>
+          <tr>
+            <td>Corporate Revenue</td>
+            <td class="num" style="color:#3b82f6;">39 days</td>
+            <td><span class="pill pill-medium-high">MODERATE</span></td>
+            <td>Above target but manageable</td>
+          </tr>
+          <tr>
+            <td>NBI Finance</td>
+            <td class="num" style="color:#10b981;">1 day</td>
+            <td><span class="pill pill-low">BEST PRACTICE</span></td>
+            <td>Benchmark team — process standardization model</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="accent-box red" style="margin-top:10px;"><strong>Unassigned recs (186 avg days late)</strong> represent the most critical governance gap. 6,500+ recs with no assigned preparer — requires immediate ownership assignment.</div>
+  </div>
+
+  <!-- Required Adjustment Items -->
+  <div class="section-title">Required Adjustment Items &amp; Attachment Analysis</div>
+  <div class="grid-2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-title">Required Adj Items by BS/P&amp;L Impact Type</div>
+      <div class="bar-chart">
+        <div class="bar-row">
+          <div class="bar-label">BS Asset</div>
+          <div class="bar-track"><div class="bar-fill" style="width:98.5%"></div></div>
+          <div class="bar-val">$2,855.4M</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">BS Liability</div>
+          <div class="bar-track"><div class="bar-fill amber" style="width:0.4%"></div></div>
+          <div class="bar-val">$10.5M</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">P&amp;L Expense</div>
+          <div class="bar-track"><div class="bar-fill red" style="width:0.2%"></div></div>
+          <div class="bar-val">$6.7M</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">P&amp;L Revenue</div>
+          <div class="bar-track"><div class="bar-fill green" style="width:0.1%"></div></div>
+          <div class="bar-val">$2.7M</div>
+        </div>
+      </div>
+      <div class="accent-box red" style="margin-top:10px;">Only <strong>2.0%</strong> of Required Adj Items have an action plan. <strong>98%</strong> unaddressed — critical governance failure.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Attachment % Without Supporting Doc &amp; Item Class</div>
+      <div class="bar-chart" style="margin-bottom:14px;">
+        <div class="bar-row">
+          <div class="bar-label">April (no attach)</div>
+          <div class="bar-track"><div class="bar-fill red" style="width:65.8%"></div></div>
+          <div class="bar-val">65.8%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">May (no attach)</div>
+          <div class="bar-track"><div class="bar-fill amber" style="width:53.8%"></div></div>
+          <div class="bar-val">53.8%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">June (no attach)</div>
+          <div class="bar-track"><div class="bar-fill amber" style="width:53.6%"></div></div>
+          <div class="bar-val">53.6%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">July (no attach)</div>
+          <div class="bar-track"><div class="bar-fill red" style="width:65.2%"></div></div>
+          <div class="bar-val">65.2%</div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:#94a3b8;margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Item Class Distribution</div>
+      <div class="bar-chart">
+        <div class="bar-row">
+          <div class="bar-label">List Items</div>
+          <div class="bar-track"><div class="bar-fill green" style="width:69%"></div></div>
+          <div class="bar-val">22K (69%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Required Adj</div>
+          <div class="bar-track"><div class="bar-fill red" style="width:28%"></div></div>
+          <div class="bar-val">9K (28%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Timing</div>
+          <div class="bar-track"><div class="bar-fill amber" style="width:3%"></div></div>
+          <div class="bar-val">1K (3%)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Auto Rec by Template + Approvers -->
+  <div class="section-title">Auto Reconciliation by Template &amp; Approver Stats</div>
+  <div class="grid-2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-title">Auto Rec Count by Template Type</div>
+      <div class="bar-chart">
+        <div class="bar-row">
+          <div class="bar-label">General List</div>
+          <div class="bar-track"><div class="bar-fill green" style="width:91.9%"></div></div>
+          <div class="bar-val">3,653</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Subledger Match</div>
+          <div class="bar-track"><div class="bar-fill" style="width:5.3%"></div></div>
+          <div class="bar-val">212</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Amortizable</div>
+          <div class="bar-track"><div class="bar-fill amber" style="width:1.8%"></div></div>
+          <div class="bar-val">71</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Accruable</div>
+          <div class="bar-track"><div class="bar-fill purple" style="width:1.7%"></div></div>
+          <div class="bar-val">69</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Bank Account</div>
+          <div class="bar-track"><div class="bar-fill red" style="width:0.3%"></div></div>
+          <div class="bar-val">10</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Preparer &amp; Approver Workload</div>
+      <div class="data-table" style="margin-top:8px;">
+        <table class="data-table">
+          <thead>
+            <tr><th>Role</th><th class="num">Count</th><th class="num">Recs/Person</th><th>Load</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Preparers</td>
+              <td class="num">102</td>
+              <td class="num" style="color:#f59e0b;">207</td>
+              <td><span class="pill pill-high">HIGH</span></td>
+            </tr>
+            <tr>
+              <td>Approvers</td>
+              <td class="num">64</td>
+              <td class="num" style="color:#ef4444;">330</td>
+              <td><span class="pill pill-critical">OVERLOADED</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="accent-box amber" style="margin-top:12px;">Rejection reasons include: <strong>Accounting Policy</strong>, <strong>Insufficient Documentation</strong>, <strong>Item Class Error</strong>. Standardized templates and training required.</div>
+    </div>
+  </div>
+
+</div><!-- end tab-rec -->
+
+<!-- ══════════════════════════════════════════════
+     TAB 3: FAA INSIGHTS
+══════════════════════════════════════════════ -->
+<div id="tab-faa" class="tab-content">
+
+  <div class="section-title">Finance Activity Analysis — Key Metrics</div>
+  <div class="grid-4" style="margin-bottom:16px;">
+    <div class="stat-card">
+      <div class="stat-label">Unique Employees</div>
+      <div class="stat-value" style="color:#3b82f6;">195</div>
+      <div class="stat-sub">218.1 FTE | 85% survey response</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Fully Loaded Labor</div>
+      <div class="stat-value" style="color:#f59e0b;">$31.5M</div>
+      <div class="stat-sub">$144.3K/FTE | 218.1 FTE</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Avg Hours/Week</div>
+      <div class="stat-value" style="color:#ef4444;">42.5 hrs</div>
+      <div class="stat-sub">Above 40-hr norm — sustained overtime</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Automation Opportunity</div>
+      <div class="stat-value" style="color:#10b981;">$16.2M</div>
+      <div class="stat-sub">51.4% of total labor = automation potential</div>
+    </div>
+  </div>
+
+  <!-- Labor by L1 Process -->
+  <div class="section-title">Labor Cost by L1 Process</div>
+  <div class="grid-2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-title">Fully Loaded Labor by Process ($M)</div>
+      <div class="bar-chart">
+        <div class="bar-row">
+          <div class="bar-label">R2R (Record-to-Report)</div>
+          <div class="bar-track"><div class="bar-fill red" style="width:49.5%"></div></div>
+          <div class="bar-val">$15.6M (49.5%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Finance Enablement</div>
+          <div class="bar-track"><div class="bar-fill" style="width:23.5%"></div></div>
+          <div class="bar-val">$7.4M (23.5%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Payroll</div>
+          <div class="bar-track"><div class="bar-fill amber" style="width:8.3%"></div></div>
+          <div class="bar-val">$2.6M (8.3%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Other</div>
+          <div class="bar-track"><div class="bar-fill purple" style="width:7.9%"></div></div>
+          <div class="bar-val">$2.5M (7.9%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Acquire to Retire</div>
+          <div class="bar-track"><div class="bar-fill green" style="width:3.8%"></div></div>
+          <div class="bar-val">$1.2M (3.8%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Tax</div>
+          <div class="bar-track"><div class="bar-fill green" style="width:3.2%"></div></div>
+          <div class="bar-val">$1.0M (3.2%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Treasury</div>
+          <div class="bar-track"><div class="bar-fill green" style="width:2.2%"></div></div>
+          <div class="bar-val">$0.7M (2.2%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Source to Pay</div>
+          <div class="bar-track"><div class="bar-fill green" style="width:1.6%"></div></div>
+          <div class="bar-val">$0.5M (1.6%)</div>
+        </div>
+      </div>
+      <div class="accent-box red" style="margin-top:10px;"><strong>R2R = $15.6M (49.5%)</strong> of total $31.5M labor — disproportionate concentration in manual close &amp; reconciliation work.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Labor Distribution Charts</div>
+      <div style="font-size:11px;color:#94a3b8;margin-bottom:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">By Work Category</div>
+      <div class="chart-wrap" style="height:180px;">
+        <canvas id="laborCategoryChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Improvement Lever + Service Delivery -->
+  <div class="grid-2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-title">Labor by Improvement Lever</div>
+      <div class="bar-chart">
+        <div class="bar-row">
+          <div class="bar-label">Automation Opportunity</div>
+          <div class="bar-track"><div class="bar-fill red" style="width:51.4%"></div></div>
+          <div class="bar-val">$16.2M (51.4%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Process Improvement/Std</div>
+          <div class="bar-track"><div class="bar-fill amber" style="width:24.6%"></div></div>
+          <div class="bar-val">$7.7M (24.6%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">N/A (Retain)</div>
+          <div class="bar-track"><div class="bar-fill" style="width:20.0%"></div></div>
+          <div class="bar-val">$6.3M (20.0%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Process Elimination</div>
+          <div class="bar-track"><div class="bar-fill green" style="width:3.8%"></div></div>
+          <div class="bar-val">$1.2M (3.8%)</div>
+        </div>
+      </div>
+      <div class="accent-box" style="margin-top:10px;"><strong>$25.1M (79.8%)</strong> of labor addressable via automation, process improvement, or elimination. Only $6.3M truly non-addressable.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Service Delivery Model</div>
+      <div class="bar-chart" style="margin-bottom:14px;">
+        <div class="bar-row">
+          <div class="bar-label">Corporate (In-House)</div>
+          <div class="bar-track"><div class="bar-fill amber" style="width:42.25%"></div></div>
+          <div class="bar-val">$13.3M (42.3%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">SSC / BPO</div>
+          <div class="bar-track"><div class="bar-fill" style="width:32.31%"></div></div>
+          <div class="bar-val">$10.2M (32.3%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">CoE (Center of Excellence)</div>
+          <div class="bar-track"><div class="bar-fill green" style="width:14.17%"></div></div>
+          <div class="bar-val">$4.5M (14.2%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Segment / BU</div>
+          <div class="bar-track"><div class="bar-fill purple" style="width:11.26%"></div></div>
+          <div class="bar-val">$3.5M (11.3%)</div>
+        </div>
+      </div>
+      <div class="accent-box amber" style="margin-top:10px;">CoE = <strong>14.2%</strong> vs 20%+ target (Finding F10). Corporate in-house = 42.3% — opportunity to shift transactional work to SSC/BPO. $1.5-2.0M reallocation opportunity.</div>
+    </div>
+  </div>
+
+  <!-- Hours by Role + Respondents -->
+  <div class="grid-2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-title">Avg Hours/Week by Role — Seniority Mismatch</div>
+      <div class="bar-chart">
+        <div class="bar-row">
+          <div class="bar-label">Director / MD</div>
+          <div class="bar-track"><div class="bar-fill red" style="width:86.7%"></div></div>
+          <div class="bar-val">52 hrs/wk</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Senior Manager</div>
+          <div class="bar-track"><div class="bar-fill amber" style="width:73.3%"></div></div>
+          <div class="bar-val">44 hrs/wk</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Manager</div>
+          <div class="bar-track"><div class="bar-fill amber" style="width:71.7%"></div></div>
+          <div class="bar-val">43 hrs/wk</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Sr Analyst / Analyst</div>
+          <div class="bar-track"><div class="bar-fill" style="width:61.7%"></div></div>
+          <div class="bar-val">37 hrs/wk</div>
+        </div>
+      </div>
+      <div class="accent-box red" style="margin-top:10px;">Directors at 52 hrs/wk with 25% manual work. Managers at 55% manual. <strong>$9.68M</strong> Director-level labor — seniority mismatch driving $2-3M excess cost (Finding F8).</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Survey Respondents by Group</div>
+      <div class="bar-chart">
+        <div class="bar-row">
+          <div class="bar-label">Controller T&amp;O &amp; Corp Fn</div>
+          <div class="bar-track"><div class="bar-fill" style="width:20.48%"></div></div>
+          <div class="bar-val">34 (20.5%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Controller Capital Markets</div>
+          <div class="bar-track"><div class="bar-fill" style="width:18.67%"></div></div>
+          <div class="bar-val">31 (18.7%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Controller &amp; Compensation</div>
+          <div class="bar-track"><div class="bar-fill amber" style="width:17.47%"></div></div>
+          <div class="bar-val">29 (17.5%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Control &amp; Governance</div>
+          <div class="bar-track"><div class="bar-fill purple" style="width:15.66%"></div></div>
+          <div class="bar-val">26 (15.7%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">CAG Accounting</div>
+          <div class="bar-track"><div class="bar-fill green" style="width:9.64%"></div></div>
+          <div class="bar-val">16 (9.6%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Controller P&amp;C Finance</div>
+          <div class="bar-track"><div class="bar-fill green" style="width:7.23%"></div></div>
+          <div class="bar-val">12 (7.2%)</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">CAG Parent Bank</div>
+          <div class="bar-track"><div class="bar-fill green" style="width:6.02%"></div></div>
+          <div class="bar-val">10 (6.0%)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Agentic AI -->
+  <div class="section-title">Agentic AI Transformation Potential</div>
+  <div class="card" style="margin-bottom:20px;">
+    <div class="grid-2">
+      <div>
+        <div class="card-title">AI Agent Mode Distribution</div>
+        <div class="chart-wrap" style="height:200px;">
+          <canvas id="agentAIChart"></canvas>
+        </div>
+      </div>
+      <div>
+        <div class="value-summary-grid" style="grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="val-card green">
+            <div class="vnum" style="color:#10b981;">76.5%</div>
+            <div class="vtag">Agent-Driven<br>Automation</div>
+          </div>
+          <div class="val-card blue">
+            <div class="vnum" style="color:#3b82f6;">23.5%</div>
+            <div class="vtag">Agent-Assisted<br>(Human-in-loop)</div>
+          </div>
+          <div class="val-card amber">
+            <div class="vnum" style="color:#f59e0b;">$18.4M</div>
+            <div class="vtag">Total Potential<br>Savings (Agentic AI)</div>
+          </div>
+          <div class="val-card red">
+            <div class="vnum" style="color:#ef4444;">$18.5M</div>
+            <div class="vtag">Current Annual Cost<br>of Manual Work</div>
+          </div>
+        </div>
+        <div class="accent-box green" style="margin-top:14px;">Agentic AI framework ($18.4M savings potential) nearly covers the entire <strong>$18.5M</strong> annual cost of manual work. Near-full automation achievable with Agent-Driven model.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Labor Unclassified Alert -->
+  <div class="accent-box amber" style="margin-bottom:20px;">
+    <strong>Finding F7 — 43.66% Labor Unclassified ($13.7M at risk):</strong> The single largest labor category is "Other/Unclassified" at $13.7M (43.66%). This represents governance, decision-support, and ad-hoc work that cannot be optimized without classification. Immediate FAA data quality remediation required via agents <span class="agent-badge">fc-003</span> + <span class="agent-badge">da-003</span>.
+  </div>
+
+</div><!-- end tab-faa -->
+
+<!-- ══════════════════════════════════════════════
+     TAB 4: CROSS-CORRELATION
+══════════════════════════════════════════════ -->
+<div id="tab-corr" class="tab-content">
+
+  <div class="section-title">Correlation 1 — Record-to-Report Process Chain: Manual Work Cascade</div>
+  <div class="card" style="margin-bottom:20px;">
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Process Domain</th>
+            <th>JE Evidence</th>
+            <th>Rec Evidence</th>
+            <th>FAA Evidence</th>
+            <th>Correlation</th>
+            <th>Root Cause</th>
+            <th class="num">$ Opportunity</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Journal Entry Processing</strong></td>
+            <td>143,556 JEs — 100% manual; 144 preparers; 997 JEs/preparer</td>
+            <td>21,151 recs — 19% automated; 30.2% not completed</td>
+            <td>R2R = $15.6M (49.5%); 107 FTE; JE prep+review = $1.9M</td>
+            <td><span class="corr-tag corr-vs">VERY STRONG</span></td>
+            <td>No auto-posting rules in SAP S4/FC; Sub-ledger disconnected from GL</td>
+            <td class="num" style="color:#10b981;">$3–5M</td>
+          </tr>
+          <tr>
+            <td><strong>Intercompany Processing</strong></td>
+            <td>~35% IC JEs (~50K entries); Manual netting &amp; elimination; Multiple company codes</td>
+            <td>IC recs among worst performers; Highest unexplained diffs; US Branches: $46.8M diff</td>
+            <td>IC processing embedded in R2R; Cross-team handoffs; Est. ~$3-4M labor</td>
+            <td><span class="corr-tag corr-s">STRONG</span></td>
+            <td>No IC matching hub; Manual netting across 6+ company codes</td>
+            <td class="num" style="color:#10b981;">$1.5–2.5M</td>
+          </tr>
+          <tr>
+            <td><strong>Period-End Close</strong></td>
+            <td>71% JEs in Pre-Close (102K); July peak: 30.6K JEs; +24% MoM spike</td>
+            <td>56 avg days late; 6,391 post-close recs; April: 97 days late (worst)</td>
+            <td>42.5 avg hrs/week (&gt;40 norm); Overtime during close; Directors at 52 hrs</td>
+            <td><span class="corr-tag corr-vs">VERY STRONG</span></td>
+            <td>Batch close mentality; No continuous accounting model</td>
+            <td class="num" style="color:#10b981;">$2–3M</td>
+          </tr>
+          <tr>
+            <td><strong>Reclassifications</strong></td>
+            <td>7,692 reclass JEs/period; $1.87T amount; BS↔PL cross-impact: 37%</td>
+            <td>Reclass drives unexplained diffs; BS/PL cross-statement errors; Requires senior review</td>
+            <td>Senior staff time on reclass; Managers at 55% manual; Est. ~$2M labor</td>
+            <td><span class="corr-tag corr-ms">MODERATE-STRONG</span></td>
+            <td>No auto-classification engine; ~1,300 hrs/month effort</td>
+            <td class="num" style="color:#10b981;">$1–1.5M</td>
+          </tr>
+          <tr>
+            <td><strong>Accruals &amp; Adjustments</strong></td>
+            <td>Accrual JEs: ~7,692; Recurring monthly pattern</td>
+            <td>Accrual recs: high % not completed; Timing differences dominant</td>
+            <td>Accrual processing in R2R labor; Est. ~$1.5M allocation</td>
+            <td><span class="corr-tag corr-m">MODERATE</span></td>
+            <td>No auto-accrual engine; Spreadsheet-based estimates</td>
+            <td class="num" style="color:#10b981;">$0.8–1.2M</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Correlation 2: People x Volume -->
+  <div class="section-title">Correlation 2 — People × Volume: Capacity &amp; Concentration Risk</div>
+  <div class="card" style="margin-bottom:20px;">
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Dimension</th>
+            <th>JE Data</th>
+            <th>Rec Data</th>
+            <th>FAA Data</th>
+            <th>Key Insight</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Preparer Concentration</strong></td>
+            <td>Top 3 users = 91% of JEs; SAP_WFRT = 65.3%</td>
+            <td>102 preparers; 207 recs/preparer; Top team: 6,500 recs</td>
+            <td>195 employees / 218 FTE; 144 JE preparers ⊆ 195 employees</td>
+            <td style="color:#ef4444;"><strong>3 JE users control $219B; 997 JEs/preparer vs 500 benchmark = 2× overloaded</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Team Workload Balance</strong></td>
+            <td>BMO Bank N.A.: 43.8K JEs; Bank of Montreal Fgn: 51.2K; Top 2 = 66%</td>
+            <td>Unassigned: ~6,500 recs (worst); NBI Finance: best performer</td>
+            <td>Controller T&amp;O: 20.48% of staff; Controller Cap Mkts: 18.67%</td>
+            <td style="color:#f59e0b;"><strong>Top 2 company codes = 66% of JEs; Disproportionate load on Controller T&amp;O + Cap Mkts</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Seniority Mismatch</strong></td>
+            <td>100% manual JEs — no complexity filter; Simple 2-4 line JEs = 60.9%</td>
+            <td>Liability recs: 14.7% late; No skill-based routing</td>
+            <td>Directors: 52 hrs/wk, 25% manual; Managers: 55% manual; Analysts: 70% manual</td>
+            <td style="color:#f59e0b;"><strong>Directors reviewing simple JEs; $9.68M on Director labor; $2-3M excess cost from mismatch</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Manual Work Concentration Heat Map -->
+  <div class="section-title">Manual Work Concentration Heat Map</div>
+  <div class="card" style="margin-bottom:20px;">
+    <div class="grid-2">
+      <div>
+        <div class="card-title">Process Area Risk Heat Map</div>
+        <table class="data-table">
+          <thead>
+            <tr><th>Process Area</th><th>Risk Tier</th><th>Priority</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Journal Entry Processing</td>
+              <td><span class="pill pill-critical">CRITICAL</span></td>
+              <td><span class="pill pill-p0">P0</span></td>
+            </tr>
+            <tr>
+              <td>Period-End Close</td>
+              <td><span class="pill pill-critical">CRITICAL</span></td>
+              <td><span class="pill pill-p0">P0</span></td>
+            </tr>
+            <tr>
+              <td>Intercompany Processing</td>
+              <td><span class="pill pill-critical">CRITICAL</span></td>
+              <td><span class="pill pill-p0">P0</span></td>
+            </tr>
+            <tr>
+              <td>Account Reconciliation</td>
+              <td><span class="pill pill-critical">CRITICAL</span></td>
+              <td><span class="pill pill-p0">P0</span></td>
+            </tr>
+            <tr>
+              <td>Sub-ledger Matching</td>
+              <td><span class="pill pill-high">HIGH</span></td>
+              <td><span class="pill pill-p1">P1</span></td>
+            </tr>
+            <tr>
+              <td>Reclassification</td>
+              <td><span class="pill pill-high">HIGH</span></td>
+              <td><span class="pill pill-p1">P1</span></td>
+            </tr>
+            <tr>
+              <td>Accruals &amp; Reversals</td>
+              <td><span class="pill pill-high">HIGH</span></td>
+              <td><span class="pill pill-p1">P1</span></td>
+            </tr>
+            <tr>
+              <td>Consolidation (SAP FC)</td>
+              <td><span class="pill pill-high">HIGH</span></td>
+              <td><span class="pill pill-p1">P1</span></td>
+            </tr>
+            <tr>
+              <td>Financial Reporting</td>
+              <td><span class="pill pill-medium-high">MEDIUM-HIGH</span></td>
+              <td><span class="pill pill-p2">P2</span></td>
+            </tr>
+            <tr>
+              <td>Statutory Reporting</td>
+              <td><span class="pill pill-medium">MEDIUM</span></td>
+              <td><span class="pill pill-p2">P2</span></td>
+            </tr>
+            <tr>
+              <td>Tax &amp; Treasury</td>
+              <td><span class="pill pill-low">LOW-MEDIUM</span></td>
+              <td><span class="pill pill-p2">P3</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="card-title">Team Concentration Scores (1–5)</div>
+        <table class="data-table">
+          <thead>
+            <tr><th>Team</th><th class="num">JEs</th><th class="num">Recs</th><th class="num">Labor</th><th class="num">Manual%</th><th>Score</th><th>Bottleneck</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="font-size:11px;">Controller T&amp;O &amp; Corp Fn</td>
+              <td class="num">~30K</td>
+              <td class="num">~4,200</td>
+              <td class="num">$5.7M</td>
+              <td class="num" style="color:#ef4444;">72%</td>
+              <td><span class="pill pill-critical">4.8</span></td>
+              <td style="font-size:10px;">Close + IC</td>
+            </tr>
+            <tr>
+              <td style="font-size:11px;">CAG - Accounting Policy</td>
+              <td class="num">~15K</td>
+              <td class="num">~2,800</td>
+              <td class="num">$2.9M</td>
+              <td class="num" style="color:#ef4444;">80%</td>
+              <td><span class="pill pill-critical">4.7</span></td>
+              <td style="font-size:10px;">Reclass &amp; Policy</td>
+            </tr>
+            <tr>
+              <td style="font-size:11px;">Unassigned / Other</td>
+              <td class="num">~4.8K</td>
+              <td class="num">~6.5K+</td>
+              <td class="num">$2.1M</td>
+              <td class="num" style="color:#94a3b8;">Unk</td>
+              <td><span class="pill pill-critical">4.5</span></td>
+              <td style="font-size:10px;">No ownership</td>
+            </tr>
+            <tr>
+              <td style="font-size:11px;">Controller Capital Markets</td>
+              <td class="num">~43.8K</td>
+              <td class="num">~3,500</td>
+              <td class="num">$5.3M</td>
+              <td class="num" style="color:#ef4444;">68%</td>
+              <td><span class="pill pill-critical">4.5</span></td>
+              <td style="font-size:10px;">High JE + IC</td>
+            </tr>
+            <tr>
+              <td style="font-size:11px;">CAG Parent Bank</td>
+              <td class="num">~12K</td>
+              <td class="num">~2,100</td>
+              <td class="num">$1.8M</td>
+              <td class="num" style="color:#f59e0b;">75%</td>
+              <td><span class="pill pill-high">4.2</span></td>
+              <td style="font-size:10px;">Consolidation</td>
+            </tr>
+            <tr>
+              <td style="font-size:11px;">Controller &amp; Compensation</td>
+              <td class="num">~8K</td>
+              <td class="num">~2,500</td>
+              <td class="num">$4.7M</td>
+              <td class="num" style="color:#f59e0b;">55%</td>
+              <td><span class="pill pill-high">3.8</span></td>
+              <td style="font-size:10px;">Payroll JEs</td>
+            </tr>
+            <tr>
+              <td style="font-size:11px;">Controller P&amp;C Finance</td>
+              <td class="num">~10K</td>
+              <td class="num">~2,000</td>
+              <td class="num">$2.0M</td>
+              <td class="num" style="color:#f59e0b;">60%</td>
+              <td><span class="pill pill-high">3.5</span></td>
+              <td style="font-size:10px;">Branch JE vol</td>
+            </tr>
+            <tr>
+              <td style="font-size:11px;">Control &amp; Governance</td>
+              <td class="num">~5K</td>
+              <td class="num">~1,800</td>
+              <td class="num">$4.0M</td>
+              <td class="num" style="color:#3b82f6;">45%</td>
+              <td><span class="pill pill-high">3.2</span></td>
+              <td style="font-size:10px;">Gov overhead</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cross-Process Chart -->
+  <div class="section-title">Cross-Process Volume Alignment</div>
+  <div class="card" style="margin-bottom:20px;">
+    <div class="chart-wrap" style="height:250px;">
+      <canvas id="crossProcessChart"></canvas>
+    </div>
+  </div>
+
+</div><!-- end tab-corr -->
+
+<!-- ══════════════════════════════════════════════
+     TAB 5: RUDRA FINDINGS & RECOMMENDATIONS
+══════════════════════════════════════════════ -->
+<div id="tab-rudra" class="tab-content">
+
+  <div class="section-title">Top 10 Findings — Rudra Principal Oversight</div>
+  <div class="card" style="margin-bottom:20px;">
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Finding</th>
+            <th>Severity</th>
+            <th class="num">$ Exposure</th>
+            <th>Agents Assigned</th>
+            <th>Priority Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:700;color:#ef4444;">F1</td>
+            <td><strong>100% Manual JE Processing</strong> — No auto-posting rules in SAP S4/FC; all 143,556 JEs posted manually</td>
+            <td><span class="pill pill-critical">CRITICAL</span></td>
+            <td class="num" style="color:#ef4444;">$5.2M</td>
+            <td><span class="agent-badge">fc-004</span> <span class="agent-badge">do-001</span></td>
+            <td>Deploy JE auto-posting rules; Wave 2 SAP S4 configuration</td>
+          </tr>
+          <tr>
+            <td style="font-weight:700;color:#ef4444;">F2</td>
+            <td><strong>Extreme Preparer Concentration (SPOF)</strong> — SAP_WFRT = 65.3% of all JEs ($93,700 JEs). Single point of failure for $219B in postings</td>
+            <td><span class="pill pill-critical">CRITICAL</span></td>
+            <td class="num" style="color:#ef4444;">$219B SPOF</td>
+            <td><span class="agent-badge">fc-003</span> <span class="agent-badge">ri-001</span></td>
+            <td>Immediate: distribute workload; implement dual-control; BCP activation</td>
+          </tr>
+          <tr>
+            <td style="font-weight:700;color:#ef4444;">F3</td>
+            <td><strong>Low Reconciliation Automation (19% vs 40%+ target)</strong> — Only 4,015 of 21,151 recs automated; 65.3% unexplained differences; $5.2B unexplained</td>
+            <td><span class="pill pill-critical">CRITICAL</span></td>
+            <td class="num" style="color:#ef4444;">$4.8M</td>
+            <td><span class="agent-badge">fc-004</span> <span class="agent-badge">da-003</span></td>
+            <td>Expand auto-rec templates; target 40%+ automation by Wave 1</td>
+          </tr>
+          <tr>
+            <td style="font-weight:700;color:#ef4444;">F4</td>
+            <td><strong>R2R Labor Cost Dominance</strong> — $15.6M (49.5% of $31.5M total) consumed by Record-to-Report; 107 FTE; unsustainable concentration</td>
+            <td><span class="pill pill-critical">CRITICAL</span></td>
+            <td class="num" style="color:#ef4444;">$15.6M</td>
+            <td><span class="agent-badge">fc-003</span> <span class="agent-badge">do-001</span></td>
+            <td>Automation roadmap; target R2R &lt;30% of labor by Year 2</td>
+          </tr>
+          <tr>
+            <td style="font-weight:700;color:#f59e0b;">F5</td>
+            <td><strong>Period-End Concentration Crisis</strong> — 71% of JEs in pre-close; July peak 30,600 JEs (+24% MoM); 56 avg days late on recs; April: 97 days</td>
+            <td><span class="pill pill-high">HIGH</span></td>
+            <td class="num" style="color:#f59e0b;">$1.4M OT</td>
+            <td><span class="agent-badge">fc-004</span> <span class="agent-badge">do-001</span></td>
+            <td>Continuous accounting model; distribute close over month</td>
+          </tr>
+          <tr>
+            <td style="font-weight:700;color:#f59e0b;">F6</td>
+            <td><strong>Intercompany Manual Processing</strong> — ~50K IC JEs; US Branches: $46.8M unexplained diff; manual netting across 6+ company codes</td>
+            <td><span class="pill pill-high">HIGH</span></td>
+            <td class="num" style="color:#f59e0b;">$3.5M</td>
+            <td><span class="agent-badge">fc-003</span> <span class="agent-badge">fc-004</span></td>
+            <td>Deploy IC hub automation; automated netting engine</td>
+          </tr>
+          <tr>
+            <td style="font-weight:700;color:#f59e0b;">F7</td>
+            <td><strong>43.66% Labor Unclassified</strong> — $13.7M "Other/Unclassified" category; cannot be optimized; governance gap in FAA data</td>
+            <td><span class="pill pill-high">HIGH</span></td>
+            <td class="num" style="color:#f59e0b;">$13.7M at risk</td>
+            <td><span class="agent-badge">fc-003</span> <span class="agent-badge">da-003</span></td>
+            <td>FAA reclassification workshop; mandatory activity taxonomy</td>
+          </tr>
+          <tr>
+            <td style="font-weight:700;color:#f59e0b;">F8</td>
+            <td><strong>Seniority Mismatch</strong> — Directors at 52 hrs/wk with 25% manual work; Managers 55% manual; $9.68M Director-level labor on transactional tasks</td>
+            <td><span class="pill pill-high">HIGH</span></td>
+            <td class="num" style="color:#f59e0b;">$2–3M excess</td>
+            <td><span class="agent-badge">fc-003</span> <span class="agent-badge">do-002</span></td>
+            <td>Skill-based routing; automation for simple/repetitive tasks</td>
+          </tr>
+          <tr>
+            <td style="font-weight:700;color:#818cf8;">F9</td>
+            <td><strong>Poor JE Metadata Quality</strong> — 45.4% "Other" category; 8.3% no header; limits analytics, automation, and audit trail</td>
+            <td><span class="pill pill-medium">MEDIUM</span></td>
+            <td class="num" style="color:#818cf8;">Process risk</td>
+            <td><span class="agent-badge">fc-004</span> <span class="agent-badge">da-003</span></td>
+            <td>JE metadata standards; mandatory fields enforcement in SAP</td>
+          </tr>
+          <tr>
+            <td style="font-weight:700;color:#818cf8;">F10</td>
+            <td><strong>Undersized CoE</strong> — 14.17% of labor in CoE vs 20%+ target; $4.5M vs $6.3M+ needed; limiting standardization and governance</td>
+            <td><span class="pill pill-medium">MEDIUM</span></td>
+            <td class="num" style="color:#818cf8;">$2–3M realloc</td>
+            <td><span class="agent-badge">fc-003</span> <span class="agent-badge">do-001</span></td>
+            <td>CoE expansion; move transactional to SSC; upskill CoE roles</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Efficiency Opportunities -->
+  <div class="section-title">Efficiency Opportunities — Priority Table (10 Initiatives)</div>
+  <div class="card" style="margin-bottom:20px;">
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Opportunity</th>
+            <th class="num">Current Cost</th>
+            <th class="num">Savings Range</th>
+            <th class="num">Savings %</th>
+            <th>Priority</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:700;">1</td>
+            <td><strong>JE Auto-Posting Rules (SAP S4 &amp; FC)</strong></td>
+            <td class="num">$5.2M</td>
+            <td class="num" style="color:#10b981;">$2.5–3.5M</td>
+            <td class="num">48–67%</td>
+            <td><span class="pill pill-p0">P0</span></td>
+          </tr>
+          <tr>
+            <td style="font-weight:700;">2</td>
+            <td><strong>Auto-Reconciliation Expansion</strong></td>
+            <td class="num">$4.8M</td>
+            <td class="num" style="color:#10b981;">$2.0–3.0M</td>
+            <td class="num">42–63%</td>
+            <td><span class="pill pill-p0">P0</span></td>
+          </tr>
+          <tr>
+            <td style="font-weight:700;">3</td>
+            <td><strong>Intercompany Hub Automation</strong></td>
+            <td class="num">$3.5M</td>
+            <td class="num" style="color:#10b981;">$1.5–2.5M</td>
+            <td class="num">43–71%</td>
+            <td><span class="pill pill-p0">P0</span></td>
+          </tr>
+          <tr>
+            <td style="font-weight:700;">4</td>
+            <td><strong>Continuous Accounting Model</strong></td>
+            <td class="num">$2.8M</td>
+            <td class="num" style="color:#10b981;">$1.5–2.0M</td>
+            <td class="num">54–71%</td>
+            <td><span class="pill pill-p1">P1 — Quick Win</span></td>
+          </tr>
+          <tr>
+            <td style="font-weight:700;">5</td>
+            <td><strong>ML-Based Reclassification Engine</strong></td>
+            <td class="num">$2.1M</td>
+            <td class="num" style="color:#10b981;">$1.0–1.5M</td>
+            <td class="num">48–71%</td>
+            <td><span class="pill pill-p1">P1</span></td>
+          </tr>
+          <tr>
+            <td style="font-weight:700;">6</td>
+            <td><strong>Auto-Accrual Engine</strong></td>
+            <td class="num">$1.5M</td>
+            <td class="num" style="color:#10b981;">$0.8–1.2M</td>
+            <td class="num">53–80%</td>
+            <td><span class="pill pill-p1">P1 — QUICK WIN</span></td>
+          </tr>
+          <tr>
+            <td style="font-weight:700;">7</td>
+            <td><strong>JE Template &amp; Metadata Standards</strong></td>
+            <td class="num">$0.8M</td>
+            <td class="num" style="color:#10b981;">$0.4–0.6M</td>
+            <td class="num">50–75%</td>
+            <td><span class="pill pill-p1">P1 — QUICK WIN</span></td>
+          </tr>
+          <tr>
+            <td style="font-weight:700;">8</td>
+            <td><strong>Workflow Automation (Approvals)</strong></td>
+            <td class="num">$2.3M</td>
+            <td class="num" style="color:#10b981;">$1.0–1.5M</td>
+            <td class="num">43–65%</td>
+            <td><span class="pill pill-p2">P2 — QUICK WIN</span></td>
+          </tr>
+          <tr>
+            <td style="font-weight:700;">9</td>
+            <td><strong>SSC/BPO Expansion for Transactional</strong></td>
+            <td class="num">$4.7M</td>
+            <td class="num" style="color:#10b981;">$1.5–2.0M</td>
+            <td class="num">32–43%</td>
+            <td><span class="pill pill-p2">P2</span></td>
+          </tr>
+          <tr>
+            <td style="font-weight:700;">10</td>
+            <td><strong>Process Waste Elimination</strong></td>
+            <td class="num">$1.2M</td>
+            <td class="num" style="color:#10b981;">$0.8–1.2M</td>
+            <td class="num">67–100%</td>
+            <td><span class="pill pill-p1">P1 — QUICK WIN</span></td>
+          </tr>
+          <tr class="total-row">
+            <td colspan="2">TOTAL (10 Initiatives)</td>
+            <td class="num">$28.9M</td>
+            <td class="num" style="color:#10b981;">$12.0–19.0M</td>
+            <td class="num">41–66%</td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Implementation Roadmap -->
+  <div class="section-title">Implementation Roadmap — Wave Progression</div>
+  <div class="roadmap" style="margin-bottom:20px;">
+    <div class="wave-card w0">
+      <div class="wave-label">Wave 0 — Month 1-3 (Quick Wins)</div>
+      <div class="wave-item">#6 — Auto-Accrual Engine</div>
+      <div class="wave-item">#7 — JE Template &amp; Metadata Standards</div>
+      <div class="wave-item">#8 — Workflow Automation (Approvals)</div>
+      <div class="wave-item">#10 — Process Waste Elimination</div>
+      <div style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(239,68,68,0.3);">
+        <div style="font-size:12px;font-weight:700;color:#ef4444;">$3.0–4.5M savings</div>
+        <div style="font-size:10px;color:#94a3b8;margin-top:2px;">Low investment | Immediate impact</div>
+      </div>
+    </div>
+    <div class="wave-card w1">
+      <div class="wave-label">Wave 1 — Month 3-12 (Core Automation)</div>
+      <div class="wave-item">#2 — Auto-Reconciliation Expansion</div>
+      <div class="wave-item">#4 — Continuous Accounting Model</div>
+      <div style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(245,158,11,0.3);">
+        <div style="font-size:12px;font-weight:700;color:#f59e0b;">$6.5–9.5M cumulative</div>
+        <div style="font-size:10px;color:#94a3b8;margin-top:2px;">System configuration | Process redesign</div>
+      </div>
+    </div>
+    <div class="wave-card w2">
+      <div class="wave-label">Wave 2 — Month 12-24 (Transformation)</div>
+      <div class="wave-item">#1 — JE Auto-Posting Rules (SAP S4 &amp; FC)</div>
+      <div class="wave-item">#3 — Intercompany Hub Automation</div>
+      <div class="wave-item">#5 — ML-Based Reclass Engine</div>
+      <div class="wave-item">#9 — SSC/BPO Expansion</div>
+      <div style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(59,130,246,0.3);">
+        <div style="font-size:12px;font-weight:700;color:#3b82f6;">$12.0–19.0M cumulative</div>
+        <div style="font-size:10px;color:#94a3b8;margin-top:2px;">Full transformation | $3-5M investment</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transformation Value Summary -->
+  <div class="section-title">Transformation Value Summary</div>
+  <div class="value-summary-grid" style="margin-bottom:20px;">
+    <div class="val-card red">
+      <div class="vnum" style="color:#ef4444;">$18.5M</div>
+      <div class="vtag">Total Annual Cost<br>of Manual Work<br>(58.7% of $31.5M)</div>
+    </div>
+    <div class="val-card green">
+      <div class="vnum" style="color:#10b981;">$12–19M</div>
+      <div class="vtag">Annual Savings<br>Conservative → Aggressive<br>(38–60% reduction)</div>
+    </div>
+    <div class="val-card blue">
+      <div class="vnum" style="color:#3b82f6;">2.5–4.0×</div>
+      <div class="vtag">Expected ROI<br>Over 3 Years<br>$3–5M investment</div>
+    </div>
+    <div class="val-card amber">
+      <div class="vnum" style="color:#f59e0b;">40–65 FTE</div>
+      <div class="vtag">FTE Released<br>for Higher-Value Work<br>via Automation</div>
+    </div>
+  </div>
+  <div class="grid-2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-title">Savings Waterfall — By Initiative ($M)</div>
+      <div class="chart-wrap" style="height:250px;">
+        <canvas id="savingsWaterfallChart"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Agentic AI — Potential Savings Breakdown</div>
+      <div class="chart-wrap" style="height:250px;">
+        <canvas id="agentSavingsChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Agent Framework -->
+  <div class="section-title">Rudra Agent Framework — Principal Oversight Model</div>
+  <div class="card" style="margin-bottom:20px;">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+      <div style="background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.25);border-radius:10px;padding:12px;">
+        <div style="font-size:10px;color:#7dd3fc;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:6px;">Finance Operating</div>
+        <div class="agent-badge" style="font-size:12px;padding:3px 10px;">fc-003</div>
+        <div style="font-size:11px;color:#94a3b8;margin-top:6px;">Finance Operating Model Specialist</div>
+        <div style="font-size:10px;color:#64748b;margin-top:4px;">Findings: F2, F4, F6, F7, F8, F10</div>
+      </div>
+      <div style="background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.25);border-radius:10px;padding:12px;">
+        <div style="font-size:10px;color:#7dd3fc;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:6px;">Close &amp; Consolidation</div>
+        <div class="agent-badge" style="font-size:12px;padding:3px 10px;">fc-004</div>
+        <div style="font-size:11px;color:#94a3b8;margin-top:6px;">Close &amp; Consolidation Advisor</div>
+        <div style="font-size:10px;color:#64748b;margin-top:4px;">Findings: F1, F3, F5, F6, F9, F10</div>
+      </div>
+      <div style="background:rgba(34,193,195,0.08);border:1px solid rgba(34,193,195,0.25);border-radius:10px;padding:12px;">
+        <div style="font-size:10px;color:#22c1c3;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:6px;">Data Quality</div>
+        <div class="agent-badge" style="font-size:12px;padding:3px 10px;">da-003</div>
+        <div style="font-size:11px;color:#94a3b8;margin-top:6px;">Data Quality Engineer</div>
+        <div style="font-size:10px;color:#64748b;margin-top:4px;">Findings: F3, F7, F9</div>
+      </div>
+      <div style="background:rgba(34,193,195,0.08);border:1px solid rgba(34,193,195,0.25);border-radius:10px;padding:12px;">
+        <div style="font-size:10px;color:#22c1c3;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:6px;">Process Automation</div>
+        <div class="agent-badge" style="font-size:12px;padding:3px 10px;">do-001</div>
+        <div style="font-size:11px;color:#94a3b8;margin-top:6px;">Process Automation Advisor</div>
+        <div style="font-size:10px;color:#64748b;margin-top:4px;">Findings: F1, F4, F5, F10</div>
+      </div>
+      <div style="background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.25);border-radius:10px;padding:12px;">
+        <div style="font-size:10px;color:#818cf8;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:6px;">Business Case</div>
+        <div class="agent-badge" style="font-size:12px;padding:3px 10px;">ri-002</div>
+        <div style="font-size:11px;color:#94a3b8;margin-top:6px;">Business Case Architect</div>
+        <div style="font-size:10px;color:#64748b;margin-top:4px;">All opportunities — ROI modeling</div>
+      </div>
+      <div style="background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.25);border-radius:10px;padding:12px;">
+        <div style="font-size:10px;color:#818cf8;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:6px;">Visualization</div>
+        <div class="agent-badge" style="font-size:12px;padding:3px 10px;">da-002</div>
+        <div style="font-size:11px;color:#94a3b8;margin-top:6px;">Data Visualization Architect</div>
+        <div style="font-size:10px;color:#64748b;margin-top:4px;">Dashboard design &amp; reporting</div>
+      </div>
+      <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:10px;padding:12px;">
+        <div style="font-size:10px;color:#f87171;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:6px;">Risk Assessment</div>
+        <div class="agent-badge" style="font-size:12px;padding:3px 10px;">ri-001</div>
+        <div style="font-size:11px;color:#94a3b8;margin-top:6px;">Risk Assessment Specialist</div>
+        <div style="font-size:10px;color:#64748b;margin-top:4px;">Findings: F2 — SPOF risk</div>
+      </div>
+      <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:10px;padding:12px;">
+        <div style="font-size:10px;color:#f87171;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:6px;">Operating Model</div>
+        <div class="agent-badge" style="font-size:12px;padding:3px 10px;">do-002</div>
+        <div style="font-size:11px;color:#94a3b8;margin-top:6px;">Operating Model Design</div>
+        <div style="font-size:10px;color:#64748b;margin-top:4px;">Findings: F8 — Seniority mismatch</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end tab-rudra -->
+
+
+<!-- ══════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════ -->
+<footer>
+  <div>Journal &amp; Recon Variance Analysis Dashboard &nbsp;|&nbsp; Source: PCC_Integrated_Diagnostic_JE_FAA_Rec_Correlation.xlsx &nbsp;|&nbsp; PCC_JE Diagnostic.pdf &nbsp;|&nbsp; PCC_Rec_Diagnostic.pdf &nbsp;|&nbsp; FAA_Activity_Analysis.pdf</div>
+  <div>Power BI Report Layouts (reportIds: 18226462, 18226456, 18226440, 18226439, 18226457, 18226444) &nbsp;|&nbsp; Dark Navy Theme (#0b1020)</div>
+  <div>Rudra Principal Oversight Framework &nbsp;|&nbsp; Agents: fc-003 | fc-004 | da-003 | do-001 | ri-002 | da-002 | ri-001 | do-002 &nbsp;|&nbsp; Report Date: March 10, 2026</div>
+  <div style="margin-top:4px;">All financial figures in $M (millions), $B (billions) or $K (thousands) as labeled. Variance figures may differ due to rounding.</div>
+</footer>
+
+<!-- ══════════════════════════════════════════════
+     JAVASCRIPT — Tab Logic + Chart.js
+══════════════════════════════════════════════ -->
+<script>
+// ── Tab Switching ──
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── Chart.js Global Defaults ──
+Chart.defaults.color = '#94a3b8';
+Chart.defaults.font.family = 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+Chart.defaults.font.size = 11;
+
+const gridColor = 'rgba(37,43,70,0.8)';
+
+// ── JE Period Chart ──
+new Chart(document.getElementById('jePeriodChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+    datasets: [{
+      label: 'JE Count',
+      data: [15900, 24600, 24700, 30600, 23000, 19200, 5500],
+      backgroundColor: [
+        'rgba(59,130,246,0.7)','rgba(59,130,246,0.7)','rgba(59,130,246,0.7)',
+        'rgba(239,68,68,0.8)','rgba(59,130,246,0.7)','rgba(59,130,246,0.7)','rgba(59,130,246,0.7)'
+      ],
+      borderColor: [
+        '#3b82f6','#3b82f6','#3b82f6','#ef4444','#3b82f6','#3b82f6','#3b82f6'
+      ],
+      borderWidth: 1, borderRadius: 4
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ' ' + ctx.parsed.y.toLocaleString() + ' JEs' } }
+    },
+    scales: {
+      x: { grid: { color: gridColor } },
+      y: { grid: { color: gridColor }, ticks: { callback: v => (v/1000)+'K' } }
+    }
+  }
+});
+
+// ── JE Elimination Chart ──
+new Chart(document.getElementById('jeEliminationChart'), {
+  type: 'line',
+  data: {
+    labels: ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+    datasets: [{
+      label: 'Elimination %',
+      data: [23.5, 21.8, 21.1, 26.4, 23.1, 23.8, 25.2],
+      borderColor: '#10b981',
+      backgroundColor: 'rgba(16,185,129,0.12)',
+      fill: true, tension: 0.35, pointRadius: 4,
+      pointBackgroundColor: '#10b981'
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ' ' + ctx.parsed.y + '%' } }
+    },
+    scales: {
+      x: { grid: { color: gridColor } },
+      y: { grid: { color: gridColor }, min: 18, max: 30,
+        ticks: { callback: v => v + '%' }
+      }
+    }
+  }
+});
+
+// ── Rec Timeliness Doughnut ──
+new Chart(document.getElementById('recTimelinessDoughnut'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Auto Reconciled', 'On Time', 'Late', 'Not Completed'],
+    datasets: [{
+      data: [4015, 8281, 2464, 6391],
+      backgroundColor: ['#10b981','#3b82f6','#f59e0b','#ef4444'],
+      borderColor: '#0b1020', borderWidth: 2
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    cutout: '65%',
+    plugins: {
+      legend: { position: 'right', labels: { boxWidth: 10, padding: 10 } },
+      tooltip: { callbacks: { label: ctx => ' ' + ctx.label + ': ' + ctx.parsed.toLocaleString() } }
+    }
+  }
+});
+
+// ── Auto Rec Trend Chart ──
+new Chart(document.getElementById('autoRecTrendChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+    datasets: [{
+      label: 'Auto Recs',
+      data: [843, 879, 818, 824, 336, 315],
+      backgroundColor: ['rgba(16,185,129,0.7)','rgba(16,185,129,0.7)','rgba(16,185,129,0.7)',
+        'rgba(16,185,129,0.7)','rgba(239,68,68,0.7)','rgba(239,68,68,0.7)'],
+      borderColor: ['#10b981','#10b981','#10b981','#10b981','#ef4444','#ef4444'],
+      borderWidth: 1, borderRadius: 4
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      annotation: {},
+      tooltip: { callbacks: { label: ctx => ' ' + ctx.parsed.y + ' auto recs' } }
+    },
+    scales: {
+      x: { grid: { color: gridColor } },
+      y: { grid: { color: gridColor } }
+    }
+  }
+});
+
+// ── Unexplained Diff Chart ──
+new Chart(document.getElementById('unexplainedDiffChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Apr', 'May', 'Jun', 'Jul', 'Aug'],
+    datasets: [{
+      label: 'Unexplained Diff ($M)',
+      data: [255.41, 422.83, 262.23, 437.26, 400.14],
+      backgroundColor: 'rgba(239,68,68,0.65)',
+      borderColor: '#ef4444',
+      borderWidth: 1, borderRadius: 4
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ' $' + ctx.parsed.y.toFixed(2) + 'M' } }
+    },
+    scales: {
+      x: { grid: { color: gridColor } },
+      y: { grid: { color: gridColor }, ticks: { callback: v => '$' + v + 'M' } }
+    }
+  }
+});
+
+// ── Labor Category Chart ──
+new Chart(document.getElementById('laborCategoryChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Other/Unclassified', 'Core Functional', 'Transactional', 'Strategic'],
+    datasets: [{
+      data: [13.7, 9.8, 4.7, 3.3],
+      backgroundColor: ['#f59e0b','#3b82f6','#ef4444','#10b981'],
+      borderColor: '#0b1020', borderWidth: 2
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    cutout: '60%',
+    plugins: {
+      legend: { position: 'right', labels: { boxWidth: 10, padding: 8 } },
+      tooltip: { callbacks: { label: ctx => ' $' + ctx.parsed + 'M (' + ((ctx.parsed/31.5)*100).toFixed(1) + '%)' } }
+    }
+  }
+});
+
+// ── Agentic AI Chart ──
+new Chart(document.getElementById('agentAIChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Agent Driven (76.5%)', 'Agent Assisted (23.5%)'],
+    datasets: [{
+      data: [76.48, 23.52],
+      backgroundColor: ['#10b981','#3b82f6'],
+      borderColor: '#0b1020', borderWidth: 2
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    cutout: '60%',
+    plugins: {
+      legend: { position: 'bottom', labels: { boxWidth: 10, padding: 10 } },
+      tooltip: { callbacks: { label: ctx => ' ' + ctx.parsed.toFixed(1) + '%' } }
+    }
+  }
+});
+
+// ── Cross-Process Chart ──
+new Chart(document.getElementById('crossProcessChart'), {
+  type: 'bar',
+  data: {
+    labels: ['JE Count (K)', 'Rec Count (K)', 'Labor $M', 'FTE Count'],
+    datasets: [
+      {
+        label: 'Controller T&O & Corp Fn',
+        data: [30, 4.2, 5.7, 37],
+        backgroundColor: 'rgba(239,68,68,0.7)', borderRadius: 3
+      },
+      {
+        label: 'Controller Capital Mkts',
+        data: [43.8, 3.5, 5.3, 35],
+        backgroundColor: 'rgba(245,158,11,0.7)', borderRadius: 3
+      },
+      {
+        label: 'CAG Accounting Policy',
+        data: [15, 2.8, 2.9, 18],
+        backgroundColor: 'rgba(59,130,246,0.7)', borderRadius: 3
+      },
+      {
+        label: 'Controller & Comp',
+        data: [8, 2.5, 4.7, 31],
+        backgroundColor: 'rgba(16,185,129,0.7)', borderRadius: 3
+      }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { position: 'top', labels: { boxWidth: 10, padding: 10 } } },
+    scales: {
+      x: { grid: { color: gridColor } },
+      y: { grid: { color: gridColor } }
+    }
+  }
+});
+
+// ── Savings Waterfall Chart ──
+new Chart(document.getElementById('savingsWaterfallChart'), {
+  type: 'bar',
+  data: {
+    labels: ['1-JE Auto', '2-Auto Rec', '3-IC Hub', '4-Cont Acct', '5-ML Reclass', '6-Auto Accrual', '7-Metadata', '8-Workflow', '9-SSC/BPO', '10-Waste Elim'],
+    datasets: [
+      {
+        label: 'Conservative ($M)',
+        data: [2.5, 2.0, 1.5, 1.5, 1.0, 0.8, 0.4, 1.0, 1.5, 0.8],
+        backgroundColor: 'rgba(16,185,129,0.65)', borderRadius: 3
+      },
+      {
+        label: 'Aggressive ($M)',
+        data: [3.5, 3.0, 2.5, 2.0, 1.5, 1.2, 0.6, 1.5, 2.0, 1.2],
+        backgroundColor: 'rgba(59,130,246,0.5)', borderRadius: 3
+      }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { position: 'top', labels: { boxWidth: 10, padding: 8 } },
+      tooltip: { callbacks: { label: ctx => ' $' + ctx.parsed.y + 'M' } }
+    },
+    scales: {
+      x: { grid: { color: gridColor } },
+      y: { grid: { color: gridColor }, ticks: { callback: v => '$' + v + 'M' } }
+    }
+  }
+});
+
+// ── Agent Savings Chart ──
+new Chart(document.getElementById('agentSavingsChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Automation Opportunity ($16.2M)', 'Process Improvement ($7.7M)', 'Process Elimination ($1.2M)', 'Retain/N-A ($6.3M)'],
+    datasets: [{
+      data: [16.2, 7.7, 1.2, 6.3],
+      backgroundColor: ['#ef4444','#f59e0b','#10b981','#475569'],
+      borderColor: '#0b1020', borderWidth: 2
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    cutout: '55%',
+    plugins: {
+      legend: { position: 'right', labels: { boxWidth: 10, padding: 8, font: { size: 10 } } },
+      tooltip: { callbacks: { label: ctx => ' $' + ctx.parsed + 'M' } }
+    }
+  }
+});
+
+</script>
+</body>
+</html>
