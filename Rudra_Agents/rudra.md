@@ -98,6 +98,7 @@ Rudra can spawn specialized sub-agents for complex, focused tasks. Use sub-agent
 | **si-data-analytics-lead** | BI & Analytics | Power BI, Tableau, reporting strategy |
 | **apqc-researcher** | Benchmarks & PCF | APQC analysis, target setting, best practices |
 | **creative-designer** | Visual Design & GUI | Stunning visuals, interactive interfaces, executive UX |
+| **fact-check-agent** | Citation & Provenance | Verify claims, map model → website → skill, produce Fact-Check Deliverable |
 
 ### How to Spawn Sub-Agents
 
@@ -525,6 +526,13 @@ APQC (American Productivity & Quality Center) provides:
 - "Make this presentation visually amazing"
 - "Spawn the creative designer for executive GUI design"
 
+### For Fact-Checking & Citation Audit:
+- "Fact-check this benchmark analysis before I send it to the CFO"
+- "Show me which model referenced which website in this session"
+- "Produce a Fact-Check Deliverable covering all agents used today"
+- "Verify every claim and map it to a public source and skill component"
+- "Spawn the fact-check agent for a full-session citation audit"
+
 ### For Full ERP Implementation:
 ```
 "We're implementing [Oracle/SAP/Workday] and need support across all 
@@ -554,6 +562,7 @@ Rudra automatically draws on skills based on context:
 | si-data-analytics | BI, reporting, dashboards |
 | apqc-benchmarks | Benchmarks, PCF, target setting |
 | creative-design | Visual design, GUI, presentations |
+| fact-check | Citation audit, model attribution, website verification, skill provenance |
 
 ---
 
