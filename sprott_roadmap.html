@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sprott — Finance Transformation Roadmap</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+         background:#f1f5f9; color:#1e293b; margin:0; padding:0; }
+  @media print { body { background:#fff; } }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div style="background:linear-gradient(135deg,#1e3a5f 0%,#1d4ed8 100%);color:#fff;padding:40px 48px">
+  <div style="max-width:1100px;margin:0 auto">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div>
+        <div style="font-size:13px;opacity:0.7;text-transform:uppercase;letter-spacing:0.1em">Confidential · Finance Transformation</div>
+        <h1 style="margin:8px 0 4px;font-size:36px;font-weight:900">Sprott Inc.</h1>
+        <div style="font-size:20px;opacity:0.9;font-weight:300">Finance Transformation Roadmap &amp; Project Plan</div>
+      </div>
+      <div style="text-align:right;opacity:0.8;font-size:13px">
+        <div style="font-weight:700;font-size:16px">March 15, 2026</div>
+        <div style="margin-top:4px">Source files: PCC_Integrated_Diagnostic_JE_FAA_Rec_Correlation.xlsx, FAA_Activity_Analysis (2).pdf</div>
+        <div style="margin-top:4px">Prepared by: Rudra AI · Confidential</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="max-width:1100px;margin:32px auto;padding:0 24px">
+
+  <!-- EXECUTIVE SUMMARY -->
+  <div style="background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.08);padding:28px;margin-bottom:28px">
+    <h2 style="font-size:18px;font-weight:800;color:#1e3a5f;margin:0 0 18px 0;padding-bottom:10px;border-bottom:2px solid #e2e8f0;text-transform:uppercase;letter-spacing:0.04em">Executive Summary</h2>
+    <p style="font-size:16px;line-height:1.7;color:#334155;margin:0">Sprott's finance function faces critical operational risk: 100% manual JE processing, 19% rec automation, and 56-day average close lateness create $8.8M–$12.7M in annual waste. A four-phase, 18-month transformation targeting SAP automation, reconciliation platform deployment, and continuous close redesign will deliver $10M+ annual savings and material SOX/regulatory risk reduction. Immediate action on governance remediation and quick wins can generate $2M+ in savings within 90 days.</p>
+    <div style="margin-top:20px">
+      <div style="font-weight:700;color:#1e293b;margin-bottom:10px;font-size:14px">TRANSFORMATION THEMES</div>
+      
+        <div style="background:#f8fafc;border-left:4px solid #dc2626;padding:12px 16px;margin-bottom:10px;border-radius:0 6px 6px 0">
+          <div style="font-weight:700;color:#1e293b">Automate the Record-to-Report Engine <span style="background:#dc2626;color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600">High</span></div>
+          <div style="color:#475569;margin-top:4px;font-size:14px">Eliminate manual JE processing via SAP auto-posting, ML classification, and auto-accrual rules.</div>
+        </div>
+        <div style="background:#f8fafc;border-left:4px solid #dc2626;padding:12px 16px;margin-bottom:10px;border-radius:0 6px 6px 0">
+          <div style="font-weight:700;color:#1e293b">Deploy Intelligent Reconciliation Platform <span style="background:#dc2626;color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600">High</span></div>
+          <div style="color:#475569;margin-top:4px;font-size:14px">Replace Excel-based recs with BlackLine auto-certification, IC matching hub, and SLA workflows.</div>
+        </div>
+        <div style="background:#f8fafc;border-left:4px solid #d97706;padding:12px 16px;margin-bottom:10px;border-radius:0 6px 6px 0">
+          <div style="font-weight:700;color:#1e293b">Redesign Close Cycle to Continuous Accounting <span style="background:#d97706;color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600">Medium</span></div>
+          <div style="color:#475569;margin-top:4px;font-size:14px">Shift from batch close mentality to distributed activity model eliminating structural overtime.</div>
+        </div>
+    </div>
+  </div>
+
+  <!-- CURRENT STATE FINDINGS -->
+  <div style="background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.08);padding:28px;margin-bottom:28px">
+    <h2 style="font-size:18px;font-weight:800;color:#1e3a5f;margin:0 0 18px 0;padding-bottom:10px;border-bottom:2px solid #e2e8f0;text-transform:uppercase;letter-spacing:0.04em">Current State Findings</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:14px">
+      <thead><tr>
+        <th style="background:#f1f5f9;color:#475569;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;padding:10px 12px;text-align:left">Area</th>
+        <th style="background:#f1f5f9;color:#475569;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;padding:10px 12px;text-align:left">Finding</th>
+        <th style="background:#f1f5f9;color:#475569;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;padding:10px 12px;text-align:left">Business Impact</th>
+        <th style="background:#f1f5f9;color:#475569;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;padding:10px 12px;text-align:left">Severity</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td style="font-weight:600;color:#1e293b;padding:10px 12px;border-bottom:1px solid #e2e8f0">Journal Entry Processing</td>
+          <td style="color:#475569;padding:10px 12px;border-bottom:1px solid #e2e8f0">143,556 JEs 100% manual; single user SAP_WFRT = 65.3% of volume.</td>
+          <td style="color:#475569;padding:10px 12px;border-bottom:1px solid #e2e8f0">$5.2M annual labor; critical SPOF and SOX control risk.</td>
+          <td style="padding:10px 12px;border-bottom:1px solid #e2e8f0"><span style="background:#dc2626;color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600">Critical</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:#1e293b;padding:10px 12px;border-bottom:1px solid #e2e8f0">Reconciliation Governance</td>
+          <td style="color:#475569;padding:10px 12px;border-bottom:1px solid #e2e8f0">6,500 unassigned recs averaging 186 days late; 0% automation; zero accountability.</td>
+          <td style="color:#475569;padding:10px 12px;border-bottom:1px solid #e2e8f0">Complete governance breakdown; direct SEC/OSC audit exposure.</td>
+          <td style="padding:10px 12px;border-bottom:1px solid #e2e8f0"><span style="background:#dc2626;color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600">Critical</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:#1e293b;padding:10px 12px;border-bottom:1px solid #e2e8f0">Reconciliation Quality</td>
+          <td style="color:#475569;padding:10px 12px;border-bottom:1px solid #e2e8f0">65.3% of recs contain unexplained differences; 30.2% not completed on time.</td>
+          <td style="color:#475569;padding:10px 12px;border-bottom:1px solid #e2e8f0">$4.8M labor waste; restatement and regulatory risk elevated.</td>
+          <td style="padding:10px 12px;border-bottom:1px solid #e2e8f0"><span style="background:#dc2626;color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600">Critical</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:#1e293b;padding:10px 12px;border-bottom:1px solid #e2e8f0">Intercompany Processing</td>
+          <td style="color:#475569;padding:10px 12px;border-bottom:1px solid #e2e8f0">$46.8M unreconciled IC differences; manual netting across 6+ company codes.</td>
+          <td style="color:#475569;padding:10px 12px;border-bottom:1px solid #e2e8f0">$1.5–2.5M labor waste; close delays every period.</td>
+          <td style="padding:10px 12px;border-bottom:1px solid #e2e8f0"><span style="background:#ea580c;color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600">High</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:#1e293b;padding:10px 12px;border-bottom:1px solid #e2e8f0">Finance Labor Transparency</td>
+          <td style="color:#475569;padding:10px 12px;border-bottom:1px solid #e2e8f0">43.66% of $31.5M labor unclassified; $16.2M unassessed for improvement levers.</td>
+          <td style="color:#475569;padding:10px 12px;border-bottom:1px solid #e2e8f0">Transformation cannot be accurately prioritized or sized.</td>
+          <td style="padding:10px 12px;border-bottom:1px solid #e2e8f0"><span style="background:#ea580c;color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600">High</span></td>
+        </tr></tbody>
+    </table>
+  </div>
+
+  <!-- BENCHMARK GAPS -->
+  <div style="background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.08);padding:28px;margin-bottom:28px">
+    <h2 style="font-size:18px;font-weight:800;color:#1e3a5f;margin:0 0 18px 0;padding-bottom:10px;border-bottom:2px solid #e2e8f0;text-transform:uppercase;letter-spacing:0.04em">Benchmark Gaps vs. APQC Top Quartile</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:14px">
+      <thead><tr>
+        <th style="background:#f1f5f9;color:#475569;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;padding:10px 12px;text-align:left">Metric</th>
+        <th style="background:#f1f5f9;color:#475569;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;padding:10px 12px;text-align:left;text-align:center">Sprott (Est.)</th>
+        <th style="background:#f1f5f9;color:#475569;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;padding:10px 12px;text-align:left;text-align:center">Top Quartile</th>
+        <th style="background:#f1f5f9;color:#475569;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;padding:10px 12px;text-align:left;text-align:center">Gap</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td style="font-weight:600;color:#1e293b;padding:10px 12px;border-bottom:1px solid #e2e8f0">Reconciliation Automation Rate</td>
+          <td style="text-align:center;color:#dc2626;font-weight:700;padding:10px 12px;border-bottom:1px solid #e2e8f0">19%</td>
+          <td style="text-align:center;color:#16a34a;font-weight:700;padding:10px 12px;border-bottom:1px solid #e2e8f0">50%</td>
+          <td style="text-align:center;color:#d97706;font-weight:600;padding:10px 12px;border-bottom:1px solid #e2e8f0">31 percentage points below benchmark</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:#1e293b;padding:10px 12px;border-bottom:1px solid #e2e8f0">Average Rec Lateness (Days)</td>
+          <td style="text-align:center;color:#dc2626;font-weight:700;padding:10px 12px;border-bottom:1px solid #e2e8f0">56 days</td>
+          <td style="text-align:center;color:#16a34a;font-weight:700;padding:10px 12px;border-bottom:1px solid #e2e8f0"><5 days</td>
+          <td style="text-align:center;color:#d97706;font-weight:600;padding:10px 12px;border-bottom:1px solid #e2e8f0">51 days above best-practice target</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:#1e293b;padding:10px 12px;border-bottom:1px solid #e2e8f0">Pre-Close JE Concentration</td>
+          <td style="text-align:center;color:#dc2626;font-weight:700;padding:10px 12px;border-bottom:1px solid #e2e8f0">71%</td>
+          <td style="text-align:center;color:#16a34a;font-weight:700;padding:10px 12px;border-bottom:1px solid #e2e8f0"><40%</td>
+          <td style="text-align:center;color:#d97706;font-weight:600;padding:10px 12px;border-bottom:1px solid #e2e8f0">31 points above continuous close benchmark</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:#1e293b;padding:10px 12px;border-bottom:1px solid #e2e8f0">Unexplained Rec Difference Rate</td>
+          <td style="text-align:center;color:#dc2626;font-weight:700;padding:10px 12px;border-bottom:1px solid #e2e8f0">65.3%</td>
+          <td style="text-align:center;color:#16a34a;font-weight:700;padding:10px 12px;border-bottom:1px solid #e2e8f0"><20%</td>
+          <td style="text-align:center;color:#d97706;font-weight:600;padding:10px 12px;border-bottom:1px solid #e2e8f0">45+ points above acceptable threshold</td>
+        </tr></tbody>
+    </table>
+  </div>
+
+  <!-- ROADMAP -->
+  <div style="background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.08);padding:28px;margin-bottom:28px">
+    <h2 style="font-size:18px;font-weight:800;color:#1e3a5f;margin:0 0 18px 0;padding-bottom:10px;border-bottom:2px solid #e2e8f0;text-transform:uppercase;letter-spacing:0.04em">Finance Transformation Roadmap</h2>
+    
+        <div style="border:2px solid #1e3a5f;border-radius:10px;margin-bottom:24px;overflow:hidden">
+          <div style="background:#1e3a5f;color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <span style="font-size:13px;opacity:0.8">Phase 1</span>
+              <div style="font-size:20px;font-weight:800;margin-top:2px">Stabilize & Govern</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:13px;opacity:0.8">Q2 2026</div>
+              <div style="font-size:16px;font-weight:700">3 months</div>
+            </div>
+          </div>
+          <div style="padding:16px 20px">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+              <div>
+                <div style="font-weight:700;color:#1e293b;margin-bottom:8px;font-size:14px">WORKSTREAMS</div>
+                
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:12px;margin-bottom:8px">
+              <div style="font-weight:700;color:#1e3a5f;font-size:13px">Reconciliation Governance Remediation
+                <span style="font-weight:400;color:#64748b;float:right">Controller / Finance Ops Lead</span>
+              </div>
+              <ul style="margin:6px 0 0 16px;color:#475569;font-size:13px"><li>Assign preparers/approvers to all 6,500 unassigned recs</li><li>Implement SLA escalation rules and accountability framework</li><li>Triage and remediate top 500 highest-risk aged items</li></ul>
+              <div style="margin-top:6px;font-size:12px;color:#7c3aed">
+                ✓ Milestone: Zero unassigned recs by end of Q2 2026
+              </div>
+            </div>
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:12px;margin-bottom:8px">
+              <div style="font-weight:700;color:#1e3a5f;font-size:13px">Finance Labor Activity Coding
+                <span style="font-weight:400;color:#64748b;float:right">Finance Transformation PMO</span>
+              </div>
+              <ul style="margin:6px 0 0 16px;color:#475569;font-size:13px"><li>Deploy structured activity taxonomy across all 195 employees</li><li>Reclassify $13.7M unclassified labor into process categories</li><li>Baseline automation opportunity sizing by FSLI and process</li></ul>
+              <div style="margin-top:6px;font-size:12px;color:#7c3aed">
+                ✓ Milestone: 100% labor classified; automation pipeline prioritized
+              </div>
+            </div>
+              </div>
+              <div>
+                <div style="font-weight:700;color:#1e293b;margin-bottom:8px;font-size:14px">KEY DELIVERABLES</div>
+                <ul style="color:#475569;font-size:13px;margin:0 0 0 16px"><li>Reconciliation accountability register with zero unassigned items</li><li>Fully classified finance activity baseline ($31.5M labor mapped)</li><li>Top-20 automation opportunity prioritization matrix</li></ul>
+                <div style="margin-top:12px"><div style="font-weight:700;color:#1e293b;font-size:13px;margin-bottom:6px">DEPENDENCIES</div><span style='background:#fef3c7;color:#92400e;padding:2px 6px;border-radius:3px;font-size:11px;margin-right:4px'>CFO mandate and resource commitment to governance remediation</span><span style='background:#fef3c7;color:#92400e;padding:2px 6px;border-radius:3px;font-size:11px;margin-right:4px'>HR data access for labor classification and FTE mapping</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="border:2px solid #1d4ed8;border-radius:10px;margin-bottom:24px;overflow:hidden">
+          <div style="background:#1d4ed8;color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <span style="font-size:13px;opacity:0.8">Phase 2</span>
+              <div style="font-size:20px;font-weight:800;margin-top:2px">Automate Core R2R</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:13px;opacity:0.8">Q3–Q4 2026</div>
+              <div style="font-size:16px;font-weight:700">5 months</div>
+            </div>
+          </div>
+          <div style="padding:16px 20px">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+              <div>
+                <div style="font-weight:700;color:#1e293b;margin-bottom:8px;font-size:14px">WORKSTREAMS</div>
+                
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:12px;margin-bottom:8px">
+              <div style="font-weight:700;color:#1d4ed8;font-size:13px">SAP Auto-Posting & JE Controls
+                <span style="font-weight:400;color:#64748b;float:right">SAP Finance Technology Lead</span>
+              </div>
+              <ul style="margin:6px 0 0 16px;color:#475569;font-size:13px"><li>Configure SAP S4/FC auto-posting rules for recurring/templated JEs</li><li>Implement materiality thresholds and complexity-based routing</li><li>Deploy preparer concentration controls; retire SAP_WFRT batch dependency</li></ul>
+              <div style="margin-top:6px;font-size:12px;color:#7c3aed">
+                ✓ Milestone: 50%+ of JE volume auto-posted by Q4 2026
+              </div>
+            </div>
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:12px;margin-bottom:8px">
+              <div style="font-weight:700;color:#1d4ed8;font-size:13px">Reconciliation Platform Deployment (BlackLine Phase 1)
+                <span style="font-weight:400;color:#64748b;float:right">Finance Systems / BlackLine Project Manager</span>
+              </div>
+              <ul style="margin:6px 0 0 16px;color:#475569;font-size:13px"><li>Deploy BlackLine for Asset and Liability FSLI rec populations</li><li>Configure auto-certification rules for zero-balance and low-risk accounts</li><li>Integrate SAP GL to BlackLine for real-time balance feeds</li></ul>
+              <div style="margin-top:6px;font-size:12px;color:#7c3aed">
+                ✓ Milestone: Rec automation rate reaches 40% by end Q4 2026
+              </div>
+            </div>
+              </div>
+              <div>
+                <div style="font-weight:700;color:#1e293b;margin-bottom:8px;font-size:14px">KEY DELIVERABLES</div>
+                <ul style="color:#475569;font-size:13px;margin:0 0 0 16px"><li>SAP auto-posting ruleset covering 50%+ of JE volume</li><li>BlackLine live for 15,000+ Asset/Liability recs with auto-cert</li><li>GL-to-sub-ledger integration eliminating manual re-keying</li></ul>
+                <div style="margin-top:12px"><div style="font-weight:700;color:#1e293b;font-size:13px;margin-bottom:6px">DEPENDENCIES</div><span style='background:#fef3c7;color:#92400e;padding:2px 6px;border-radius:3px;font-size:11px;margin-right:4px'>Phase 1 labor baseline and automation priority list completed</span><span style='background:#fef3c7;color:#92400e;padding:2px 6px;border-radius:3px;font-size:11px;margin-right:4px'>SAP S4/FC configuration access and vendor support engagement</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="border:2px solid #0891b2;border-radius:10px;margin-bottom:24px;overflow:hidden">
+          <div style="background:#0891b2;color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <span style="font-size:13px;opacity:0.8">Phase 3</span>
+              <div style="font-size:20px;font-weight:800;margin-top:2px">Expand Automation & Close Redesign</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:13px;opacity:0.8">Q1–Q2 2027</div>
+              <div style="font-size:16px;font-weight:700">5 months</div>
+            </div>
+          </div>
+          <div style="padding:16px 20px">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+              <div>
+                <div style="font-weight:700;color:#1e293b;margin-bottom:8px;font-size:14px">WORKSTREAMS</div>
+                
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:12px;margin-bottom:8px">
+              <div style="font-weight:700;color:#0891b2;font-size:13px">Intercompany Hub & Auto-Accrual Deployment
+                <span style="font-weight:400;color:#64748b;float:right">R2R Process Owner / Finance Technology Lead</span>
+              </div>
+              <ul style="margin:6px 0 0 16px;color:#475569;font-size:13px"><li>Deploy BlackLine Intercompany Hub across all 6+ company codes</li><li>Implement auto-accrual engine with reverse-and-repost scheduling</li><li>Configure ML-assisted reclassification engine for 70% of reclass JEs</li></ul>
+              <div style="margin-top:6px;font-size:12px;color:#7c3aed">
+                ✓ Milestone: IC differences below $5M; 70% of accruals auto-generated
+              </div>
+            </div>
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:12px;margin-bottom:8px">
+              <div style="font-weight:700;color:#0891b2;font-size:13px">Continuous Close Model Implementation
+                <span style="font-weight:400;color:#64748b;float:right">Controller / Finance Transformation PMO</span>
+              </div>
+              <ul style="margin:6px 0 0 16px;color:#475569;font-size:13px"><li>Deploy close task management platform with distributed activity calendar</li><li>Redesign close checklist to reduce pre-close JE concentration to <45%</li><li>Implement real-time close dashboard for CFO and Controller visibility</li></ul>
+              <div style="margin-top:6px;font-size:12px;color:#7c3aed">
+                ✓ Milestone: Average rec lateness below 15 days by Q2 2027
+              </div>
+            </div>
+              </div>
+              <div>
+                <div style="font-weight:700;color:#1e293b;margin-bottom:8px;font-size:14px">KEY DELIVERABLES</div>
+                <ul style="color:#475569;font-size:13px;margin:0 0 0 16px"><li>IC matching hub live; $46.8M difference backlog remediated</li><li>Continuous close model reducing pre-close JEs to <45% of volume</li><li>ML reclass engine covering 70%+ of 7,692 monthly reclass entries</li></ul>
+                <div style="margin-top:12px"><div style="font-weight:700;color:#1e293b;font-size:13px;margin-bottom:6px">DEPENDENCIES</div><span style='background:#fef3c7;color:#92400e;padding:2px 6px;border-radius:3px;font-size:11px;margin-right:4px'>Phase 2 BlackLine and SAP auto-posting fully stabilized in production</span><span style='background:#fef3c7;color:#92400e;padding:2px 6px;border-radius:3px;font-size:11px;margin-right:4px'>Intercompany entity data model and elimination rules documented</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="border:2px solid #059669;border-radius:10px;margin-bottom:24px;overflow:hidden">
+          <div style="background:#059669;color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <span style="font-size:13px;opacity:0.8">Phase 4</span>
+              <div style="font-size:20px;font-weight:800;margin-top:2px">Optimize & Scale</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:13px;opacity:0.8">Q3 2027</div>
+              <div style="font-size:16px;font-weight:700">3 months</div>
+            </div>
+          </div>
+          <div style="padding:16px 20px">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+              <div>
+                <div style="font-weight:700;color:#1e293b;margin-bottom:8px;font-size:14px">WORKSTREAMS</div>
+                
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:12px;margin-bottom:8px">
+              <div style="font-weight:700;color:#059669;font-size:13px">Senior Labor Reallocation & Role Redesign
+                <span style="font-weight:400;color:#64748b;float:right">CFO / HR Business Partner</span>
+              </div>
+              <ul style="margin:6px 0 0 16px;color:#475569;font-size:13px"><li>Redirect Director/Senior Manager capacity from manual to strategic work</li><li>Implement complexity-based task routing eliminating senior JE review of <$50K entries</li><li>Define target operating model with revised spans, layers, and FTE count</li></ul>
+              <div style="margin-top:6px;font-size:12px;color:#7c3aed">
+                ✓ Milestone: 30% of senior manual capacity redeployed to analytics/FP&A
+              </div>
+            </div>
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:12px;margin-bottom:8px">
+              <div style="font-weight:700;color:#059669;font-size:13px">Controls Rationalization & Regulatory Reporting
+                <span style="font-weight:400;color:#64748b;float:right">Chief Accounting Officer / Compliance Lead</span>
+              </div>
+              <ul style="margin:6px 0 0 16px;color:#475569;font-size:13px"><li>Rationalize SOX control inventory leveraging automated control evidence</li><li>Automate regulatory report inputs (Form N-PORT, N-CEN, SEDAR feeds)</li><li>Embed continuous monitoring dashboards for SEC/OSC compliance metrics</li></ul>
+              <div style="margin-top:6px;font-size:12px;color:#7c3aed">
+                ✓ Milestone: SOX control count reduced 25%; zero manual reg report inputs
+              </div>
+            </div>
+              </div>
+              <div>
+                <div style="font-weight:700;color:#1e293b;margin-bottom:8px;font-size:14px">KEY DELIVERABLES</div>
+                <ul style="color:#475569;font-size:13px;margin:0 0 0 16px"><li>Target operating model with optimized FTE count and role definitions</li><li>Rationalized SOX control framework leveraging automation evidence</li><li>Fully automated regulatory reporting data pipeline</li></ul>
+                <div style="margin-top:12px"><div style="font-weight:700;color:#1e293b;font-size:13px;margin-bottom:6px">DEPENDENCIES</div><span style='background:#fef3c7;color:#92400e;padding:2px 6px;border-radius:3px;font-size:11px;margin-right:4px'>Phases 2–3 automation platforms fully adopted and KPIs stabilized</span><span style='background:#fef3c7;color:#92400e;padding:2px 6px;border-radius:3px;font-size:11px;margin-right:4px'>Board and audit committee approval of revised control framework</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+  </div>
+
+  <!-- INVESTMENT SUMMARY -->
+  <div style="background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.08);padding:28px;margin-bottom:28px">
+    <h2 style="font-size:18px;font-weight:800;color:#1e3a5f;margin:0 0 18px 0;padding-bottom:10px;border-bottom:2px solid #e2e8f0;text-transform:uppercase;letter-spacing:0.04em">Investment &amp; Business Case</h2>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px">
+      
+        <div style="background:#f8fafc;border-top:4px solid #1e3a5f;border-radius:8px;padding:16px;text-align:center">
+          <div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:0.05em">Total Investment</div>
+          <div style="font-size:22px;font-weight:800;color:#1e3a5f;margin-top:6px">$4.5–6.0M over 18 months</div>
+        </div>
+        <div style="background:#f8fafc;border-top:4px solid #16a34a;border-radius:8px;padding:16px;text-align:center">
+          <div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:0.05em">Annual Savings</div>
+          <div style="font-size:22px;font-weight:800;color:#16a34a;margin-top:6px">$10.0–12.7M fully realized by Year 2</div>
+        </div>
+        <div style="background:#f8fafc;border-top:4px solid #0891b2;border-radius:8px;padding:16px;text-align:center">
+          <div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:0.05em">FTE Reduction</div>
+          <div style="font-size:22px;font-weight:800;color:#0891b2;margin-top:6px">25–35 FTE redeployed or eliminated from manual R2R tasks</div>
+        </div>
+        <div style="background:#f8fafc;border-top:4px solid #7c3aed;border-radius:8px;padding:16px;text-align:center">
+          <div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:0.05em">Payback Period</div>
+          <div style="font-size:22px;font-weight:800;color:#7c3aed;margin-top:6px">12–18 months</div>
+        </div>
+        <div style="background:#f8fafc;border-top:4px solid #059669;border-radius:8px;padding:16px;text-align:center">
+          <div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:0.05em">3-Year NPV</div>
+          <div style="font-size:22px;font-weight:800;color:#059669;margin-top:6px">$18–24M (10% discount rate)</div>
+        </div>
+    </div>
+    <div>
+      <div style="font-weight:700;color:#1e293b;margin-bottom:8px;font-size:14px">KEY VALUE DRIVERS</div>
+      <ul style="color:#475569;font-size:14px;margin:0 0 0 16px;line-height:1.8"><li>JE auto-posting eliminating $2.5–3.5M annual R2R manual labor</li><li>Rec platform auto-cert and IC hub saving $3.5–5.5M annually</li><li>Continuous close model eliminating $1.4M structural overtime</li><li>Senior labor reallocation unlocking $3–5.5M strategic capacity</li></ul>
+    </div>
+  </div>
+
+  <!-- QUICK WINS -->
+  <div style="background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.08);padding:28px;margin-bottom:28px">
+    <h2 style="font-size:18px;font-weight:800;color:#1e3a5f;margin:0 0 18px 0;padding-bottom:10px;border-bottom:2px solid #e2e8f0;text-transform:uppercase;letter-spacing:0.04em">Quick Wins (90 Days)</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:14px">
+      <thead><tr>
+        <th style="background:#f1f5f9;color:#475569;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;padding:10px 12px;text-align:left">Initiative</th>
+        <th style="background:#f1f5f9;color:#475569;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;padding:10px 12px;text-align:left">Timeline</th>
+        <th style="background:#f1f5f9;color:#475569;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;padding:10px 12px;text-align:left">Expected Savings</th>
+        <th style="background:#f1f5f9;color:#475569;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;padding:10px 12px;text-align:left">Effort</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td style="font-weight:600;color:#1e293b;padding:10px 12px;border-bottom:1px solid #e2e8f0">Assign all 6,500 unassigned recs; implement escalation SLAs</td>
+          <td style="color:#475569;padding:10px 12px;border-bottom:1px solid #e2e8f0">30 days</td>
+          <td style="color:#16a34a;font-weight:600;padding:10px 12px;border-bottom:1px solid #e2e8f0">$500K risk cost avoidance; immediate audit risk reduction</td>
+          <td style="padding:10px 12px;border-bottom:1px solid #e2e8f0"><span style="background:#16a34a;color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600">Low</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:#1e293b;padding:10px 12px;border-bottom:1px solid #e2e8f0">Configure SAP auto-posting for top-20 recurring JE templates</td>
+          <td style="color:#475569;padding:10px 12px;border-bottom:1px solid #e2e8f0">60 days</td>
+          <td style="color:#16a34a;font-weight:600;padding:10px 12px;border-bottom:1px solid #e2e8f0">$400–600K annual labor savings on templated entries</td>
+          <td style="padding:10px 12px;border-bottom:1px solid #e2e8f0"><span style="background:#d97706;color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600">Medium</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:#1e293b;padding:10px 12px;border-bottom:1px solid #e2e8f0">Auto-certify zero-balance and low-risk recs via rule configuration</td>
+          <td style="color:#475569;padding:10px 12px;border-bottom:1px solid #e2e8f0">45 days</td>
+          <td style="color:#16a34a;font-weight:600;padding:10px 12px;border-bottom:1px solid #e2e8f0">$300–500K labor; immediate automation rate improvement</td>
+          <td style="padding:10px 12px;border-bottom:1px solid #e2e8f0"><span style="background:#16a34a;color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600">Low</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:#1e293b;padding:10px 12px;border-bottom:1px solid #e2e8f0">Reclassify $13.7M unclassified labor using structured activity codes</td>
+          <td style="color:#475569;padding:10px 12px;border-bottom:1px solid #e2e8f0">30 days</td>
+          <td style="color:#16a34a;font-weight:600;padding:10px 12px;border-bottom:1px solid #e2e8f0">Enables $3–5M additional transformation targeting accuracy</td>
+          <td style="padding:10px 12px;border-bottom:1px solid #e2e8f0"><span style="background:#16a34a;color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600">Low</span></td>
+        </tr></tbody>
+    </table>
+  </div>
+
+  <!-- RISKS -->
+  <div style="background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.08);padding:28px;margin-bottom:28px">
+    <h2 style="font-size:18px;font-weight:800;color:#1e3a5f;margin:0 0 18px 0;padding-bottom:10px;border-bottom:2px solid #e2e8f0;text-transform:uppercase;letter-spacing:0.04em">Key Risks &amp; Mitigations</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:14px">
+      <thead><tr>
+        <th style="background:#f1f5f9;color:#475569;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;padding:10px 12px;text-align:left">Risk</th>
+        <th style="background:#f1f5f9;color:#475569;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;padding:10px 12px;text-align:left">Likelihood</th>
+        <th style="background:#f1f5f9;color:#475569;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;padding:10px 12px;text-align:left">Mitigation</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td style="font-weight:600;color:#1e293b;padding:10px 12px;border-bottom:1px solid #e2e8f0">SAP configuration complexity delays auto-posting rule deployment</td>
+          <td style="padding:10px 12px;border-bottom:1px solid #e2e8f0"><span style="background:#d97706;color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600">Medium</span></td>
+          <td style="color:#475569;padding:10px 12px;border-bottom:1px solid #e2e8f0">Engage SAP implementation partner in Phase 1; parallel-run rules before go-live</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:#1e293b;padding:10px 12px;border-bottom:1px solid #e2e8f0">Change resistance from 195 finance staff facing role redesign</td>
+          <td style="padding:10px 12px;border-bottom:1px solid #e2e8f0"><span style="background:#ea580c;color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600">High</span></td>
+          <td style="color:#475569;padding:10px 12px;border-bottom:1px solid #e2e8f0">CFO-sponsored change management program; communicate role uplift narrative early</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600;color:#1e293b;padding:10px 12px;border-bottom:1px solid #e2e8f0">M&A integration of new fund entities disrupts rec governance progress</td>
+          <td style="padding:10px 12px;border-bottom:1px solid #e2e8f0"><span style="background:#d97706;color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600">Medium</span></td>
+          <td style="color:#475569;padding:10px 12px;border-bottom:1px solid #e2e8f0">Embed rec onboarding playbook into acquisition integration checklist</td>
+        </tr></tbody>
+    </table>
+  </div>
+
+  <!-- NEXT STEPS -->
+  <div style="background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.08);padding:28px;margin-bottom:28px">
+    <h2 style="font-size:18px;font-weight:800;color:#1e3a5f;margin:0 0 18px 0;padding-bottom:10px;border-bottom:2px solid #e2e8f0;text-transform:uppercase;letter-spacing:0.04em">Immediate Next Steps</h2>
+    
+        <div style="display:flex;align-items:flex-start;gap:12px;padding:12px;border-bottom:1px solid #e2e8f0">
+          <div style="background:#1e3a5f;color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0">1</div>
+          <div style="flex:1">
+            <div style="font-weight:600;color:#1e293b">CFO to sponsor Phase 1 kickoff; assign transformation PMO lead</div>
+            <div style="font-size:13px;color:#64748b;margin-top:2px">Owner: CFO · Due: 2026-03-31</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px;padding:12px;border-bottom:1px solid #e2e8f0">
+          <div style="background:#1e3a5f;color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0">2</div>
+          <div style="flex:1">
+            <div style="font-weight:600;color:#1e293b">Issue RFP for BlackLine and evaluate SAP configuration partner</div>
+            <div style="font-size:13px;color:#64748b;margin-top:2px">Owner: Finance Systems Director · Due: 2026-04-15</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px;padding:12px;border-bottom:1px solid #e2e8f0">
+          <div style="background:#1e3a5f;color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0">3</div>
+          <div style="flex:1">
+            <div style="font-weight:600;color:#1e293b">Launch unassigned rec remediation sprint with Controller</div>
+            <div style="font-size:13px;color:#64748b;margin-top:2px">Owner: Controller · Due: 2026-04-01</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px;padding:12px;border-bottom:1px solid #e2e8f0">
+          <div style="background:#1e3a5f;color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0">4</div>
+          <div style="flex:1">
+            <div style="font-weight:600;color:#1e293b">Deploy activity taxonomy survey to classify $13.7M unclassified labor</div>
+            <div style="font-size:13px;color:#64748b;margin-top:2px">Owner: Finance Transformation PMO · Due: 2026-04-15</div>
+          </div>
+        </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div style="text-align:center;color:#94a3b8;font-size:12px;padding:24px 0 40px">
+    Confidential — prepared for Sprott Inc. by Rudra AI Finance Transformation · March 15, 2026
+  </div>
+
+</div>
+</body>
+</html>
