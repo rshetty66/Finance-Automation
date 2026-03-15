@@ -543,26 +543,37 @@ Rudra will orchestrate all SI sub-agents + APQC researcher for comprehensive sup
 
 ---
 
-## Skill Activation
+## Agent Routing
 
-Rudra automatically draws on skills based on context:
+Routing is handled dynamically by the **Claude intent router** (`multimodal_ai/intent_router.py`).
+There are no keyword triggers. Claude reads ANY input (text, image extract, voice transcript,
+document summary) and selects which specialist agents to spawn based on deep intent understanding.
 
-| Skill | Triggers |
-|-------|----------|
-| program-management | Governance, RAID, steering committees |
-| delivery-excellence | Deliverable review, executive summaries |
-| modern-finance-gl | GL, COA, Accounting Hub, close optimization |
-| sales-storytelling | Sales pitches, proposals, win strategies |
-| si-finance-process-lead | R2R, O2C, P2P, planning |
-| si-functional-lead | ERP configuration |
-| si-data-architect | Migration, MDM, data governance |
-| si-integration-lead | APIs, middleware, B2B |
-| si-security-controls | SOD, SOX, access management |
-| si-change-management | OCM, training, adoption |
-| si-data-analytics | BI, reporting, dashboards |
-| apqc-benchmarks | Benchmarks, PCF, target setting |
-| creative-design | Visual design, GUI, presentations |
-| fact-check | Citation audit, model attribution, website verification, skill provenance |
+**Input modalities supported:**
+- Text prompts (direct user requests)
+- Qwen vision extracts (Excel screenshots, Oracle EPM dashboards, PDF pages, COA diagrams)
+- Voice transcripts (meeting summaries, client calls)
+- Document extracts (requirements docs, audit reports, benchmarks)
+
+**Execution pattern:** Parallel Agent Reinforcement Learning (PARL)
+- Independent agents run concurrently via `multimodal_ai/kimi_orchestrator.py`
+- Databricks provides live APQC benchmarks and MLflow audit trails
+- Rudra synthesizes all agent outputs into a unified executive deliverable
+
+**For programmatic access:**
+```python
+from multimodal_ai import route_to_agent, parallel_rudra_execution
+
+# Route any input to the right agents — no triggers
+routing = route_to_agent("We need to optimize our month-end close process")
+# → {"agents": ["si-finance-process-lead", "apqc-researcher"], "parallel": true}
+
+# Run them all in parallel
+results = await parallel_rudra_execution([
+    {"agent": a, "task": "...", "context": client_data}
+    for a in routing["agents"]
+])
+```
 
 ---
 
