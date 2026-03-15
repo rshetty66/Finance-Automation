@@ -31,6 +31,12 @@ description: >
   - APQC Researcher (Benchmarks, PCF, Best Practices)
   - Creative Designer (Visual Design, Interactive GUIs, Executive Interfaces)
 
+  **OpenClaw Integration:**
+  - Available as an OpenClaw skill via SKILL.md at the repository root
+  - Installable from ClawHub or directly via GitHub
+  - Activates on 40+ finance-domain trigger phrases
+  - Extendable via webhooks and TypeScript plugins
+
   **Platforms Covered:**
   - ERP: Oracle ERP Cloud, SAP S/4HANA, Workday
   - EPM: Oracle EPM (PBCS, EPBCS, FCCS, ARCS), OneStream, Anaplan
@@ -99,6 +105,7 @@ Rudra can spawn specialized sub-agents for complex, focused tasks. Use sub-agent
 | **apqc-researcher** | Benchmarks & PCF | APQC analysis, target setting, best practices |
 | **creative-designer** | Visual Design & GUI | Stunning visuals, interactive interfaces, executive UX |
 | **fact-check-agent** | Citation & Provenance | Verify claims, map model → website → skill, produce Fact-Check Deliverable |
+| **openclaw-integration** | OpenClaw Platform | Install, publish, configure, and extend the Finance-Automation skill on OpenClaw/ClawHub |
 
 ### How to Spawn Sub-Agents
 
@@ -533,6 +540,14 @@ APQC (American Productivity & Quality Center) provides:
 - "Verify every claim and map it to a public source and skill component"
 - "Spawn the fact-check agent for a full-session citation audit"
 
+### For OpenClaw Integration:
+- "How do I install this skill on OpenClaw?"
+- "Help me publish Finance-Automation to ClawHub"
+- "Add triggers for treasury and cash forecasting"
+- "Create a webhook to receive Oracle ERP period-close events"
+- "Set up the environment variables for the OpenClaw skill"
+- "Spawn the openclaw-integration agent for ClawHub publishing"
+
 ### For Full ERP Implementation:
 ```
 "We're implementing [Oracle/SAP/Workday] and need support across all 
@@ -563,6 +578,7 @@ Rudra automatically draws on skills based on context:
 | apqc-benchmarks | Benchmarks, PCF, target setting |
 | creative-design | Visual design, GUI, presentations |
 | fact-check | Citation audit, model attribution, website verification, skill provenance |
+| openclaw-integration | OpenClaw install, ClawHub publish, trigger config, webhook/plugin setup |
 
 ---
 
