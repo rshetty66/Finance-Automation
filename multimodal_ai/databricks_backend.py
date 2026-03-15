@@ -75,9 +75,9 @@ class RudraDataBrain:
         """Return mock data for development/testing without Databricks."""
         if "apqc" in sql.lower():
             return [
-                {"metric": "days_to_close", "top25": 4.0, "median": 6.5, "bottom25": 10.0},
-                {"metric": "ftes_per_1b_revenue", "top25": 40.0, "median": 70.0, "bottom25": 120.0},
-                {"metric": "cost_pct_revenue", "top25": 0.6, "median": 1.0, "bottom25": 1.8},
+                {"metric_name": "days_to_close", "top25": 4.0, "median": 6.5, "bottom25": 10.0, "unit": "days"},
+                {"metric_name": "ftes_per_1b_revenue", "top25": 40.0, "median": 70.0, "bottom25": 120.0, "unit": "FTEs"},
+                {"metric_name": "cost_pct_revenue", "top25": 0.6, "median": 1.0, "bottom25": 1.8, "unit": "%"},
             ]
         if "engagement" in sql.lower():
             return [{"engagement_id": "mock-001", "client": "Test Client", "status": "active"}]
