@@ -25,13 +25,6 @@ metadata:
   openclaw:
     emoji: "💼"
     homepage: https://github.com/rshetty66/Finance-Automation
-    primaryEnv: ANTHROPIC_API_KEY
-    requires:
-      env:
-        - ANTHROPIC_API_KEY
-      config:
-        - Rudra_Agents/rudra.md
-        - Rudra_Agents/FT_AgenticFramework.md
 triggers:
   - finance transformation
   - ERP implementation
