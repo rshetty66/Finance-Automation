@@ -6,7 +6,6 @@ build-backend = "setuptools.build_meta"
 name = "rudra"
 version = "0.1.0"
 description = "Skills-based multi-agent framework for finance transformation consulting"
-readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
 
@@ -14,6 +13,8 @@ dependencies = [
     "pydantic>=2.0",
     "pyyaml>=6.0",
     "numpy>=1.24",
+    "fastapi>=0.100",
+    "uvicorn>=0.20",
 ]
 
 [project.optional-dependencies]
@@ -42,6 +43,9 @@ rudra = "rudra.cli:main"
 
 [tool.setuptools.packages.find]
 include = ["rudra*"]
+
+[tool.setuptools.package-data]
+rudra = ["static/*"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
