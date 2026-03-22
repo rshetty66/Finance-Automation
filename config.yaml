@@ -1,0 +1,145 @@
+# Multi-Model AI Agent Framework Configuration
+# Finance Automation | Rudra Agents
+
+framework:
+  name: "Rudra Multi-Model Agent Framework"
+  version: "1.0.0"
+  description: "ERP/EPM Consulting Deliverables in 1 Week"
+
+# ─── Model Configuration ──────────────────────────────────────────────────────
+models:
+  # Anthropic Claude — Primary reasoning model (complex accounting/ERP analysis)
+  claude:
+    provider: "anthropic"
+    model_id: "claude-opus-4-6"
+    thinking: { type: "adaptive" }
+    output_config: { effort: "high" }
+    max_tokens: 16000
+    use_cases:
+      - "complex_reasoning"
+      - "accounting_policy"
+      - "erp_design"
+      - "epm_modeling"
+      - "ma_diligence"
+      - "audit"
+
+  # OpenClaw — OpenAI-compatible open-source orchestration model
+  openclaw:
+    provider: "openai"
+    model_id: "gpt-4o"         # Swappable: local Llama, Mixtral, etc.
+    base_url: null             # null = OpenAI default; set for self-hosted
+    max_tokens: 8000
+    use_cases:
+      - "orchestration"
+      - "routing"
+      - "summarization"
+      - "structured_extraction"
+
+  # Qwen 2.5 — Alibaba DashScope (OpenAI-compatible API)
+  qwen:
+    provider: "qwen"
+    model_id: "qwen-max"       # qwen-max / qwen-plus / qwen-turbo
+    base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1"
+    max_tokens: 8000
+    use_cases:
+      - "multilingual"
+      - "financial_data"
+      - "fast_inference"
+      - "code_generation"
+
+# ─── Routing Strategy ─────────────────────────────────────────────────────────
+routing:
+  default_model: "claude"
+  task_model_map:
+    accounting_policy: "claude"
+    revenue_recognition: "claude"
+    lease_accounting: "claude"
+    tax_accounting: "claude"
+    ma_due_diligence: "claude"
+    consolidation: "claude"
+    epm_modeling: "claude"
+    erp_design: "claude"
+    # OpenClaw handles orchestration and routing
+    orchestration: "openclaw"
+    agent_routing: "openclaw"
+    summarization: "openclaw"
+    structured_extraction: "openclaw"
+    # Qwen handles multilingual and fast tasks
+    multilingual_report: "qwen"
+    financial_data_extraction: "qwen"
+    code_generation: "qwen"
+
+# ─── Databricks Configuration ─────────────────────────────────────────────────
+databricks:
+  host: "${DATABRICKS_HOST}"
+  token: "${DATABRICKS_TOKEN}"
+  catalog: "finance_automation"
+  schema: "rudra_agents"
+  vector_search:
+    endpoint: "rudra-vector-search"
+    index_name: "finance_automation.rudra_agents.standards_index"
+    embedding_model: "databricks-bge-large-en"
+    chunk_size: 1500
+    chunk_overlap: 200
+  warehouse_id: "${DATABRICKS_WAREHOUSE_ID}"
+
+# ─── Canva Integration ────────────────────────────────────────────────────────
+canva:
+  enabled: true
+  access_token: "${CANVA_ACCESS_TOKEN}"
+  default_brand_kit: null
+  output_formats: ["pdf", "png", "pptx"]
+
+# ─── Video Animation ──────────────────────────────────────────────────────────
+video:
+  engine: "matplotlib"          # matplotlib | luma_ai | custom
+  luma_ai_key: "${LUMA_AI_KEY}"
+  output_dir: "./output/videos"
+  default_fps: 30
+  default_resolution: [1920, 1080]
+  default_duration: 60          # seconds
+
+# ─── ERP/EPM Deliverables ─────────────────────────────────────────────────────
+deliverables:
+  output_dir: "./output/deliverables"
+  timeline_weeks: 1
+  formats: ["xlsx", "pdf", "docx", "pptx"]
+  default_erp: "Oracle ERP Cloud"
+  default_epm: "Oracle EPM Cloud"
+
+# ─── Agent Definitions ────────────────────────────────────────────────────────
+agents:
+  rudra:
+    description: "Principal consulting agent — orchestrates all specialists"
+    model: "claude"
+    max_subagents: 6
+  openclaw_orchestrator:
+    description: "State-machine workflow engine (LangGraph-compatible)"
+    model: "openclaw"
+  vector_router:
+    description: "Semantic agent routing via embedding similarity"
+    model: "openclaw"
+  accounting_policy:
+    description: "IFRS/GAAP accounting policy engine"
+    model: "claude"
+  revenue_recognition:
+    description: "IFRS 15 / ASC 606 specialist"
+    model: "claude"
+  lease_accounting:
+    description: "IFRS 16 / ASC 842 specialist"
+    model: "claude"
+  tax_accounting:
+    description: "IAS 12 / ASC 740 specialist"
+    model: "claude"
+  ma_due_diligence:
+    description: "M&A Quality of Earnings and PPA"
+    model: "claude"
+  creative_designer:
+    description: "Visual design and Canva deliverables"
+    model: "claude"
+  databricks_pipeline:
+    description: "Databricks lakehouse and ML pipelines"
+    model: "qwen"
+  financial_modeling:
+    description: "EPM forecasting and scenario models"
+    model: "claude"
