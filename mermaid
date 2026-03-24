@@ -1,0 +1,758 @@
+## Complete Diagram Pack for Architecture Deliverable
+
+---
+
+## Diagram 1: End-to-End Solution Architecture (Master View)
+
+```mermaid
+graph TB
+    subgraph SOURCES["🔵 SOURCE SYSTEMS"]
+        direction TB
+        WD["<b>Workday HCM</b><br/>Positions, Employees<br/>Comp, Org, Benefits"]
+        PF["<b>PeopleFluent</b><br/>ICP Grants, VDIP<br/>Balances, Vintages"]
+        TR["<b>Treasury / Rates</b><br/>FX Rates, RoR<br/>Assumptions"]
+        HR["<b>HR Analytics</b><br/>Turnover, Merit<br/>Benefits Rates"]
+    end
+
+    subgraph STAGING["🟡 STAGING & INTEGRATION"]
+        direction TB
+        ETL["<b>ETL / Extract</b><br/>Workday RaaS<br/>PF API Extract"]
+        FLAT["<b>Flat Files</b><br/>CSV/TXT with<br/>Prefix Mapping"]
+        DI["<b>EPM Data Integration</b><br/>Import Rules<br/>Validation"]
+        AUTO["<b>EPM Automate</b><br/>Orchestration<br/>Sequencing"]
+    end
+
+    subgraph EDMCS_BOX["🟣 EDMCS — Hierarchy Governance"]
+        direction TB
+        EDMCS["<b>EDMCS</b><br/>Single Source of Truth"]
+        EDMCS_WF["Workflows &<br/>Approvals"]
+        EDMCS_VER["Version Control<br/>Current + Alternate"]
+        EDMCS_PUB["Metadata<br/>Publication"]
+        EDMCS --> EDMCS_WF
+        EDMCS --> EDMCS_VER
+        EDMCS --> EDMCS_PUB
+    end
+
+    subgraph EPM["🟢 ORACLE EPM CLOUD — 4 CUBES"]
+        direction TB
+        subgraph CALC_LAYER["Calculation Layer"]
+            direction LR
+            WFP["<b>WFP Calculation Cube</b><br/>Position-Centric (Pxxxx)<br/>13 Dimensions<br/>Base Salary, Benefits,<br/>Merit, Bonus, Turnover"]
+            ICP["<b>ICP/VDIP Calc Cube</b><br/>Employee-Centric (Exxxx)<br/>13 Dimensions<br/>RoR Compounding,<br/>Tranche Vesting"]
+        end
+        subgraph CONSUME_LAYER["Consumption Layer"]
+            direction LR
+            RPT["<b>Reporting Cube</b><br/>14 Dimensions<br/>Consolidated Analytics<br/>Current + Alt Hierarchies<br/>Dashboards & SmartView"]
+            FS["<b>FS Integration Cube</b><br/>11 Dimensions<br/>GL-Mapped Accounts<br/>Validation Rules<br/>Journal Export"]
+        end
+    end
+
+    subgraph OUTPUTS["🔴 OUTPUTS & CONSUMERS"]
+        direction TB
+        DASH["<b>Dashboards</b><br/>8 Executive Dashboards<br/>CFO, CHRO, Planning"]
+        SV["<b>SmartView</b><br/>Ad-hoc Analysis<br/>Drill-Through"]
+        GL["<b>Oracle Financials</b><br/>GL Journals<br/>Budget/Forecast"]
+        BOARD["<b>Board Reporting</b><br/>Scenario Comparison<br/>Reorg Analysis"]
+    end
+
+    WD -->|"Position/Employee<br/>Comp Data"| ETL
+    PF -->|"ICP Grants<br/>VDIP Balances"| ETL
+    TR -->|"FX Rates<br/>RoR Assumptions"| ETL
+    HR -->|"Turnover/Merit<br/>Benefits Rates"| ETL
+    ETL --> FLAT
+    FLAT --> DI
+    DI --> AUTO
+
+    EDMCS_PUB -->|"Metadata Sync<br/>Daily 6:00 AM"| WFP
+    EDMCS_PUB -->|"Metadata Sync"| ICP
+    EDMCS_PUB -->|"Current + Alt<br/>Hierarchies"| RPT
+    EDMCS_PUB -->|"GL Mapping"| FS
+
+    AUTO -->|"Position Data<br/>Comp Rates"| WFP
+    AUTO -->|"ICP Grants<br/>VDIP Data"| ICP
+
+    ICP -->|"Aggregated ICP/VDIP<br/>Cost → Position"| WFP
+    WFP -->|"Position Costs<br/>Push"| RPT
+    ICP -->|"ICP Detail<br/>Push"| RPT
+    RPT -->|"Validated<br/>Aggregates"| FS
+
+    RPT --> DASH
+    RPT --> SV
+    FS -->|"Journal Export"| GL
+    RPT --> BOARD
+
+    classDef source fill:#3498DB,stroke:#2C3E50,color:#FFF,stroke-width:2px
+    classDef staging fill:#F39C12,stroke:#E67E22,color:#FFF,stroke-width:2px
+    classDef edmcs fill:#9B59B6,stroke:#8E44AD,color:#FFF,stroke-width:2px
+    classDef calc fill:#27AE60,stroke:#1E8449,color:#FFF,stroke-width:2px
+    classDef consume fill:#2ECC71,stroke:#27AE60,color:#FFF,stroke-width:2px
+    classDef output fill:#E74C3C,stroke:#C0392B,color:#FFF,stroke-width:2px
+
+    class WD,PF,TR,HR source
+    class ETL,FLAT,DI,AUTO staging
+    class EDMCS,EDMCS_WF,EDMCS_VER,EDMCS_PUB edmcs
+    class WFP,ICP calc
+    class RPT,FS consume
+    class DASH,SV,GL,BOARD output
+```
+
+---
+
+## Diagram 2: Four-Cube Data Flow Architecture
+
+```mermaid
+graph LR
+    subgraph CUBE1["WFP Calculation Cube"]
+        direction TB
+        W_DIM["13 Dimensions<br/>Scenario|Version|Year|Period<br/>Account|Entity|CC|Position<br/>Employee|Job|Location<br/>Currency|Data_Source"]
+        W_DATA["Position Data:<br/>• Base Salary<br/>• Benefits<br/>• Merit / STI<br/>• FTE / Headcount<br/>• Vacancy / Turnover"]
+        W_CALC["Groovy Calcs:<br/>• Benefits = Base × Rate<br/>• Merit = Base × Merit%<br/>• Total Comp aggregation<br/>• Vacancy savings"]
+    end
+
+    subgraph CUBE2["ICP/VDIP Calculation Cube"]
+        direction TB
+        I_DIM["13 Dimensions<br/>Scenario|Version|Year|Period<br/>ICP_Account|Employee<br/>Grant_Year|Tranche|Fund_Type<br/>Entity|CC|Currency<br/>Data_Source"]
+        I_DATA["ICP/VDIP Data:<br/>• Grant Values<br/>• Vesting Schedules<br/>• RoR Assumptions<br/>• Forfeiture Rates"]
+        I_CALC["Groovy Calcs:<br/>• RoR Compounding<br/>• Tranche Vesting<br/>• PI vs Total Fund<br/>• Forfeiture Adj<br/>• Net ICP Cost"]
+    end
+
+    subgraph CUBE3["Reporting Cube"]
+        direction TB
+        R_DIM["14 Dimensions<br/>+ Alt_Entity<br/>+ Alt_Cost_Centre<br/>+ Source_Cube"]
+        R_CALC["Calculated Members:<br/>• Avg Cost/FTE<br/>• Vacancy Rate<br/>• YoY Change<br/>• Scenario Delta<br/>• Forecast vs Budget"]
+        R_DASH["8 Dashboards:<br/>• CFO Executive<br/>• HC Tracker<br/>• Vacancy Mgmt<br/>• ICP/VDIP<br/>• Scenario Compare"]
+    end
+
+    subgraph CUBE4["FS Integration Cube"]
+        direction TB
+        F_DIM["11 Dimensions<br/>+ Intercompany<br/>+ Movement<br/>+ Validation_Status"]
+        F_VAL["Validation Rules:<br/>• Cross-cube recon<br/>• GL completeness<br/>• Period balance<br/>• Negative check<br/>• IC elimination"]
+        F_OUT["Journal Output:<br/>• GL Account mapped<br/>• Debit/Credit<br/>• Company segment<br/>• CC segment"]
+    end
+
+    CUBE1 -->|"ICP/VDIP Cost<br/>Loaded to Position"| CUBE1
+    CUBE2 -->|"Aggregated<br/>Employee → Position"| CUBE1
+    CUBE1 -->|"Position Costs"| CUBE3
+    CUBE2 -->|"ICP Detail"| CUBE3
+    CUBE3 -->|"Validated<br/>Aggregates"| CUBE4
+
+    style CUBE1 fill:#E8F5E9,stroke:#27AE60,stroke-width:3px
+    style CUBE2 fill:#FFF3E0,stroke:#F39C12,stroke-width:3px
+    style CUBE3 fill:#E3F2FD,stroke:#3498DB,stroke-width:3px
+    style CUBE4 fill:#F3E5F5,stroke:#9B59B6,stroke-width:3px
+```
+
+---
+
+## Diagram 3: EDMCS Hierarchy Governance Flow
+
+```mermaid
+graph TB
+    subgraph REQUEST["1. Change Request"]
+        USER["Hierarchy Owner<br/>submits request"]
+        REQ_TYPE{"Request Type?"}
+        NEW_CC["New Cost Centre"]
+        REORG["CC Reorg / Move"]
+        DEACT["CC Deactivation"]
+        NEW_ENT["Entity Change"]
+        ALT_H["Alternate Hierarchy"]
+    end
+
+    subgraph APPROVAL["2. Approval Workflow"]
+        L1["Level 1: CC Owner Review"]
+        L2["Level 2: Finance Director"]
+        L3["Level 3: CFO Office<br/>(for Entity/Reorg)"]
+        HR_CHK["HR Check:<br/>Position Reassignment?"]
+        ADMIN["EDMCS Admin:<br/>Execute Change"]
+    end
+
+    subgraph VALIDATION["3. Validation & Publication"]
+        VAL["Validate:<br/>• Parent exists<br/>• No orphans<br/>• No circular ref"]
+        VER["Version:<br/>• Stamp version<br/>• Audit trail<br/>• Effective date"]
+        PUB["Publish to Cubes:<br/>• WFP Cube<br/>• ICP Cube<br/>• Reporting Cube<br/>• FS Cube"]
+    end
+
+    subgraph SYNC["4. Metadata Sync"]
+        FLAT["Generate Flat Files<br/>(Parent-Child format)"]
+        DI_META["Data Integration<br/>Metadata Import"]
+        RECON["Reconciliation:<br/>Member count check<br/>across all 4 cubes"]
+        NOTIFY["Notification:<br/>Sync complete<br/>or errors flagged"]
+    end
+
+    USER --> REQ_TYPE
+    REQ_TYPE -->|"New CC"| NEW_CC --> L1
+    REQ_TYPE -->|"Reorg"| REORG --> L1
+    REQ_TYPE -->|"Deactivate"| DEACT --> L1
+    REQ_TYPE -->|"Entity"| NEW_ENT --> L3
+    REQ_TYPE -->|"Alternate"| ALT_H --> L2
+
+    L1 --> L2
+    L2 -->|"Reorg/Entity"| L3
+    L2 -->|"Standard"| ADMIN
+    L3 --> HR_CHK --> ADMIN
+
+    ADMIN --> VAL --> VER --> PUB
+    PUB --> FLAT --> DI_META --> RECON --> NOTIFY
+
+    classDef request fill:#3498DB,stroke:#2C3E50,color:#FFF
+    classDef approval fill:#F39C12,stroke:#E67E22,color:#FFF
+    classDef validate fill:#27AE60,stroke:#1E8449,color:#FFF
+    classDef sync fill:#9B59B6,stroke:#8E44AD,color:#FFF
+
+    class USER,REQ_TYPE,NEW_CC,REORG,DEACT,NEW_ENT,ALT_H request
+    class L1,L2,L3,HR_CHK,ADMIN approval
+    class VAL,VER,PUB validate
+    class FLAT,DI_META,RECON,NOTIFY sync
+```
+
+---
+
+## Diagram 4: ICP/VDIP Calculation Flow
+
+```mermaid
+graph TB
+    subgraph INPUT["📥 Input Data (PeopleFluent)"]
+        GRANT["ICP Grant<br/>Employee × Grant_Year<br/>× Fund_Type"]
+        VEST_SCH["Vesting Schedule<br/>TR_1=20%, TR_2=20%<br/>TR_3=20%, TR_4=20%<br/>TR_5=20%"]
+        ROR["RoR Assumption<br/>PI Fund: 10%<br/>Total Fund: 7%"]
+        FORF["Forfeiture Rate<br/>3%–5% per annum"]
+    end
+
+    subgraph CALC["🔧 ICP Calculation Engine (Groovy)"]
+        direction TB
+        STEP1["Step 1: Load Grant Value<br/>ICP_Grant_Value = PF Load"]
+        STEP2["Step 2: Apply Vesting<br/>Per tranche: Grant × Vest%"]
+        STEP3["Step 3: RoR Compounding<br/>Value_t = Value_(t-1) × (1+RoR)<br/>PI vs Total Fund split"]
+        STEP4["Step 4: Unvested Calc<br/>Grant × (1 - Cum_Vest%) × (1+RoR)^n"]
+        STEP5["Step 5: Forfeiture Adj<br/>Unvested × Forfeiture_Rate"]
+        STEP6["Step 6: Net ICP Cost<br/>Vested + Unvested + RoR_Adj - Forfeiture"]
+        
+        STEP1 --> STEP2 --> STEP3 --> STEP4 --> STEP5 --> STEP6
+    end
+
+    subgraph VDIP_CALC["🔧 VDIP Calculation"]
+        V1["VDIP Accrual<br/>Base × Perf_Factor × Proration"]
+        V2["VDIP Payout<br/>Deferred schedule (3-yr)"]
+        V3["VDIP Net Cost<br/>Accrual - Payout"]
+        V1 --> V3
+        V2 --> V3
+    end
+
+    subgraph AGG["📤 Aggregation to WFP Cube"]
+        EMP_AGG["Employee → Position<br/>Mapping"]
+        POS_ICP["ICP_Cost_Loaded<br/>= Σ ICP_Net_Cost<br/>(all employees in position)"]
+        POS_VDIP["VDIP_Cost_Loaded<br/>= Σ VDIP_Net_Cost<br/>(all employees in position)"]
+        WFP_LOAD["→ WFP Cube<br/>Deferred_Comp accounts"]
+    end
+
+    GRANT --> STEP1
+    VEST_SCH --> STEP2
+    ROR --> STEP3
+    FORF --> STEP5
+
+    STEP6 --> EMP_AGG
+    V3 --> EMP_AGG
+    EMP_AGG --> POS_ICP
+    EMP_AGG --> POS_VDIP
+    POS_ICP --> WFP_LOAD
+    POS_VDIP --> WFP_LOAD
+
+    classDef input fill:#3498DB,stroke:#2C3E50,color:#FFF
+    classDef calc fill:#E74C3C,stroke:#C0392B,color:#FFF
+    classDef vdip fill:#F39C12,stroke:#E67E22,color:#FFF
+    classDef agg fill:#27AE60,stroke:#1E8449,color:#FFF
+
+    class GRANT,VEST_SCH,ROR,FORF input
+    class STEP1,STEP2,STEP3,STEP4,STEP5,STEP6 calc
+    class V1,V2,V3 vdip
+    class EMP_AGG,POS_ICP,POS_VDIP,WFP_LOAD agg
+```
+
+---
+
+## Diagram 5: EPM Automate Daily Orchestration Sequence
+
+```mermaid
+graph TB
+    subgraph T0530["05:30 AM ET"]
+        J1["Job 1: EDMCS_Metadata_Export<br/>Export hierarchies → flat files<br/>⏱ 15 min"]
+    end
+
+    subgraph T0545["05:45 AM ET"]
+        J2["Job 2: WFP_Metadata_Import<br/>Entity, CC, Job, Location → WFP<br/>⏱ 10 min"]
+        J3["Job 3: ICP_Metadata_Import<br/>Entity, CC → ICP Cube<br/>⏱ 10 min"]
+    end
+
+    subgraph T0555["05:55 AM ET"]
+        J4["Job 4: RPT_Metadata_Import<br/>All metadata + Alt hierarchies → RPT<br/>⏱ 10 min"]
+        J5["Job 5: FS_Metadata_Import<br/>Entity, CC, FS_Account → FS<br/>⏱ 10 min"]
+    end
+
+    subgraph T0600["06:00 AM ET"]
+        J6["Job 6: WD_Extract_Upload<br/>Workday files → EPM inbox<br/>⏱ 5 min"]
+        J7["Job 7: PF_Extract_Upload<br/>PeopleFluent files → EPM inbox<br/>⏱ 5 min"]
+    end
+
+    subgraph T0605["06:05 AM ET"]
+        J8["Job 8: WFP_Data_Import<br/>Position/comp → WFP cube<br/>⏱ 20 min"]
+        J9["Job 9: ICP_Data_Import<br/>ICP/VDIP grants → ICP cube<br/>⏱ 20 min"]
+    end
+
+    subgraph T0625["06:25 AM ET"]
+        J10["Job 10: WFP_Calc_Execute<br/>Groovy: benefits, merit, totals<br/>⏱ 15 min"]
+        J11["Job 11: ICP_Calc_Execute<br/>Groovy: RoR, vesting, forfeiture<br/>⏱ 20 min"]
+    end
+
+    subgraph T0645["06:45 AM ET"]
+        J12["Job 12: ICP_to_WFP_Push<br/>Aggregate ICP → Position costs<br/>⏱ 10 min"]
+    end
+
+    subgraph T0655["06:55 AM ET"]
+        J13["Job 13: WFP_to_RPT_Push<br/>Position costs → Reporting<br/>⏱ 15 min"]
+        J14["Job 14: ICP_to_RPT_Push<br/>ICP detail → Reporting<br/>⏱ 15 min"]
+    end
+
+    subgraph T0710["07:10 AM ET"]
+        J15["Job 15: Recon_Validation<br/>Cross-cube reconciliation<br/>⏱ 5 min"]
+    end
+
+    subgraph T0715["07:15 AM ET"]
+        J16["Job 16: Notification_Complete<br/>✅ Daily refresh complete<br/>⏱ 1 min"]
+    end
+
+    J1 --> J2
+    J1 --> J3
+    J2 --> J4
+    J3 --> J4
+    J1 --> J5
+    J6 --> J8
+    J7 --> J9
+    J2 --> J8
+    J3 --> J9
+    J8 --> J10
+    J9 --> J11
+    J10 --> J12
+    J11 --> J12
+    J12 --> J13
+    J11 --> J14
+    J13 --> J15
+    J14 --> J15
+    J15 --> J16
+
+    classDef meta fill:#9B59B6,stroke:#8E44AD,color:#FFF
+    classDef upload fill:#F39C12,stroke:#E67E22,color:#FFF
+    classDef load fill:#3498DB,stroke:#2C3E50,color:#FFF
+    classDef calc fill:#E74C3C,stroke:#C0392B,color:#FFF
+    classDef push fill:#27AE60,stroke:#1E8449,color:#FFF
+    classDef done fill:#2ECC71,stroke:#27AE60,color:#FFF
+
+    class J1,J2,J3,J4,J5 meta
+    class J6,J7 upload
+    class J8,J9 load
+    class J10,J11 calc
+    class J12,J13,J14 push
+    class J15,J16 done
+```
+
+---
+
+## Diagram 6: Position-Employee Data Model
+
+```mermaid
+erDiagram
+    POSITION ||--o| EMPLOYEE : "occupied by (0 or 1)"
+    POSITION }|--|| COST_CENTRE : "assigned to"
+    POSITION }|--|| ENTITY : "belongs to"
+    POSITION }|--|| JOB_CODE : "classified as"
+    POSITION }|--|| LOCATION : "located at"
+    EMPLOYEE ||--o{ ICP_GRANT : "has grants"
+    EMPLOYEE ||--o{ VDIP_ACCRUAL : "has accruals"
+    ICP_GRANT ||--|{ TRANCHE : "vests in tranches"
+    ICP_GRANT }|--|| FUND_TYPE : "allocated to"
+    COST_CENTRE }|--|| ENTITY : "rolls up to"
+
+    POSITION {
+        string Position_ID PK "P0001–P9999"
+        string Employee_ID FK "E0001 or NULL if vacant"
+        string Entity FK "E_CPPIB"
+        string Cost_Centre FK "CC_1001"
+        string Job_Code FK "JC_VP"
+        string Location FK "LOC_TOR"
+        float FTE "0.0–1.0"
+        decimal Base_Salary "Annual"
+        decimal Benefits_Total "Employer cost"
+        decimal STI_Bonus "Annual bonus"
+        string Currency "CAD/USD/GBP"
+        string Status "Active/Frozen/Pending"
+        string Vacancy_Flag "Filled/Vacant"
+        date Start_Date "Position start"
+        date End_Date "Term date if applicable"
+    }
+
+    EMPLOYEE {
+        string Employee_ID PK "E0001–E9999"
+        string Name "Full name"
+        string Position_ID FK "Current position"
+        date Hire_Date "Original hire"
+        date Term_Date "If terminated"
+    }
+
+    ICP_GRANT {
+        string Grant_ID PK "Auto-generated"
+        string Employee_ID FK "E0001"
+        string Grant_Year "GY_2022"
+        string Fund_Type FK "PI/Total_Fund"
+        decimal Grant_Value "Original grant $"
+        float RoR_Rate "Assumed RoR"
+        float Forfeiture_Rate "3-5%"
+    }
+
+    TRANCHE {
+        string Tranche_ID PK "TR_1–TR_5"
+        string Grant_ID FK "Parent grant"
+        float Vesting_Pct "20% each"
+        int Vest_Year "Year 1–5"
+        decimal Vested_Amount "Calculated"
+        decimal Unvested_Amount "Calculated"
+    }
+
+    VDIP_ACCRUAL {
+        string VDIP_ID PK "Auto-generated"
+        string Employee_ID FK "E0001"
+        string Period "FY2026-Mar"
+        decimal Accrual_Amount "Monthly accrual"
+        decimal Payout_Amount "Scheduled payout"
+        decimal Net_Cost "Accrual - Payout"
+    }
+
+    COST_CENTRE {
+        string CC_ID PK "CC_1001"
+        string CC_Name "Active Equities"
+        string Parent_CC FK "CC_Investments"
+        string Entity FK "E_CPPIB"
+    }
+
+    ENTITY {
+        string Entity_ID PK "E_CPPIB"
+        string Entity_Name "CPPIB"
+        string Parent_Entity FK "E_CPPIB_Total"
+        string Currency "CAD"
+    }
+
+    JOB_CODE {
+        string Job_Code_ID PK "JC_VP"
+        string Job_Name "Vice President"
+        string Job_Family "Investment"
+        string Salary_Band "120K-200K"
+    }
+
+    LOCATION {
+        string Location_ID PK "LOC_TOR"
+        string Location_Name "Toronto"
+        string Country "Canada"
+        string Currency "CAD"
+    }
+
+    FUND_TYPE {
+        string Fund_Type_ID PK "PI"
+        string Fund_Name "Private Investments"
+        float Default_RoR "10%"
+    }
+```
+
+---
+
+## Diagram 7: Scenario & Version Lifecycle
+
+```mermaid
+stateDiagram-v2
+    [*] --> Working : Create New Version
+
+    Working --> Working : Planner Edits
+    Working --> Final : Submit for Review
+    
+    Final --> Working : Rejected (Revise)
+    Final --> Board_Approved : Approved by Board
+    
+    Board_Approved --> [*] : Archived (Immutable)
+
+    state Working {
+        [*] --> Editing
+        Editing --> Calculating : Run Calcs
+        Calculating --> Reviewing : Self-Review
+        Reviewing --> Editing : Revise
+        Reviewing --> Ready : Ready to Submit
+    }
+
+    state Final {
+        [*] --> Under_Review
+        Under_Review --> Approved : Reviewer Approves
+        Under_Review --> Rejected : Reviewer Rejects
+    }
+
+    note right of Working
+        Access: Read/Write for Planners
+        Lock: Unlocked
+        Actions: Edit, Calculate, Copy
+    end note
+
+    note right of Final
+        Access: Read-Only for Planners
+        Lock: Locked
+        Actions: Review, Approve/Reject
+    end note
+
+    note right of Board_Approved
+        Access: Read-Only for All
+        Lock: Permanently Locked
+        Actions: View, Report, Compare
+    end note
+```
+
+---
+
+## Diagram 8: Data Lineage & Reconciliation Chain
+
+```mermaid
+graph LR
+    subgraph SOURCE["Source Systems"]
+        WD_SRC["Workday<br/>Position/Comp Data"]
+        PF_SRC["PeopleFluent<br/>ICP/VDIP Data"]
+    end
+
+    subgraph RC1["RC-01/02: Source ↔ Cube"]
+        WFP_LOAD["WFP Cube<br/>(Loaded Data)"]
+        ICP_LOAD["ICP Cube<br/>(Loaded Data)"]
+        CHECK1["✓ Source total<br/>= Loaded total<br/>±$100"]
+    end
+
+    subgraph RC2["RC-03/04: Calc ↔ Reporting"]
+        WFP_CALC["WFP Cube<br/>(Calculated)"]
+        ICP_CALC["ICP Cube<br/>(Calculated)"]
+        RPT_RCV["Reporting Cube<br/>(Received)"]
+        CHECK2["✓ Push total<br/>= Received total<br/>Exact match"]
+    end
+
+    subgraph RC3["RC-05: Reporting ↔ FS"]
+        RPT_EXP["Reporting Cube<br/>(Export)"]
+        FS_RCV["FS Cube<br/>(Received)"]
+        CHECK3["✓ Export total<br/>= FS total<br/>Exact match"]
+    end
+
+    subgraph RC4["RC-06: FS ↔ GL"]
+        FS_JNL["FS Cube<br/>(Journal)"]
+        GL_POST["Oracle GL<br/>(Posted)"]
+        CHECK4["✓ Journal total<br/>= GL posted<br/>Exact match"]
+    end
+
+    WD_SRC --> WFP_LOAD
+    PF_SRC --> ICP_LOAD
+    WFP_LOAD --> CHECK1
+    ICP_LOAD --> CHECK1
+
+    WFP_LOAD --> WFP_CALC
+    ICP_LOAD --> ICP_CALC
+    WFP_CALC --> RPT_RCV
+    ICP_CALC --> RPT_RCV
+    RPT_RCV --> CHECK2
+
+    RPT_RCV --> RPT_EXP --> FS_RCV --> CHECK3
+    FS_RCV --> FS_JNL --> GL_POST --> CHECK4
+
+    classDef source fill:#3498DB,stroke:#2C3E50,color:#FFF
+    classDef check fill:#27AE60,stroke:#1E8449,color:#FFF
+    classDef cube fill:#F39C12,stroke:#E67E22,color:#FFF
+    classDef gl fill:#9B59B6,stroke:#8E44AD,color:#FFF
+
+    class WD_SRC,PF_SRC source
+    class CHECK1,CHECK2,CHECK3,CHECK4 check
+    class WFP_LOAD,ICP_LOAD,WFP_CALC,ICP_CALC,RPT_RCV,RPT_EXP,FS_RCV,FS_JNL cube
+    class GL_POST gl
+```
+
+---
+
+## Diagram 9: Implementation Roadmap (Gantt-Style)
+
+```mermaid
+gantt
+    title CPPIB WFP Implementation — 24-Week Roadmap
+    dateFormat  YYYY-MM-DD
+    axisFormat  %b %d
+    
+    section Phase 1: Foundation
+    Environment Provisioning       :p1a, 2026-04-06, 2w
+    EDMCS Setup & Config           :p1b, 2026-04-06, 3w
+    Development Standards          :p1c, 2026-04-13, 2w
+    Milestone: Environment Ready   :milestone, m1, 2026-04-17, 0d
+
+    section Phase 2: Core WFP Build
+    WFP Cube Design & Build        :p2a, 2026-05-04, 3w
+    Workday Integration            :p2b, 2026-05-11, 3w
+    WFP Groovy Calcs               :p2c, 2026-05-25, 2w
+    Milestone: WFP Data Loaded     :milestone, m2, 2026-06-12, 0d
+
+    section Phase 3: ICP/VDIP Build
+    ICP Cube Design & Build        :p3a, 2026-05-04, 3w
+    PeopleFluent Integration       :p3b, 2026-05-11, 3w
+    ICP Groovy Calcs (RoR/Vesting) :p3c, 2026-05-25, 3w
+    Milestone: ICP Calcs Validated :milestone, m3, 2026-06-12, 0d
+
+    section Phase 4: Reporting
+    Reporting Cube Build           :p4a, 2026-06-15, 2w
+    Dashboard Design & Build       :p4b, 2026-06-22, 3w
+    Milestone: Dashboards Complete :milestone, m4, 2026-07-10, 0d
+
+    section Phase 5: FS Integration
+    FS Cube Build                  :p5a, 2026-06-22, 2w
+    GL Mapping & Validation        :p5b, 2026-06-29, 2w
+    Milestone: FS Journal Test     :milestone, m5, 2026-07-10, 0d
+
+    section Phase 6: Testing
+    E2E Testing                    :p6a, 2026-07-13, 3w
+    Performance Testing            :p6b, 2026-07-20, 2w
+    Defect Resolution              :p6c, 2026-07-27, 2w
+    Milestone: E2E Complete        :milestone, m6, 2026-08-07, 0d
+
+    section Phase 7: UAT & Training
+    UAT Execution                  :p7a, 2026-08-10, 2w
+    Training Delivery              :p7b, 2026-08-17, 2w
+    Milestone: UAT Sign-Off        :milestone, m7, 2026-08-28, 0d
+
+    section Phase 8: Go-Live
+    Production Cutover             :p8a, 2026-08-31, 1w
+    Parallel Run                   :p8b, 2026-09-07, 1w
+    Hypercare Support              :p8c, 2026-09-14, 2w
+    Milestone: Hypercare Exit      :milestone, m8, 2026-09-25, 0d
+```
+
+---
+
+## Diagram 10: Security & Access Model
+
+```mermaid
+graph TB
+    subgraph ROLES["Security Roles"]
+        R_ADMIN["EPM Admin<br/>Full access all cubes<br/>Job management"]
+        R_PLAN["Planning Manager<br/>Read/Write WFP Cube<br/>Working version"]
+        R_FIN["Finance Analyst<br/>Read/Write FS Cube<br/>Journal export"]
+        R_COMP["Compensation SME<br/>Read/Write ICP Cube<br/>Assumptions"]
+        R_VIEW["Executive Viewer<br/>Read-Only Reporting<br/>Dashboards only"]
+        R_EDMCS["EDMCS Admin<br/>Hierarchy management<br/>Workflow approval"]
+        R_HR["HR Business Partner<br/>Read Reporting Cube<br/>HC & Vacancy dashboards"]
+    end
+
+    subgraph CUBES["Cube Access Matrix"]
+        WFP_ACC["WFP Cube"]
+        ICP_ACC["ICP Cube"]
+        RPT_ACC["Reporting Cube"]
+        FS_ACC["FS Cube"]
+        EDMCS_ACC["EDMCS"]
+    end
+
+    R_ADMIN -->|"Full R/W"| WFP_ACC
+    R_ADMIN -->|"Full R/W"| ICP_ACC
+    R_ADMIN -->|"Full R/W"| RPT_ACC
+    R_ADMIN -->|"Full R/W"| FS_ACC
+    R_ADMIN -->|"Full R/W"| EDMCS_ACC
+
+    R_PLAN -->|"R/W Working"| WFP_ACC
+    R_PLAN -->|"Read"| RPT_ACC
+
+    R_COMP -->|"R/W Assumptions"| ICP_ACC
+    R_COMP -->|"Read"| RPT_ACC
+
+    R_FIN -->|"Read"| RPT_ACC
+    R_FIN -->|"R/W Export"| FS_ACC
+
+    R_VIEW -->|"Read Only"| RPT_ACC
+
+    R_EDMCS -->|"Full R/W"| EDMCS_ACC
+
+    R_HR -->|"Read"| RPT_ACC
+
+    classDef admin fill:#E74C3C,stroke:#C0392B,color:#FFF
+    classDef plan fill:#3498DB,stroke:#2C3E50,color:#FFF
+    classDef fin fill:#27AE60,stroke:#1E8449,color:#FFF
+    classDef view fill:#95A5A6,stroke:#7F8C8D,color:#FFF
+    classDef cube fill:#F39C12,stroke:#E67E22,color:#333
+
+    class R_ADMIN admin
+    class R_PLAN,R_COMP plan
+    class R_FIN,R_EDMCS fin
+    class R_VIEW,R_HR view
+    class WFP_ACC,ICP_ACC,RPT_ACC,FS_ACC,EDMCS_ACC cube
+```
+
+---
+
+## Diagram 11: WFP Compensation Calculation Waterfall
+
+```mermaid
+graph TB
+    subgraph WATERFALL["Total Compensation Build-Up per Position"]
+        BASE["Base Salary<br/>(Workday Load)<br/>$185,000"]
+        MERIT["+ Merit Increase<br/>Base × 3.0%<br/>+$5,550"]
+        ADJ_BASE["= Adjusted Base<br/>$190,550"]
+        BEN["+ Benefits<br/>Adj Base × 26%<br/>+$49,543"]
+        TAX["+ Employer Tax<br/>Adj Base × 8.5%<br/>+$16,197"]
+        STI["+ STI Bonus<br/>Adj Base × 30%<br/>+$57,165"]
+        CASH_TOTAL["= Total Cash Comp<br/>$313,455"]
+        ICP_L["+ ICP Cost (Loaded)<br/>From ICP Cube<br/>+$42,300"]
+        VDIP_L["+ VDIP Cost (Loaded)<br/>From ICP Cube<br/>+$18,750"]
+        TOTAL["= TOTAL COMP COST<br/>$374,505"]
+    end
+
+    BASE --> MERIT --> ADJ_BASE --> BEN
+    ADJ_BASE --> TAX
+    ADJ_BASE --> STI
+    BEN --> CASH_TOTAL
+    TAX --> CASH_TOTAL
+    STI --> CASH_TOTAL
+    CASH_TOTAL --> ICP_L
+    CASH_TOTAL --> VDIP_L
+    ICP_L --> TOTAL
+    VDIP_L --> TOTAL
+
+    classDef loaded fill:#3498DB,stroke:#2C3E50,color:#FFF
+    classDef calc fill:#F39C12,stroke:#E67E22,color:#FFF
+    classDef subtotal fill:#27AE60,stroke:#1E8449,color:#FFF
+    classDef deferred fill:#9B59B6,stroke:#8E44AD,color:#FFF
+    classDef total fill:#E74C3C,stroke:#C0392B,color:#FFF
+
+    class BASE loaded
+    class MERIT,BEN,TAX,STI calc
+    class ADJ_BASE,CASH_TOTAL subtotal
+    class ICP_L,VDIP_L deferred
+    class TOTAL total
+```
+
+---
+
+## Diagram 12: Scenario Comparison Bridge
+
+```mermaid
+graph LR
+    BUDGET["Budget FY2026<br/>$385M"] 
+    --> MERIT_D["+Merit/Inflation<br/>+$12M"]
+    --> NEW_HIRE["+New Hires<br/>+$8M"]
+    --> TURNOVER["-Turnover Savings<br/>-$15M"]
+    --> VACANCY["-Vacancy Savings<br/>-$7M"]
+    --> ICP_CHG["+ICP/VDIP Change<br/>+$5M"]
+    --> FX_IMP["+/-FX Impact<br/>-$2M"]
+    --> REORG["+/-Reorg Impact<br/>-$8M"]
+    --> FORECAST["Forecast Q2<br/>$378M"]
+
+    classDef start fill:#3498DB,stroke:#2C3E50,color:#FFF
+    classDef positive fill:#27AE60,stroke:#1E8449,color:#FFF
+    classDef negative fill:#E74C3C,stroke:#C0392B,color:#FFF
+    classDef mixed fill:#F39C12,stroke:#E67E22,color:#FFF
+    classDef end_node fill:#9B59B6,stroke:#8E44AD,color:#FFF
+
+    class BUDGET start
+    class MERIT_D,NEW_HIRE,ICP_CHG positive
+    class TURNOVER,VACANCY negative
+    class FX_IMP,REORG mixed
+    class FORECAST end_node
+```
+
