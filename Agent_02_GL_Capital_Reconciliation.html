@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent 02 · GL-to-Capital Reconciliation</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#F8F6F3; --surface:#FFFFFF; --surface-alt:#F2EFE9;
+  --border:#E8E3DC; --border-lite:#EDE9E2;
+  --ink-1:#1C1917; --ink-2:#44403C; --ink-3:#78716C; --ink-4:#A8A29E;
+  --blue:#1D4ED8; --blue-bg:#EFF6FF; --blue-soft:#DBEAFE;
+  --amber:#92400E; --amber-mid:#B45309; --amber-bg:#FFFBEB; --amber-soft:#FDE68A;
+  --teal:#0F766E; --teal-bg:#F0FDFA;
+  --green:#166534; --green-bg:#F0FDF4; --green-soft:#BBF7D0;
+  --red:#991B1B; --red-bg:#FEF2F2; --red-soft:#FECACA;
+  --purple:#5B21B6; --purple-bg:#F5F3FF; --purple-soft:#DDD6FE;
+  --sap:#0A5486; --sap-bg:#EBF5FB; --sap-soft:#B8D7ED;
+  --bl:#00704A; --bl-bg:#E8F8F3; --bl-soft:#A7E9C9;
+  --aws:#CC5500; --aws-bg:#FFF0E6; --aws-soft:#FFCBA4;
+  --oracle:#C74634; --oracle-bg:#FEF2F0; --oracle-soft:#F5BDB0;
+  --sh-sm:0 1px 3px rgba(28,25,23,.06);
+  --sh:0 2px 8px rgba(28,25,23,.08),0 1px 3px rgba(28,25,23,.04);
+  --sh-md:0 8px 24px rgba(28,25,23,.10),0 2px 6px rgba(28,25,23,.04);
+  --sh-lg:0 16px 48px rgba(28,25,23,.12),0 4px 12px rgba(28,25,23,.06);
+  --r-sm:6px; --r:10px; --r-lg:16px; --r-xl:24px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink-1);font-size:15px;line-height:1.6;min-height:100vh}
+/* HEADER */
+.hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;box-shadow:var(--sh-sm)}
+.hdr-brand{display:flex;align-items:center;gap:12px}
+.hdr-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--blue) 0%,#3B82F6 100%);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px;flex-shrink:0}
+.hdr-title{font-size:15px;font-weight:700;letter-spacing:-.3px}
+.hdr-sub{font-size:12px;color:var(--ink-4);margin-top:1px}
+.hdr-badges{display:flex;gap:8px;align-items:center}
+.badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;white-space:nowrap}
+.badge-blue{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-soft)}
+.badge-sap{background:var(--sap-bg);color:var(--sap);border:1px solid var(--sap-soft)}
+.badge-bl{background:var(--bl-bg);color:var(--bl);border:1px solid var(--bl-soft)}
+.badge-aws{background:var(--aws-bg);color:var(--aws);border:1px solid var(--aws-soft)}
+.badge-green{background:var(--green-bg);color:var(--green);border:1px solid var(--green-soft)}
+.badge-amber{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-soft)}
+.badge-red{background:var(--red-bg);color:var(--red);border:1px solid var(--red-soft)}
+/* BREADCRUMB */
+.breadcrumb{background:var(--surface-alt);border-bottom:1px solid var(--border);padding:10px 32px;font-size:12px;color:var(--ink-3);display:flex;align-items:center;gap:8px}
+.breadcrumb a{color:var(--blue);text-decoration:none;cursor:pointer}
+/* TAB NAV */
+.tab-nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px;display:flex;gap:0;overflow-x:auto}
+.tab-btn{padding:13px 18px;font-size:13px;font-weight:500;color:var(--ink-3);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.tab-btn:hover{color:var(--ink-1)}
+.tab-btn.active{color:var(--blue);border-bottom-color:var(--blue);font-weight:600}
+/* PANEL */
+.tab-panel{display:none;padding:32px;max-width:1280px;margin:0 auto}
+.tab-panel.active{display:block}
+/* TYPOGRAPHY */
+.kicker{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--ink-4);margin-bottom:8px}
+.section-title{font-size:22px;font-weight:700;letter-spacing:-.5px;color:var(--ink-1)}
+.section-sub{font-size:14px;color:var(--ink-3);margin-top:6px;max-width:680px;line-height:1.6}
+/* SPACERS */
+.sp-sm{height:12px} .sp{height:20px} .sp-lg{height:32px}
+/* KPI STRIP */
+.kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:24px 0}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px 24px;box-shadow:var(--sh-sm)}
+.kpi-val{font-size:30px;font-weight:800;letter-spacing:-1px;line-height:1}
+.kpi-label{font-size:12px;color:var(--ink-3);margin-top:4px;font-weight:500}
+.kpi-delta{font-size:11px;font-weight:600;margin-top:8px}
+.d-pos{color:var(--green)} .d-neg{color:var(--red)} .d-warn{color:var(--amber-mid)}
+/* HERO */
+.hero{background:linear-gradient(135deg,#1E3A5F 0%,#1D4ED8 100%);border-radius:var(--r-xl);padding:40px 48px;color:#fff;margin-bottom:28px;position:relative;overflow:hidden}
+.hero::after{content:'02';position:absolute;right:48px;top:50%;transform:translateY(-50%);font-size:140px;font-weight:900;opacity:.06;letter-spacing:-4px;line-height:1}
+.hero-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;opacity:.65;margin-bottom:10px}
+.hero-title{font-size:30px;font-weight:800;letter-spacing:-.8px;line-height:1.2;margin-bottom:10px}
+.hero-sub{font-size:14px;opacity:.78;max-width:540px;line-height:1.65}
+.hero-chips{display:flex;gap:8px;margin-top:20px;flex-wrap:wrap}
+.hero-chip{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:500}
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:24px;box-shadow:var(--sh-sm)}
+.card-title{font-size:14px;font-weight:700;color:var(--ink-1);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+/* TWO COL */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+/* SYSTEM BLOCK */
+.sys-blk{border-radius:var(--r-lg);padding:20px;border:1.5px solid}
+.sys-sap{background:var(--sap-bg);border-color:var(--sap-soft)}
+.sys-bl{background:var(--bl-bg);border-color:var(--bl-soft)}
+.sys-aws{background:var(--aws-bg);border-color:var(--aws-soft)}
+.sys-title{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.sys-sap .sys-title{color:var(--sap)}
+.sys-bl .sys-title{color:var(--bl)}
+.sys-aws .sys-title{color:var(--aws)}
+.sys-row{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--ink-2);margin-bottom:7px}
+.sys-dot{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;margin-top:1px}
+.dot-red{background:var(--red-soft);color:var(--red)}
+.dot-green{background:var(--green-soft);color:var(--green)}
+.dot-blue{background:var(--blue-soft);color:var(--blue)}
+.state-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 8px;border-radius:10px;margin-bottom:10px;display:inline-block}
+.state-curr{background:var(--red-bg);color:var(--red);border:1px solid var(--red-soft)}
+.state-future{background:var(--green-bg);color:var(--green);border:1px solid var(--green-soft)}
+/* FLOW ARROW */
+.flow-arrow{display:flex;flex-direction:column;align-items:center;padding:8px 0;gap:3px}
+.flow-line{width:2px;height:24px;background:var(--border)}
+.flow-label{font-size:10px;font-weight:600;color:var(--ink-4);background:var(--bg);padding:2px 8px;border-radius:10px;border:1px solid var(--border);white-space:nowrap}
+.flow-down{color:var(--ink-4);font-size:12px}
+/* WATERFALL TABLE */
+.wf-table{width:100%;border-collapse:collapse;font-size:13px}
+.wf-table th{background:var(--surface-alt);color:var(--ink-3);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:10px 14px;text-align:left;border-bottom:2px solid var(--border)}
+.wf-table th.num{text-align:right}
+.wf-table td{padding:9px 14px;border-bottom:1px solid var(--border-lite);vertical-align:middle}
+.wf-table td.num{text-align:right;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600}
+.wf-table tr:hover td{background:rgba(0,0,0,.015)}
+.row-eq{background:#EBF5FB} .row-eq td{color:var(--sap);font-weight:600}
+.row-ded{background:var(--red-bg)} .row-ded td.num{color:var(--red)}
+.row-sub{background:var(--surface-alt)} .row-sub td{font-weight:700;color:var(--ink-2)}
+.row-cet1{background:linear-gradient(90deg,var(--green-bg),#fff)} .row-cet1 td{font-weight:700;color:var(--green)}
+.row-t1{background:linear-gradient(90deg,var(--blue-bg),#fff)} .row-t1 td{font-weight:700;color:var(--blue)}
+.row-tc{background:linear-gradient(90deg,var(--purple-bg),#fff)} .row-tc td{font-weight:700;color:var(--purple)}
+.row-rwa{background:var(--amber-bg)} .row-rwa td{color:var(--amber);font-weight:600}
+.row-ratio{background:var(--surface)} .row-ratio td{font-size:13px;font-weight:700}
+.row-section{background:var(--surface-alt)}
+.row-section td{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-4);padding:7px 14px;border-bottom:1px solid var(--border)}
+.ded-num{font-size:10px;color:var(--ink-4);font-weight:600}
+.ratio-bar{height:6px;border-radius:3px;background:var(--border);overflow:hidden;margin-top:5px;min-width:80px}
+.ratio-fill{height:100%;border-radius:3px;transition:width .6s}
+/* DEDUCTION TABLE */
+.ded-table{width:100%;border-collapse:collapse;font-size:12px}
+.ded-table th{background:var(--surface-alt);color:var(--ink-3);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:9px 12px;text-align:left;border-bottom:2px solid var(--border);white-space:nowrap}
+.ded-table td{padding:9px 12px;border-bottom:1px solid var(--border-lite);vertical-align:top}
+.ded-table tr:hover td{background:rgba(0,0,0,.015)}
+.ded-ref{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-4);font-weight:600}
+.ded-gl{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--sap);background:var(--sap-bg);padding:2px 6px;border-radius:var(--r-sm)}
+.ded-amt{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--red);font-weight:700;text-align:right;white-space:nowrap}
+.ded-amt.zero{color:var(--ink-4)}
+.comp-hi{background:var(--red-bg);color:var(--red);padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700}
+.comp-med{background:var(--amber-bg);color:var(--amber-mid);padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700}
+.comp-lo{background:var(--green-bg);color:var(--green);padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700}
+.ai-tag{background:var(--blue-bg);color:var(--blue);padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700;border:1px solid var(--blue-soft)}
+/* WORKPAPER */
+.wp{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:28px 32px;font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.8;box-shadow:var(--sh-sm)}
+.wp-title{font-family:'Inter',sans-serif;font-size:14px;font-weight:700;margin-bottom:6px;color:var(--ink-1)}
+.wp-meta{font-family:'Inter',sans-serif;font-size:12px;color:var(--ink-3);margin-bottom:20px;display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.wp-section{font-weight:600;color:var(--ink-2);margin:14px 0 6px}
+.wp-line{display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px dotted var(--border-lite)}
+.wp-line:last-child{border-bottom:none}
+.wp-total{display:flex;justify-content:space-between;font-weight:700;padding:4px 0;border-top:2px solid var(--ink-2);margin-top:4px;color:var(--ink-1)}
+.wp-sub{display:flex;justify-content:space-between;font-weight:700;padding:3px 0;border-top:1px solid var(--border);color:var(--ink-2)}
+.wp-ded{color:var(--red)}
+.wp-pos{color:var(--green)}
+.wp-highlight{background:var(--amber-bg);padding:3px 8px;border-radius:var(--r-sm);color:var(--amber)}
+.wp-ok{color:var(--green)}
+.wp-open{background:var(--amber-bg);color:var(--amber);padding:1px 6px;border-radius:var(--r-sm);font-size:10px;font-weight:700}
+.signoff{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:20px}
+.signoff-box{border:1px solid var(--border);border-radius:var(--r);padding:14px;font-family:'Inter',sans-serif;font-size:12px}
+.signoff-role{font-weight:700;color:var(--ink-2);font-size:11px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.signoff-line{border-bottom:1px solid var(--border);margin:20px 0 6px;height:1px}
+.signoff-name{font-size:12px;color:var(--ink-3)}
+/* BREAK CARDS */
+.break-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.break-card{border-radius:var(--r-lg);padding:20px;border:1.5px solid}
+.p1{background:#FFF5F5;border-color:#FEB2B2}
+.p2{background:var(--amber-bg);border-color:var(--amber-soft)}
+.p3{background:var(--blue-bg);border-color:var(--blue-soft)}
+.break-sev{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;padding:3px 10px;border-radius:20px;display:inline-block}
+.sev-p1{background:var(--red-soft);color:var(--red)}
+.sev-p2{background:var(--amber-soft);color:var(--amber)}
+.sev-p3{background:var(--blue-soft);color:var(--blue)}
+.break-name{font-size:14px;font-weight:700;color:var(--ink-1);margin-bottom:4px}
+.break-thr{font-size:12px;font-weight:600;color:var(--ink-3);margin-bottom:8px}
+.break-item{font-size:12px;color:var(--ink-2);margin-bottom:4px;display:flex;gap:6px;align-items:flex-start}
+/* AI AUTOMATION */
+.ai-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.ai-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;box-shadow:var(--sh-sm);display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start}
+.ai-num{width:40px;height:40px;border-radius:var(--r-sm);background:var(--blue-bg);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;border:1px solid var(--blue-soft)}
+.ai-name{font-size:14px;font-weight:700;color:var(--ink-1);margin-bottom:4px}
+.ai-desc{font-size:12px;color:var(--ink-3);line-height:1.5;margin-bottom:10px}
+.ai-compare{display:flex;align-items:center;gap:8px}
+.ai-from{font-size:13px;font-weight:700;color:var(--red);text-decoration:line-through;opacity:.7}
+.ai-arrow{font-size:14px;color:var(--ink-4)}
+.ai-to{font-size:20px;font-weight:800;color:var(--green);letter-spacing:-.5px}
+.ai-unit{font-size:11px;color:var(--ink-4);font-weight:500}
+.ai-source{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.ai-chip{font-size:10px;font-weight:500;padding:2px 7px;border-radius:8px;border:1px solid var(--border);color:var(--ink-3);background:var(--bg)}
+/* TOTAL SAVINGS */
+.savings-banner{background:linear-gradient(135deg,var(--green) 0%,#22C55E 100%);border-radius:var(--r-xl);padding:28px 36px;color:#fff;display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:24px}
+.sav-item{text-align:center}
+.sav-val{font-size:30px;font-weight:800;letter-spacing:-1px}
+.sav-lbl{font-size:12px;opacity:.8;margin-top:4px}
+/* PROCESS TIMELINE */
+.tl-wrap{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.tl-col h3{font-size:13px;font-weight:700;padding:10px 16px;border-radius:var(--r-sm);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.tl-before h3{background:var(--red-bg);color:var(--red);border:1px solid var(--red-soft)}
+.tl-after h3{background:var(--green-bg);color:var(--green);border:1px solid var(--green-soft)}
+.tl-step{display:flex;gap:12px;margin-bottom:12px}
+.tl-mark{flex-shrink:0;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.tl-before .tl-mark{background:var(--red-soft);color:var(--red)}
+.tl-after .tl-mark{background:var(--green-soft);color:var(--green)}
+.tl-day{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-4)}
+.tl-name{font-size:13px;font-weight:600;color:var(--ink-1);margin:2px 0}
+.tl-detail{font-size:12px;color:var(--ink-3);line-height:1.5}
+.tl-effort{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;margin-top:4px;padding:2px 8px;border-radius:10px}
+.tl-before .tl-effort{background:var(--red-bg);color:var(--red)}
+.tl-after .tl-effort{background:var(--green-bg);color:var(--green)}
+/* INFO / HIGHLIGHT BOX */
+.info-box{background:var(--blue-bg);border:1px solid var(--blue-soft);border-radius:var(--r);padding:14px 18px;font-size:13px;color:#1E40AF;margin:12px 0;line-height:1.6}
+.highlight-box{background:var(--amber-bg);border:1px solid var(--amber-soft);border-radius:var(--r);padding:14px 18px;font-size:13px;color:var(--amber);margin:12px 0;line-height:1.6}
+/* DIVIDER */
+.divider{height:1px;background:var(--border);margin:24px 0}
+/* RESPONSIVE */
+@media(max-width:900px){
+  .kpi-strip,.two-col,.three-col,.tl-wrap{grid-template-columns:1fr 1fr}
+  .ai-grid,.break-grid{grid-template-columns:1fr}
+  .savings-banner{grid-template-columns:1fr 1fr}
+}
+@media(max-width:600px){
+  .tab-panel{padding:16px}
+  .kpi-strip{grid-template-columns:1fr}
+  .savings-banner{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="hdr-brand">
+    <div class="hdr-icon">GL<br><span style="font-size:9px;font-weight:500;opacity:.8">CAP</span></div>
+    <div>
+      <div class="hdr-title">Agent 02 · GL-to-Capital Reconciliation</div>
+      <div class="hdr-sub">IFRS Equity → CET1 Waterfall · OSFI CAR Chapter 2</div>
+    </div>
+  </div>
+  <div class="hdr-badges">
+    <span class="badge badge-sap">SAP S/4HANA</span>
+    <span class="badge badge-bl">BlackLine</span>
+    <span class="badge badge-aws">AWS Bedrock</span>
+    <span class="badge badge-green">OSFI CAR 2024</span>
+  </div>
+</header>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb">
+  <a>Capital Intelligence Platform</a>
+  <span>›</span>
+  <a>Agent Catalog</a>
+  <span>›</span>
+  <span style="color:var(--ink-1);font-weight:600">Agent 02 · GL-to-Capital Reconciliation</span>
+</div>
+
+<!-- TAB NAV -->
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="go('overview',this)">⬡ Overview</button>
+  <button class="tab-btn" onclick="go('sources',this)">⛁ Source Systems</button>
+  <button class="tab-btn" onclick="go('waterfall',this)">≋ CET1 Waterfall</button>
+  <button class="tab-btn" onclick="go('deductions',this)">⊟ 15 Deductions</button>
+  <button class="tab-btn" onclick="go('process',this)">⇄ Process Flow</button>
+  <button class="tab-btn" onclick="go('workpaper',this)">📋 Rec Workpaper</button>
+  <button class="tab-btn" onclick="go('breaks',this)">⚠ Break Analysis</button>
+  <button class="tab-btn" onclick="go('automation',this)">⚡ AI Automation</button>
+</nav>
+
+<!-- ════ TAB: OVERVIEW ════ -->
+<div id="overview" class="tab-panel active">
+  <div class="hero">
+    <div class="hero-label">Capital Intelligence Platform · Agent 02</div>
+    <div class="hero-title">GL-to-Capital Reconciliation Agent</div>
+    <div class="hero-sub">Bridges SAP S/4HANA trial balance and BlackLine reconciled accounts to OSFI regulatory capital through an automated 23-step CET1 waterfall — applying all 15 OSFI CAR Chapter 2 deductions with complete audit trail.</div>
+    <div class="hero-chips">
+      <span class="hero-chip">SAP S/4HANA · GL API</span>
+      <span class="hero-chip">BlackLine · Rec Status API</span>
+      <span class="hero-chip">AWS Bedrock Agent</span>
+      <span class="hero-chip">OSFI CAR Ch.2</span>
+      <span class="hero-chip">CET1 · AT1 · T2</span>
+      <span class="hero-chip">BCBS 239 Lineage</span>
+    </div>
+  </div>
+
+  <div class="kpi-strip">
+    <div class="kpi">
+      <div class="kpi-val" style="color:var(--green)">T+1</div>
+      <div class="kpi-label">CET1 Waterfall Available</div>
+      <div class="kpi-delta d-pos">↓ vs T+6 today (manual)</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-val" style="color:var(--blue)">3.8 hrs</div>
+      <div class="kpi-label">Agent Processing Time</div>
+      <div class="kpi-delta d-pos">↓ 96% vs 85 hrs manual</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-val" style="color:var(--teal)">15</div>
+      <div class="kpi-label">OSFI Deductions Automated</div>
+      <div class="kpi-delta d-pos">100% coverage · OSFI CAR Ch.2</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-val" style="color:var(--amber-mid)">Zero</div>
+      <div class="kpi-label">Spreadsheets in Chain</div>
+      <div class="kpi-delta d-pos">↓ from 40+ workbooks today</div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title">⬡ Agent Role in BCAR Architecture</div>
+      <p style="font-size:13px;color:var(--ink-2);line-height:1.7;margin-bottom:12px">Agent 02 is the <strong>foundational bridge</strong> in the capital reporting chain. Every other agent depends on the CET1 baseline this agent produces. It performs the most complex, high-risk step in the BCAR process — translating IFRS accounting into OSFI regulatory capital.</p>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:8px 12px;background:var(--sap-bg);border-radius:var(--r-sm);border:1px solid var(--sap-soft)"><strong style="color:var(--sap)">INPUT:</strong><span style="color:var(--ink-2)">SAP S/4HANA trial balance · BlackLine reconciled positions · Capital Engine outputs</span></div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:8px 12px;background:var(--green-bg);border-radius:var(--r-sm);border:1px solid var(--green-soft)"><strong style="color:var(--green)">OUTPUT:</strong><span style="color:var(--ink-2)">CET1/T1/Total Capital waterfall · OSFI Workpaper · Break analysis · CRO dashboard data</span></div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:8px 12px;background:var(--blue-bg);border-radius:var(--r-sm);border:1px solid var(--blue-soft)"><strong style="color:var(--blue)">DOWNSTREAM:</strong><span style="color:var(--ink-2)">Feeds Agent 04 (Capital Calc), Agent 08 (Analytics), Agent 12 (Submission Quality)</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">⚡ Current vs Future State — This Agent</div>
+      <div style="margin-bottom:14px">
+        <span class="state-lbl state-curr">Current State</span>
+        <div style="font-size:13px;color:var(--ink-2);line-height:1.7">S/4HANA trial balance exported via SAP BW/SE16N → loaded into Excel workbook → 15 deductions calculated manually with hardcoded OSFI parameters → BlackLine reconciliation reviewed separately → manually reconciled back to capital position. <strong>T+6, 30+ hrs, 4 spreadsheet owners.</strong></div>
+      </div>
+      <div>
+        <span class="state-lbl state-future">Future State (AWS Bedrock)</span>
+        <div style="font-size:13px;color:var(--ink-2);line-height:1.7">S/4HANA GL API triggers agent at period close → BlackLine rec status auto-ingested → all 15 deductions calculated using OSFI Knowledge Base parameters → CET1 waterfall generated with full BCBS 239 lineage. <strong>T+1, 3.8 hrs, zero spreadsheets.</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sp"></div>
+
+  <div class="info-box"><strong>Why This Agent Is Critical:</strong> The GL-to-Capital bridge is where most OSFI findings originate. Manual GL account mapping errors, stale OSFI parameter tables, and unreconciled BlackLine positions have historically caused CET1 restatements. AWS Bedrock agent with an OSFI CAR 2024 Knowledge Base eliminates all three root causes.</div>
+</div>
+
+<!-- ════ TAB: SOURCE SYSTEMS ════ -->
+<div id="sources" class="tab-panel">
+  <div class="kicker">Data Connections</div>
+  <div class="section-title">Source System Architecture</div>
+  <div class="section-sub">Agent 02 connects to two primary data sources — SAP S/4HANA for GL balances and BlackLine for reconciled account positions — and one secondary source, the Capital Engine, for IRB outputs.</div>
+  <div class="sp"></div>
+
+  <!-- System Boxes Row -->
+  <div style="display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:0;align-items:start;margin-bottom:24px">
+
+    <div class="sys-blk sys-sap">
+      <div class="sys-title">◈ SAP S/4HANA · General Ledger</div>
+      <div style="margin-bottom:12px">
+        <span class="state-lbl state-curr">Current State</span>
+        <div class="sys-row"><div class="sys-dot dot-red">✕</div><div>Manual export via SE16N / BW report (ZFICAP query) — runs every quarter, no scheduling</div></div>
+        <div class="sys-row"><div class="sys-dot dot-red">✕</div><div>Trial balance downloaded as CSV → reformatted in Excel → GL accounts manually mapped to OSFI capital categories</div></div>
+        <div class="sys-row"><div class="sys-dot dot-red">✕</div><div>Mapping table maintained in a shared spreadsheet — version control risk, stale accounts after COA changes</div></div>
+        <div class="sys-row"><div class="sys-dot dot-red">✕</div><div>No automated validation — duplicate accounts, missing sub-accounts go undetected</div></div>
+      </div>
+      <div>
+        <span class="state-lbl state-future">Future State (API)</span>
+        <div class="sys-row"><div class="sys-dot dot-green">✓</div><div>SAP S/4HANA SOAP/REST API (OData) — GL account balances extracted at period close trigger</div></div>
+        <div class="sys-row"><div class="sys-dot dot-green">✓</div><div>Bedrock agent applies S/4HANA GL account → OSFI capital category mapping from governed Knowledge Base</div></div>
+        <div class="sys-row"><div class="sys-dot dot-green">✓</div><div>Full BCBS 239 lineage: every capital line traceable to specific S/4HANA GL accounts and posting periods</div></div>
+        <div class="sys-row"><div class="sys-dot dot-green">✓</div><div>Automated completeness check — flags missing accounts vs. prior period and COA master</div></div>
+      </div>
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--sap-soft)">
+        <div style="font-size:11px;font-weight:700;color:var(--sap);margin-bottom:6px">KEY GL ACCOUNT RANGES CONSUMED</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;background:var(--surface);border:1px solid var(--sap-soft);padding:3px 8px;border-radius:var(--r-sm);color:var(--sap)">1xxxxx Assets</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;background:var(--surface);border:1px solid var(--sap-soft);padding:3px 8px;border-radius:var(--r-sm);color:var(--sap)">2xxxxx Liabilities</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;background:var(--surface);border:1px solid var(--sap-soft);padding:3px 8px;border-radius:var(--r-sm);color:var(--sap)">3xxxxx Equity</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;background:var(--surface);border:1px solid var(--sap-soft);padding:3px 8px;border-radius:var(--r-sm);color:var(--sap)">431xxx DVA</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;background:var(--surface);border:1px solid var(--sap-soft);padding:3px 8px;border-radius:var(--r-sm);color:var(--sap)">116xxx Goodwill</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;background:var(--surface);border:1px solid var(--sap-soft);padding:3px 8px;border-radius:var(--r-sm);color:var(--sap)">136xxx DTA</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;background:var(--surface);border:1px solid var(--sap-soft);padding:3px 8px;border-radius:var(--r-sm);color:var(--sap)">151xxx Investments</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 16px;gap:6px;min-height:300px">
+      <div style="width:2px;flex:1;background:var(--border)"></div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:6px 12px;font-size:11px;font-weight:600;color:var(--ink-4);white-space:nowrap">+ Capital<br>Engine</div>
+      <div style="width:2px;flex:1;background:var(--border)"></div>
+      <div style="color:var(--blue);font-size:20px">→</div>
+      <div style="background:var(--blue-bg);border:1px solid var(--blue-soft);border-radius:var(--r-sm);padding:6px 12px;font-size:11px;font-weight:700;color:var(--blue);white-space:nowrap;text-align:center">AWS<br>Bedrock<br>Agent 02</div>
+      <div style="width:2px;flex:1;background:var(--border)"></div>
+    </div>
+
+    <div class="sys-blk sys-bl">
+      <div class="sys-title">◈ BlackLine · Reconciliation Platform</div>
+      <div style="margin-bottom:12px">
+        <span class="state-lbl state-curr">Current State</span>
+        <div class="sys-row"><div class="sys-dot dot-red">✕</div><div>BlackLine rec status reviewed manually each quarter — capital team logs into BlackLine separately from BCAR process</div></div>
+        <div class="sys-row"><div class="sys-dot dot-red">✕</div><div>Open reconciling items in BlackLine not systematically assessed for capital materiality — risk of unrecognized capital adjustments</div></div>
+        <div class="sys-row"><div class="sys-dot dot-red">✕</div><div>No automated bridge between BlackLine balance vs. GL balance and OSFI capital impact</div></div>
+        <div class="sys-row"><div class="sys-dot dot-red">✕</div><div>BlackLine close certification timeline not synchronized with BCAR T-minus calendar — delays capital team</div></div>
+      </div>
+      <div>
+        <span class="state-lbl state-future">Future State (API)</span>
+        <div class="sys-row"><div class="sys-dot dot-green">✓</div><div>BlackLine REST API — agent pulls reconciliation status for all capital-relevant accounts at period close</div></div>
+        <div class="sys-row"><div class="sys-dot dot-green">✓</div><div>Open items automatically assessed against OSFI materiality threshold ($50M CET1 impact = P1 escalation)</div></div>
+        <div class="sys-row"><div class="sys-dot dot-green">✓</div><div>BlackLine certified balance used as authoritative source for GL-to-Capital agent; rejects GL balance if BlackLine certification is pending</div></div>
+        <div class="sys-row"><div class="sys-dot dot-green">✓</div><div>Agent auto-generates BlackLine open item impact summary for CRO review — zero manual intervention</div></div>
+      </div>
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--bl-soft)">
+        <div style="font-size:11px;font-weight:700;color:var(--bl);margin-bottom:6px">BLACKLINE ACCOUNTS MONITORED (CAPITAL-RELEVANT)</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          <span style="font-size:10px;background:var(--surface);border:1px solid var(--bl-soft);padding:3px 8px;border-radius:var(--r-sm);color:var(--bl)">Goodwill / Intangibles</span>
+          <span style="font-size:10px;background:var(--surface);border:1px solid var(--bl-soft);padding:3px 8px;border-radius:var(--r-sm);color:var(--bl)">Deferred Tax Assets</span>
+          <span style="font-size:10px;background:var(--surface);border:1px solid var(--bl-soft);padding:3px 8px;border-radius:var(--r-sm);color:var(--bl)">Investment Securities</span>
+          <span style="font-size:10px;background:var(--surface);border:1px solid var(--bl-soft);padding:3px 8px;border-radius:var(--r-sm);color:var(--bl)">Pension Obligations</span>
+          <span style="font-size:10px;background:var(--surface);border:1px solid var(--bl-soft);padding:3px 8px;border-radius:var(--r-sm);color:var(--bl)">AOCI (AFS / CFH)</span>
+          <span style="font-size:10px;background:var(--surface);border:1px solid var(--bl-soft);padding:3px 8px;border-radius:var(--r-sm);color:var(--bl)">Equity Participations</span>
+          <span style="font-size:10px;background:var(--surface);border:1px solid var(--bl-soft);padding:3px 8px;border-radius:var(--r-sm);color:var(--bl)">Sub-debt Instruments</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Output Box -->
+  <div class="card">
+    <div class="card-title">⬡ Medallion Zone: How Data Flows Through Agent 02</div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:0;align-items:stretch">
+      <div style="background:#FEF3C7;border:1px solid #FDE68A;border-radius:var(--r-lg) 0 0 var(--r-lg);padding:16px;text-align:center">
+        <div style="font-size:11px;font-weight:700;color:#92400E;margin-bottom:6px">🥉 BRONZE</div>
+        <div style="font-size:12px;color:var(--ink-3)">Raw S/4HANA trial balance + BlackLine export → S3 raw zone. No transformation.</div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:center;background:#FAFAFA;border-top:1px solid var(--border);border-bottom:1px solid var(--border);font-size:18px;color:var(--ink-4)">→</div>
+      <div style="background:var(--green-bg);border:1px solid var(--green-soft);padding:16px;text-align:center">
+        <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:6px">🥈 SILVER</div>
+        <div style="font-size:12px;color:var(--ink-3)">GL accounts mapped to OSFI categories. BlackLine statuses validated. Reconciling items assessed. BCBS 239 tags applied.</div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:center;background:#FAFAFA;border-top:1px solid var(--border);border-bottom:1px solid var(--border);font-size:18px;color:var(--ink-4)">→</div>
+      <div style="background:var(--blue-bg);border:1px solid var(--blue-soft);border-radius:0 var(--r-lg) var(--r-lg) 0;padding:16px;text-align:center">
+        <div style="font-size:11px;font-weight:700;color:var(--blue);margin-bottom:6px">🥇 GOLD</div>
+        <div style="font-size:12px;color:var(--ink-3)">OSFI-validated CET1 waterfall. All 15 deductions calculated. Workpaper ready. Feeds Agents 04, 08, 12.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ TAB: CET1 WATERFALL ════ -->
+<div id="waterfall" class="tab-panel">
+  <div class="kicker">Regulatory Capital Waterfall · Illustrative (~$200B D-SIB Bank)</div>
+  <div class="section-title">IFRS Equity → CET1 → Tier 1 → Total Capital</div>
+  <div class="section-sub">Full 23-line waterfall from IFRS balance sheet equity to OSFI regulatory capital ratios. All figures illustrative for a ~$200B Canadian D-SIB bank. OSFI CAR Q4 2024.</div>
+  <div class="sp"></div>
+
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--sh-sm)">
+    <table class="wf-table">
+      <colgroup><col style="width:40px"><col style="width:auto"><col style="width:160px"><col style="width:100px"><col style="width:160px"></colgroup>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Capital Component / Deduction</th>
+          <th class="num">Amount (CAD $M)</th>
+          <th>OSFI CAR Ref</th>
+          <th>Data Source</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="row-section"><td colspan="5">A · IFRS Balance Sheet Equity (Starting Point)</td></tr>
+        <tr class="row-eq"><td>01</td><td>Common Share Capital</td><td class="num">$12,500</td><td>CAR §2.1.1</td><td><span class="badge badge-sap" style="font-size:10px">3xxxxx Equity</span></td></tr>
+        <tr class="row-eq"><td>02</td><td>Retained Earnings</td><td class="num">$28,200</td><td>CAR §2.1.1</td><td><span class="badge badge-sap" style="font-size:10px">3xxxxx Equity</span></td></tr>
+        <tr class="row-eq"><td>03</td><td>Accumulated Other Comprehensive Income (AOCI)</td><td class="num">$1,800</td><td>CAR §2.1.1</td><td><span class="badge badge-sap" style="font-size:10px">322xxx AOCI</span></td></tr>
+        <tr class="row-eq"><td>04</td><td>Other Equity Reserves</td><td class="num">$2,630</td><td>CAR §2.1.1</td><td><span class="badge badge-sap" style="font-size:10px">3xxxxx Equity</span></td></tr>
+        <tr class="row-sub"><td></td><td><strong>Total IFRS Equity</strong></td><td class="num"><strong>$45,130</strong></td><td></td><td></td></tr>
+
+        <tr class="row-section"><td colspan="5">B · Phase 1 Deductions (Full Deduction — No Threshold)</td></tr>
+        <tr class="row-ded"><td><span class="ded-num">D01</span></td><td>Less: Goodwill (net of associated DTL)</td><td class="num">($6,200)</td><td>CAR §2.1.4</td><td><span class="badge badge-sap" style="font-size:10px">116xxx Intangibles</span></td></tr>
+        <tr class="row-ded"><td><span class="ded-num">D02</span></td><td>Less: Other Intangible Assets (net of DTL)</td><td class="num">($3,800)</td><td>CAR §2.1.5</td><td><span class="badge badge-sap" style="font-size:10px">117xxx Intangibles</span></td></tr>
+        <tr class="row-ded"><td><span class="ded-num">D03</span></td><td>Less: Debit Valuation Adjustment (DVA)</td><td class="num">($180)</td><td>CAR §2.1.6</td><td><span class="badge badge-sap" style="font-size:10px">431xxx FV Derivatives</span></td></tr>
+        <tr class="row-ded"><td><span class="ded-num">D04</span></td><td>Less: Cash Flow Hedge Reserve</td><td class="num">($420)</td><td>CAR §2.1.7</td><td><span class="badge badge-sap" style="font-size:10px">322xxx AOCI</span></td></tr>
+        <tr class="row-ded"><td><span class="ded-num">D05</span></td><td>Less: Pension Net Asset (IAS 19 surplus)</td><td class="num">($95)</td><td>CAR §2.1.8</td><td><span class="badge badge-sap" style="font-size:10px">123xxx Other Assets</span></td></tr>
+        <tr class="row-ded"><td><span class="ded-num">D06</span></td><td>Less: Deferred Tax Assets — Tax Loss Carryforwards</td><td class="num">($210)</td><td>CAR §2.1.9</td><td><span class="badge badge-sap" style="font-size:10px">136xxx DTA</span></td></tr>
+        <tr class="row-sub"><td></td><td><em>Phase 1 Deduction Subtotal</em></td><td class="num"><em>($10,905)</em></td><td></td><td></td></tr>
+        <tr class="row-sub"><td></td><td><strong>After Phase 1 Deductions</strong></td><td class="num"><strong>$34,225</strong></td><td></td><td></td></tr>
+
+        <tr class="row-section"><td colspan="5">C · Phase 2 Deductions (Threshold / Other — OSFI CAR Chapter 2)</td></tr>
+        <tr class="row-ded"><td><span class="ded-num">D07</span></td><td>Less: DTA Temporary Differences (above 10% threshold)</td><td class="num">($1,240)</td><td>CAR §2.1.10</td><td><span class="badge badge-sap" style="font-size:10px">136xxx DTA</span></td></tr>
+        <tr class="row-ded"><td><span class="ded-num">D08</span></td><td>Less: AFS Unrealized Gains Filter (equity securities)</td><td class="num">($120)</td><td>CAR §2.1.11</td><td><span class="badge badge-sap" style="font-size:10px">321xxx AOCI-AFS</span></td></tr>
+        <tr class="row-ded"><td><span class="ded-num">D09</span></td><td>Less: Securitization Gain on Sale</td><td class="num">($85)</td><td>CAR §2.1.12</td><td><span class="badge badge-sap" style="font-size:10px">475xxx Other Income</span></td></tr>
+        <tr class="row-ded"><td><span class="ded-num">D10</span></td><td>Less: IRB Expected Loss Shortfall (50% CET1 allocation)</td><td class="num">($580)</td><td>CAR §2.1.13</td><td><span class="badge badge-aws" style="font-size:10px">Capital Engine</span></td></tr>
+        <tr class="row-ded"><td><span class="ded-num">D11</span></td><td>Less: Significant Investments (above combined 17.65% threshold)</td><td class="num">($890)</td><td>CAR §2.1.14</td><td><span class="badge badge-sap" style="font-size:10px">151xxx Investments</span></td></tr>
+        <tr class="row-ded"><td><span class="ded-num">D12</span></td><td>Less: Mortgage Servicing Rights (below 10% threshold — no deduction)</td><td class="num ded-amt zero">—</td><td>CAR §2.1.14</td><td><span class="badge badge-sap" style="font-size:10px">118xxx MSR</span></td></tr>
+        <tr class="row-ded"><td><span class="ded-num">D13</span></td><td>Less: Minority Interest (non-qualifying excess)</td><td class="num">($75)</td><td>CAR §2.1.15</td><td><span class="badge badge-sap" style="font-size:10px">385xxx NCI</span></td></tr>
+        <tr class="row-ded"><td><span class="ded-num">D14</span></td><td>Less: Reciprocal Cross-Holdings</td><td class="num">($45)</td><td>CAR §2.1.16</td><td><span class="badge badge-sap" style="font-size:10px">151xxx Investments</span></td></tr>
+        <tr class="row-ded"><td><span class="ded-num">D15</span></td><td>Less: Investment in Unconsolidated Financial Subsidiaries</td><td class="num">($565)</td><td>CAR §2.1.17</td><td><span class="badge badge-sap" style="font-size:10px">154xxx Uncons. Subs</span></td></tr>
+        <tr class="row-sub"><td></td><td><em>Phase 2 Deduction Subtotal</em></td><td class="num"><em>($3,600)</em></td><td></td><td></td></tr>
+
+        <tr class="row-section"><td colspan="5">D · Common Equity Tier 1 Capital</td></tr>
+        <tr class="row-cet1"><td></td><td><strong>CET1 Capital</strong></td><td class="num"><strong>$30,625</strong></td><td>CAR §2.1</td><td>Agent 02 Output</td></tr>
+        <tr class="row-rwa"><td></td><td>Total Risk-Weighted Assets (RWA)</td><td class="num">$231,500</td><td>CAR Ch.4–8</td><td>Agents 05, 06, 07</td></tr>
+        <tr class="row-ratio"><td></td><td>
+          <strong>CET1 Ratio</strong>
+          <div class="ratio-bar"><div class="ratio-fill" style="width:70%;background:var(--green)"></div></div>
+          <span style="font-size:11px;color:var(--ink-4)">OSFI Minimum (D-SIB): 11.50% | Headroom: +173bps</span>
+        </td><td class="num" style="color:var(--green);font-size:18px"><strong>13.23%</strong></td><td></td><td></td></tr>
+
+        <tr class="row-section"><td colspan="5">E · Additional Tier 1 (AT1) and Total Tier 1</td></tr>
+        <tr><td></td><td>AT1 — NVCC Preferred Shares (OSFI-eligible)</td><td class="num">$3,415</td><td>CAR §3.1</td><td><span class="badge badge-sap" style="font-size:10px">3xxxxx Equity</span></td></tr>
+        <tr class="row-t1"><td></td><td><strong>Tier 1 Capital (CET1 + AT1)</strong></td><td class="num"><strong>$34,040</strong></td><td>CAR §2+3</td><td></td></tr>
+        <tr class="row-ratio"><td></td><td><strong>Tier 1 Ratio</strong><span style="font-size:11px;font-weight:400;color:var(--ink-4);margin-left:8px">OSFI Min: 9.50%</span></td><td class="num" style="color:var(--blue)"><strong>14.70%</strong></td><td></td><td></td></tr>
+
+        <tr class="row-section"><td colspan="5">F · Tier 2 Capital and Total Capital</td></tr>
+        <tr><td></td><td>T2 — Subordinated Debt (NVCC, qualifying)</td><td class="num">$3,640</td><td>CAR §4.1</td><td><span class="badge badge-sap" style="font-size:10px">2xxxxx Liabilities</span></td></tr>
+        <tr><td></td><td>T2 — IRB Excess Expected Loss (50% T2 allocation)</td><td class="num">$1,420</td><td>CAR §4.2</td><td><span class="badge badge-aws" style="font-size:10px">Capital Engine</span></td></tr>
+        <tr class="row-tc"><td></td><td><strong>Total Capital (T1 + T2)</strong></td><td class="num"><strong>$39,100</strong></td><td>CAR §2+3+4</td><td></td></tr>
+        <tr class="row-ratio"><td></td><td><strong>Total Capital Ratio</strong><span style="font-size:11px;font-weight:400;color:var(--ink-4);margin-left:8px">OSFI Min: 11.50%</span></td><td class="num" style="color:var(--purple)"><strong>16.90%</strong></td><td></td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sp"></div>
+  <div class="three-col">
+    <div class="card" style="text-align:center">
+      <div style="font-size:28px;font-weight:800;color:var(--green)">$30,625M</div>
+      <div style="font-size:13px;font-weight:600;color:var(--ink-2);margin-top:4px">CET1 Capital</div>
+      <div style="font-size:12px;color:var(--ink-4);margin-top:2px">13.23% · +173bps over floor</div>
+    </div>
+    <div class="card" style="text-align:center">
+      <div style="font-size:28px;font-weight:800;color:var(--red)">($14,505M)</div>
+      <div style="font-size:13px;font-weight:600;color:var(--ink-2);margin-top:4px">Total Deductions</div>
+      <div style="font-size:12px;color:var(--ink-4);margin-top:2px">15 OSFI CAR Ch.2 items · 32.1% of IFRS Equity</div>
+    </div>
+    <div class="card" style="text-align:center">
+      <div style="font-size:28px;font-weight:800;color:var(--amber-mid)">$231,500M</div>
+      <div style="font-size:13px;font-weight:600;color:var(--ink-2);margin-top:4px">Total RWA</div>
+      <div style="font-size:12px;color:var(--ink-4);margin-top:2px">Credit $168B · Market $28B · OpRisk $35.5B</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ TAB: 15 DEDUCTIONS ════ -->
+<div id="deductions" class="tab-panel">
+  <div class="kicker">OSFI CAR Chapter 2 · All 15 Regulatory Deductions</div>
+  <div class="section-title">Automated Deduction Engine</div>
+  <div class="section-sub">Every deduction mapped to its SAP S/4HANA GL account range, OSFI CAR reference, calculation logic, complexity rating, and AI automation point. Agent 02 runs all 15 without human intervention.</div>
+  <div class="sp"></div>
+
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--sh-sm)">
+    <table class="ded-table">
+      <thead>
+        <tr>
+          <th style="width:40px">#</th>
+          <th>Deduction</th>
+          <th>OSFI CAR Ref</th>
+          <th>S/4HANA GL Range</th>
+          <th>Calculation Logic</th>
+          <th>Complexity</th>
+          <th class="num" style="text-align:right">Illust. ($M)</th>
+          <th>AI Point</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="ded-num">D01</span></td><td><strong>Goodwill</strong><br><span style="color:var(--ink-4);font-weight:400">Net of associated deferred tax liability</span></td><td><span class="ded-ref">§2.1.4</span></td><td><span class="ded-gl">116xxx</span></td><td style="font-size:11px;color:var(--ink-3)">Full deduction. Goodwill balance less DTL that would arise from unwinding (if any). Includes goodwill embedded in equity method investments.</td><td><span class="comp-lo">LOW</span></td><td class="ded-amt">($6,200)</td><td><span class="ai-tag">AI-01</span></td></tr>
+
+        <tr><td><span class="ded-num">D02</span></td><td><strong>Other Intangibles</strong><br><span style="color:var(--ink-4);font-weight:400">Excluding MSR — net of DTL</span></td><td><span class="ded-ref">§2.1.5</span></td><td><span class="ded-gl">117xxx</span></td><td style="font-size:11px;color:var(--ink-3)">Full deduction. Purchased and internally developed intangibles excluding mortgage servicing rights. Agent identifies and excludes MSR sub-accounts automatically.</td><td><span class="comp-med">MEDIUM</span></td><td class="ded-amt">($3,800)</td><td><span class="ai-tag">AI-01</span></td></tr>
+
+        <tr><td><span class="ded-num">D03</span></td><td><strong>Debit Valuation Adjustment (DVA)</strong><br><span style="color:var(--ink-4);font-weight:400">Own-credit risk MTM on derivatives</span></td><td><span class="ded-ref">§2.1.6</span></td><td><span class="ded-gl">431xxx</span></td><td style="font-size:11px;color:var(--ink-3)">Deduct cumulative unrealized gain attributable to own credit risk deterioration in derivative fair values. Can be negative (add-back) if own credit has improved.</td><td><span class="comp-med">MEDIUM</span></td><td class="ded-amt">($180)</td><td><span class="ai-tag">AI-01</span></td></tr>
+
+        <tr><td><span class="ded-num">D04</span></td><td><strong>Cash Flow Hedge Reserve</strong><br><span style="color:var(--ink-4);font-weight:400">Unrealized AOCI from CFH derivatives</span></td><td><span class="ded-ref">§2.1.7</span></td><td><span class="ded-gl">322xxx</span></td><td style="font-size:11px;color:var(--ink-3)">Remove from CET1 the unrealized gains/losses on cash flow hedging instruments recorded in AOCI. Both positive and negative amounts are excluded — this is a filter, not solely a deduction.</td><td><span class="comp-med">MEDIUM</span></td><td class="ded-amt">($420)</td><td><span class="ai-tag">AI-01</span></td></tr>
+
+        <tr><td><span class="ded-num">D05</span></td><td><strong>Pension Net Asset</strong><br><span style="color:var(--ink-4);font-weight:400">IAS 19 DB plan surplus</span></td><td><span class="ded-ref">§2.1.8</span></td><td><span class="ded-gl">123xxx</span></td><td style="font-size:11px;color:var(--ink-3)">Deduct net pension asset (prepaid pension) net of associated DTL. Only applies when DB plan is in surplus. If in deficit, pension liability is already on balance sheet — no additional deduction.</td><td><span class="comp-lo">LOW</span></td><td class="ded-amt">($95)</td><td><span class="ai-tag">AI-01</span></td></tr>
+
+        <tr><td><span class="ded-num">D06</span></td><td><strong>DTA — Tax Loss Carryforwards</strong><br><span style="color:var(--ink-4);font-weight:400">Full deduction, no threshold</span></td><td><span class="ded-ref">§2.1.9</span></td><td><span class="ded-gl">136xxx</span></td><td style="font-size:11px;color:var(--ink-3)">100% deduction from CET1. DTAs arising from unused tax losses and unused tax credits — full deduction regardless of amount. No netting against DTLs permitted under OSFI CAR.</td><td><span class="comp-lo">LOW</span></td><td class="ded-amt">($210)</td><td><span class="ai-tag">AI-02</span></td></tr>
+
+        <tr style="background:#FFFDE7"><td><span class="ded-num">D07</span></td><td><strong>DTA — Temporary Differences</strong><br><span style="color:var(--amber-mid);font-weight:600;font-size:11px">⚑ THRESHOLD — 10% / 17.65% Combined</span></td><td><span class="ded-ref">§2.1.10</span></td><td><span class="ded-gl">136xxx</span></td><td style="font-size:11px;color:var(--ink-3)">Below 10% of CET1: risk-weighted 250%. Above 10% (individual) AND above 17.65% (combined with D11 + D12): deducted from CET1. Requires iterative calculation — CET1 denominator changes as deductions applied.</td><td><span class="comp-hi">HIGH</span></td><td class="ded-amt">($1,240)</td><td><span class="ai-tag">AI-02</span></td></tr>
+
+        <tr><td><span class="ded-num">D08</span></td><td><strong>AFS Unrealized Gains Filter</strong><br><span style="color:var(--ink-4);font-weight:400">Equity securities only</span></td><td><span class="ded-ref">§2.1.11</span></td><td><span class="ded-gl">321xxx</span></td><td style="font-size:11px;color:var(--ink-3)">Remove unrealized gains on AFS equity securities from CET1 (losses remain in CET1). Applies to equity instruments at FVOCI under IFRS 9. Fixed income AFS unrealized gains/losses are included in CET1.</td><td><span class="comp-med">MEDIUM</span></td><td class="ded-amt">($120)</td><td><span class="ai-tag">AI-01</span></td></tr>
+
+        <tr><td><span class="ded-num">D09</span></td><td><strong>Securitization Gain on Sale</strong><br><span style="color:var(--ink-4);font-weight:400">Excess spread / GOS</span></td><td><span class="ded-ref">§2.1.12</span></td><td><span class="ded-gl">475xxx</span></td><td style="font-size:11px;color:var(--ink-3)">Deduct gain on sale from securitization transactions and associated increases in equity (e.g., residual interests, excess spread). Designed to prevent recognition of future income as current capital.</td><td><span class="comp-med">MEDIUM</span></td><td class="ded-amt">($85)</td><td><span class="ai-tag">AI-01</span></td></tr>
+
+        <tr style="background:#FFF0F0"><td><span class="ded-num">D10</span></td><td><strong>IRB Expected Loss Shortfall</strong><br><span style="color:var(--red);font-weight:600;font-size:11px">⚑ CROSS-AGENT — Capital Engine Required</span></td><td><span class="ded-ref">§2.1.13</span></td><td><span class="ded-gl">Capital Engine</span></td><td style="font-size:11px;color:var(--ink-3)">When IRB Expected Loss (PD×LGD×EAD) exceeds IFRS 9 Stage 1+2 provisions: 50% shortfall deducted from CET1, 50% from T2. Agent 02 calls Agent 05 (IRB/EL Agent) via API to get this figure.</td><td><span class="comp-hi">HIGH</span></td><td class="ded-amt">($580)</td><td><span class="ai-tag">AI-03</span></td></tr>
+
+        <tr style="background:#FFFDE7"><td><span class="ded-num">D11</span></td><td><strong>Significant Investments in Financial Entities</strong><br><span style="color:var(--amber-mid);font-weight:600;font-size:11px">⚑ THRESHOLD — 10% / 17.65% Combined</span></td><td><span class="ded-ref">§2.1.14</span></td><td><span class="ded-gl">151xxx</span></td><td style="font-size:11px;color:var(--ink-3)">&gt;10% ownership or significant influence. Below 10% individual threshold AND below 17.65% combined threshold (with D07+D12): risk-weighted at 250%. Above thresholds: full CET1 deduction.</td><td><span class="comp-hi">HIGH</span></td><td class="ded-amt">($890)</td><td><span class="ai-tag">AI-02</span></td></tr>
+
+        <tr><td><span class="ded-num">D12</span></td><td><strong>Mortgage Servicing Rights (MSR)</strong><br><span style="color:var(--green);font-weight:600;font-size:11px">✓ BELOW THRESHOLD — No Deduction This Quarter</span></td><td><span class="ded-ref">§2.1.14</span></td><td><span class="ded-gl">118xxx</span></td><td style="font-size:11px;color:var(--ink-3)">MSR below 10% individual threshold (CET1 basis) and below 17.65% combined threshold. Risk-weighted at 250% for below-threshold amount. Agent 02 monitors quarterly and flags if threshold approaches.</td><td><span class="comp-hi">HIGH</span></td><td class="ded-amt zero">—</td><td><span class="ai-tag">AI-02</span></td></tr>
+
+        <tr><td><span class="ded-num">D13</span></td><td><strong>Minority Interest (Non-Qualifying)</strong><br><span style="color:var(--ink-4);font-weight:400">Excess over subsidiary capital req</span></td><td><span class="ded-ref">§2.1.15</span></td><td><span class="ded-gl">385xxx</span></td><td style="font-size:11px;color:var(--ink-3)">Remove non-controlling interest capital in excess of the amount needed to support the subsidiary's risk-weighted assets. Qualifying minority interest (within subsidiary capital requirements) is included.</td><td><span class="comp-med">MEDIUM</span></td><td class="ded-amt">($75)</td><td><span class="ai-tag">AI-01</span></td></tr>
+
+        <tr><td><span class="ded-num">D14</span></td><td><strong>Reciprocal Cross-Holdings</strong><br><span style="color:var(--ink-4);font-weight:400">Mutual holdings inflating capital</span></td><td><span class="ded-ref">§2.1.16</span></td><td><span class="ded-gl">151xxx</span></td><td style="font-size:11px;color:var(--ink-3)">Full deduction for cross-shareholdings between financial institutions designed to mutually inflate capital bases. Agent identifies based on OSFI-flagged counterparty list cross-referenced with investment register.</td><td><span class="comp-lo">LOW</span></td><td class="ded-amt">($45)</td><td><span class="ai-tag">AI-01</span></td></tr>
+
+        <tr><td><span class="ded-num">D15</span></td><td><strong>Investment in Unconsolidated Financial Subsidiaries</strong><br><span style="color:var(--ink-4);font-weight:400">Outside regulatory scope</span></td><td><span class="ded-ref">§2.1.17</span></td><td><span class="ded-gl">154xxx</span></td><td style="font-size:11px;color:var(--ink-3)">Investment in financial entities not included in the regulatory consolidation scope. Deducted to prevent counting of capital in entities that are separately regulated or below OSFI consolidation threshold.</td><td><span class="comp-med">MEDIUM</span></td><td class="ded-amt">($565)</td><td><span class="ai-tag">AI-01</span></td></tr>
+
+        <tr style="background:var(--surface-alt)">
+          <td colspan="5" style="text-align:right;font-weight:700;font-size:13px;color:var(--red)">Total Deductions (D01–D15)</td>
+          <td></td><td class="ded-amt" style="font-size:14px">($14,505)</td><td></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="sp-sm"></div>
+  <div class="highlight-box">⚑ <strong>D07, D11, D12 — Combined Threshold Calculation:</strong> These three deductions require an iterative solve: the 17.65% combined threshold uses CET1 as the denominator, but CET1 itself changes as deductions are applied. AWS Bedrock Agent 02 resolves this via iterative computation (typically 3–5 iterations to convergence). This is the single highest-complexity automation point in BCAR (AI-02).</div>
+</div>
+
+<!-- ════ TAB: PROCESS FLOW ════ -->
+<div id="process" class="tab-panel">
+  <div class="kicker">T-Minus Calendar · Before vs After</div>
+  <div class="section-title">GL-to-Capital Process Transformation</div>
+  <div class="section-sub">The GL-to-Capital step is the longest, riskiest part of the current BCAR cycle. AWS Bedrock Agent 02 compresses this from 6 working days to same-day automation.</div>
+  <div class="sp"></div>
+
+  <div class="tl-wrap">
+    <div class="timeline-col tl-before">
+      <h3>⚠ Current State — 6 Days Within BCAR Cycle</h3>
+
+      <div class="tl-step">
+        <div class="tl-mark">T-13</div>
+        <div>
+          <div class="tl-day">Day 1–2 · T-13</div>
+          <div class="tl-name">S/4HANA Trial Balance Export</div>
+          <div class="tl-detail">Analyst runs SE16N / BW capital query (ZFICAP). Downloads CSV. Reformats columns in Excel to match capital workbook template. Validates total equity agrees to general ledger.</div>
+          <span class="tl-effort">⏱ 6 hrs</span>
+        </div>
+      </div>
+
+      <div class="tl-step">
+        <div class="tl-mark">T-12</div>
+        <div>
+          <div class="tl-day">Day 2–3 · T-12</div>
+          <div class="tl-name">GL Account Mapping to OSFI Categories</div>
+          <div class="tl-detail">Analyst applies COA-to-OSFI mapping table (maintained in a shared SharePoint spreadsheet). Manually categorizes 200+ GL accounts to 15 deduction categories. Flags new accounts not in mapping table.</div>
+          <span class="tl-effort">⏱ 8 hrs</span>
+        </div>
+      </div>
+
+      <div class="tl-step">
+        <div class="tl-mark">T-11</div>
+        <div>
+          <div class="tl-day">Day 3–4 · T-11</div>
+          <div class="tl-name">BlackLine Review (Separate Process)</div>
+          <div class="tl-detail">Capital analyst logs into BlackLine separately. Checks rec status for 40+ capital-relevant accounts. Manually notes open items. No automated bridge to capital calculation. 2–3 back-and-forth emails with BlackLine rec team.</div>
+          <span class="tl-effort">⏱ 5 hrs</span>
+        </div>
+      </div>
+
+      <div class="tl-step">
+        <div class="tl-mark">T-10</div>
+        <div>
+          <div class="tl-day">Day 4–5 · T-10</div>
+          <div class="tl-name">Phase 1 Deductions (Excel)</div>
+          <div class="tl-detail">Manually calculates D01–D06 in Excel workbook. Goodwill, Intangibles, DVA, CFH Reserve, Pension, DTA-losses. Lookup formulas against GL extract. Multiple vlookup errors caught in review.</div>
+          <span class="tl-effort">⏱ 10 hrs</span>
+        </div>
+      </div>
+
+      <div class="tl-step">
+        <div class="tl-mark">T-9</div>
+        <div>
+          <div class="tl-day">Day 5–6 · T-9</div>
+          <div class="tl-name">Threshold Calculations (D07, D11, D12)</div>
+          <div class="tl-detail">10%/17.65% combined threshold calculations done manually. IRB EL figure requested from capital modelling team by email — arrives next morning. Manual iterative solve for threshold: 3+ Excel recalculation cycles. Highest error rate of any step.</div>
+          <span class="tl-effort">⏱ 12 hrs</span>
+        </div>
+      </div>
+
+      <div class="tl-step">
+        <div class="tl-mark">T-8</div>
+        <div>
+          <div class="tl-day">Day 6 · T-8</div>
+          <div class="tl-name">CET1 Waterfall Assembly &amp; First Review</div>
+          <div class="tl-detail">Analyst assembles full CET1 waterfall in Excel. Senior review raises 8–12 questions. Rework loops typically add 1–2 days. Waterfall only available to BCAR team after rework at T-6/T-7.</div>
+          <span class="tl-effort">⏱ 8 hrs</span>
+        </div>
+      </div>
+
+      <div style="background:var(--red-bg);border:1px solid var(--red-soft);border-radius:var(--r);padding:12px;margin-top:8px;font-size:12px;color:var(--red)"><strong>Total: 6 working days · 49 hrs · 3 analysts · 3–4 rework rounds · Zero automated audit trail</strong></div>
+    </div>
+
+    <div class="timeline-col tl-after">
+      <h3>✓ Future State — AWS Bedrock Agent 02</h3>
+
+      <div class="tl-step">
+        <div class="tl-mark">T-5</div>
+        <div>
+          <div class="tl-day">Hour 0 · Day 1</div>
+          <div class="tl-name">Automated GL Close Signal</div>
+          <div class="tl-detail">S/4HANA period close event triggers AWS Step Functions workflow. Agent 02 activated. S/4HANA OData API call pulls full trial balance for capital-relevant accounts. Data lands in Medallion Bronze S3 zone within 15 minutes.</div>
+          <span class="tl-effort">⏱ 0.2 hrs (monitor only)</span>
+        </div>
+      </div>
+
+      <div class="tl-step">
+        <div class="tl-mark">T-5</div>
+        <div>
+          <div class="tl-day">Hour 1 · Day 1</div>
+          <div class="tl-name">GL Mapping + BlackLine Sync (Concurrent)</div>
+          <div class="tl-detail">Agent applies S/4HANA GL account → OSFI capital category mapping from governed Knowledge Base (maintained by COA Governance, not capital team). Simultaneously, BlackLine REST API call retrieves certified balances for all 40+ capital accounts. Open item summary auto-generated.</div>
+          <span class="tl-effort">⏱ 0.5 hrs (automated)</span>
+        </div>
+      </div>
+
+      <div class="tl-step">
+        <div class="tl-mark">T-5</div>
+        <div>
+          <div class="tl-day">Hours 2–3 · Day 1</div>
+          <div class="tl-name">All 15 Deductions + IRB EL Integration</div>
+          <div class="tl-detail">Agent runs D01–D09, D13–D15 using OSFI Knowledge Base parameters. For D07/D11/D12 threshold deductions, iterative convergence algorithm resolves in 5 cycles. Agent 05 API call returns IRB EL shortfall for D10. All deductions completed in under 1 hour.</div>
+          <span class="tl-effort">⏱ 0.8 hrs (automated)</span>
+        </div>
+      </div>
+
+      <div class="tl-step">
+        <div class="tl-mark">T-5</div>
+        <div>
+          <div class="tl-day">Hour 3 · Day 1</div>
+          <div class="tl-name">CET1 Waterfall + OSFI Workpaper Ready</div>
+          <div class="tl-detail">Full 23-line CET1 waterfall generated. OSFI-formatted reconciliation workpaper with every source GL account reference. BCBS 239 lineage tags applied. Break analysis with P1/P2/P3 classification. CRO dashboard data pushed to Agent 08.</div>
+          <span class="tl-effort">⏱ 0.3 hrs (automated)</span>
+        </div>
+      </div>
+
+      <div class="tl-step">
+        <div class="tl-mark">T-5</div>
+        <div>
+          <div class="tl-day">Hour 4 · Day 1</div>
+          <div class="tl-name">Capital Analyst Review — Exceptions Only</div>
+          <div class="tl-detail">Analyst reviews AI-flagged exceptions only (P1/P2 breaks, new accounts not in mapping table, BlackLine open items above $50M materiality threshold). P3 items auto-resolved. Average review time: 2 hours for senior analyst.</div>
+          <span class="tl-effort">⏱ 2 hrs (exception review)</span>
+        </div>
+      </div>
+
+      <div style="background:var(--green-bg);border:1px solid var(--green-soft);border-radius:var(--r);padding:12px;margin-top:8px;font-size:12px;color:var(--green)"><strong>Total: Same day (T-5) · 3.8 hrs total · 1 analyst (exceptions) · Zero rework · Full BCBS 239 audit trail</strong></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ TAB: REC WORKPAPER ════ -->
+<div id="workpaper" class="tab-panel">
+  <div class="kicker">OSFI-Formatted Output · Agent 02 Automated Generation</div>
+  <div class="section-title">GL-to-Capital Reconciliation Workpaper</div>
+  <div class="section-sub">Agent 02 generates this workpaper automatically — every line referenced to its SAP S/4HANA GL account, BlackLine rec status, and OSFI CAR section. Previously took 2 days to produce manually.</div>
+  <div class="sp"></div>
+
+  <div class="wp">
+    <div class="wp-title">GL-TO-CAPITAL RECONCILIATION WORKPAPER</div>
+    <div class="wp-meta">
+      <div>Institution: [Canadian Bank — D-SIB]</div>
+      <div>Period End: December 31, 2024</div>
+      <div>Prepared by: AWS Bedrock · Agent 02</div>
+      <div>Date Generated: January 2, 2025 · 14:23 EST</div>
+      <div>OSFI Reference: CAR Chapter 2 · Q4 2024</div>
+      <div>Status: <span class="wp-open">2 OPEN ITEMS — REVIEW REQUIRED</span></div>
+    </div>
+
+    <div class="wp-section">━━━ SECTION A: IFRS EQUITY STARTING POINT (SAP S/4HANA — BlackLine Certified) ━━━</div>
+    <div class="wp-line"><span>Common Share Capital ............... [GL: 310000-319999] [BL: CERTIFIED ✓]</span><span class="wp-pos">$12,500.0M</span></div>
+    <div class="wp-line"><span>Retained Earnings .................. [GL: 320000-329999] [BL: CERTIFIED ✓]</span><span class="wp-pos">$28,200.0M</span></div>
+    <div class="wp-line"><span>AOCI — AFS Securities .............. [GL: 321000-321999] [BL: CERTIFIED ✓]</span><span class="wp-pos">$1,420.0M</span></div>
+    <div class="wp-line"><span>AOCI — Cash Flow Hedge Reserve ..... [GL: 322000-322999] [BL: CERTIFIED ✓]</span><span class="wp-pos">$380.0M</span></div>
+    <div class="wp-line"><span>Other Equity Reserves .............. [GL: 330000-339999] [BL: CERTIFIED ✓]</span><span class="wp-pos">$2,630.0M</span></div>
+    <div class="wp-total"><span>TOTAL IFRS EQUITY</span><span>$45,130.0M</span></div>
+
+    <div class="wp-section">━━━ SECTION B: PHASE 1 DEDUCTIONS (FULL — OSFI CAR §2.1.4–2.1.9) ━━━</div>
+    <div class="wp-line"><span>D01 Goodwill (net DTL) ............. [GL: 116000-116999] [CAR §2.1.4] [BL: CERTIFIED ✓]</span><span class="wp-ded">($6,200.0M)</span></div>
+    <div class="wp-line"><span>D02 Other Intangibles (net DTL) .... [GL: 117000-117999] [CAR §2.1.5] [BL: CERTIFIED ✓]</span><span class="wp-ded">($3,800.0M)</span></div>
+    <div class="wp-line"><span>D03 DVA ............................ [GL: 431000-431999] [CAR §2.1.6] [BL: CERTIFIED ✓]</span><span class="wp-ded">($180.0M)</span></div>
+    <div class="wp-line"><span>D04 Cash Flow Hedge Reserve ........ [GL: 322000-322999] [CAR §2.1.7] [BL: CERTIFIED ✓]</span><span class="wp-ded">($420.0M)</span></div>
+    <div class="wp-line"><span>D05 Pension Net Asset .............. [GL: 123500-123999] [CAR §2.1.8] <span class="wp-open">OPEN — BL Pending</span></span><span class="wp-ded">($95.0M)</span></div>
+    <div class="wp-line"><span>D06 DTA — Tax Loss Carryforward .... [GL: 136100-136199] [CAR §2.1.9] [BL: CERTIFIED ✓]</span><span class="wp-ded">($210.0M)</span></div>
+    <div class="wp-sub"><span>Phase 1 Subtotal</span><span>($10,905.0M)</span></div>
+
+    <div class="wp-section">━━━ SECTION C: PHASE 2 DEDUCTIONS (THRESHOLD / OTHER — OSFI CAR §2.1.10–2.1.17) ━━━</div>
+    <div class="wp-line"><span>D07 DTA Temp Diff (above 10% thr.) . [GL: 136200-136299] [CAR §2.1.10] [ITER: 5 cycles ✓]</span><span class="wp-ded">($1,240.0M)</span></div>
+    <div class="wp-line"><span>D08 AFS Unrealized Gains Filter .... [GL: 321000-321999] [CAR §2.1.11] [BL: CERTIFIED ✓]</span><span class="wp-ded">($120.0M)</span></div>
+    <div class="wp-line"><span>D09 Securitization Gain on Sale .... [GL: 475000-475999] [CAR §2.1.12] [BL: CERTIFIED ✓]</span><span class="wp-ded">($85.0M)</span></div>
+    <div class="wp-line"><span>D10 IRB EL Shortfall (50% CET1) .... [SOURCE: Agent 05] [CAR §2.1.13] <span class="wp-open">OPEN — EL Model Q4 Update</span></span><span class="wp-ded">($580.0M)</span></div>
+    <div class="wp-line"><span>D11 Significant Investments (>thr). [GL: 151000-151999] [CAR §2.1.14] [ITER: 5 cycles ✓]</span><span class="wp-ded">($890.0M)</span></div>
+    <div class="wp-line"><span>D12 Mortgage Servicing Rights ...... [GL: 118000-118999] [CAR §2.1.14] [BELOW THRESHOLD]</span><span>—</span></div>
+    <div class="wp-line"><span>D13 Minority Interest (non-qual.) .. [GL: 385000-385999] [CAR §2.1.15] [BL: CERTIFIED ✓]</span><span class="wp-ded">($75.0M)</span></div>
+    <div class="wp-line"><span>D14 Reciprocal Cross-Holdings ...... [GL: 151500-151599] [CAR §2.1.16] [BL: CERTIFIED ✓]</span><span class="wp-ded">($45.0M)</span></div>
+    <div class="wp-line"><span>D15 Unconsolidated Subsidiaries .... [GL: 154000-154999] [CAR §2.1.17] [BL: CERTIFIED ✓]</span><span class="wp-ded">($565.0M)</span></div>
+    <div class="wp-sub"><span>Phase 2 Subtotal</span><span>($3,600.0M)</span></div>
+
+    <div class="wp-section">━━━ SECTION D: REGULATORY CAPITAL ━━━</div>
+    <div class="wp-total"><span>CET1 CAPITAL</span><span class="wp-pos">$30,625.0M</span></div>
+    <div class="wp-line"><span>+ AT1 (NVCC Preferred Shares) ....... [GL: 315000-315999] [OSFI Eligible ✓]</span><span class="wp-pos">$3,415.0M</span></div>
+    <div class="wp-total"><span>TIER 1 CAPITAL</span><span class="wp-pos">$34,040.0M</span></div>
+    <div class="wp-line"><span>+ T2 Subordinated Debt .............. [GL: 221000-221999] [NVCC Eligible ✓]</span><span class="wp-pos">$3,640.0M</span></div>
+    <div class="wp-line"><span>+ T2 IRB EL Excess (50%) ............. [SOURCE: Agent 05]</span><span class="wp-pos">$1,420.0M</span></div>
+    <div class="wp-total"><span>TOTAL CAPITAL</span><span class="wp-pos">$39,100.0M</span></div>
+
+    <div class="wp-section">━━━ SECTION E: OPEN ITEMS REQUIRING REVIEW ━━━</div>
+    <div class="wp-line wp-highlight"><span>OI-01 [P2] D05 Pension Net Asset — BlackLine certification pending · Actuary rec not closed · $95M · DUE: Jan 3</span><span>ESCALATE</span></div>
+    <div class="wp-line wp-highlight"><span>OI-02 [P2] D10 IRB EL Shortfall — Q4 model update in progress · Prior quarter estimate used · $580M · VALIDATE</span><span>REVIEW</span></div>
+  </div>
+
+  <!-- Sign-off -->
+  <div class="sp"></div>
+  <div style="font-size:13px;font-weight:600;color:var(--ink-2);margin-bottom:12px">Sign-Off Workflow (SOD Enforced by Agent 10)</div>
+  <div class="signoff">
+    <div class="signoff-box">
+      <div class="signoff-role">Capital Analyst (Preparer)</div>
+      <div class="signoff-line"></div>
+      <div class="signoff-name">Signature / Date</div>
+      <div style="font-size:11px;color:var(--ink-4);margin-top:6px">Prepared by AWS Bedrock Agent 02. Human review of open items OI-01, OI-02 required before sign-off.</div>
+    </div>
+    <div class="signoff-box">
+      <div class="signoff-role">Senior Capital Analyst (Reviewer)</div>
+      <div class="signoff-line"></div>
+      <div class="signoff-name">Signature / Date</div>
+      <div style="font-size:11px;color:var(--ink-4);margin-top:6px">Reviewer must be different from Preparer. SOD enforced — cannot be same individual who resolved OI-01 or OI-02.</div>
+    </div>
+    <div class="signoff-box">
+      <div class="signoff-role">CRO Approval</div>
+      <div class="signoff-line"></div>
+      <div class="signoff-name">Signature / Date</div>
+      <div style="font-size:11px;color:var(--ink-4);margin-top:6px">CRO reviews exception dashboard (P1/P2). Digital attestation unlocks submission workflow in Agent 12.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ TAB: BREAK ANALYSIS ════ -->
+<div id="breaks" class="tab-panel">
+  <div class="kicker">Automated Break Classification · P1 / P2 / P3 Framework</div>
+  <div class="section-title">Exception Management Engine</div>
+  <div class="section-sub">Agent 02 automatically classifies all reconciliation breaks by severity. Only P1 and P2 items are escalated to the capital team — P3 items are auto-resolved and documented.</div>
+  <div class="sp"></div>
+
+  <div class="break-grid">
+    <div class="break-card p1">
+      <span class="break-sev sev-p1">P1 · Critical</span>
+      <div class="break-name">CET1 Ratio Below OSFI Minimum</div>
+      <div class="break-thr">Threshold: CET1 ratio &lt; 11.50% (D-SIB floor)</div>
+      <div class="break-item"><span>→</span><span>Immediate escalation to CFO, CRO, and Treasury</span></div>
+      <div class="break-item"><span>→</span><span>BCAR submission halted pending resolution</span></div>
+      <div class="break-item"><span>→</span><span>Capital injection or RWA relief modelling initiated via Agent 11 (Capital Optimization)</span></div>
+      <div class="break-item"><span>→</span><span>OSFI notification may be required per CAR §1.5</span></div>
+      <div style="margin-top:12px;padding:8px 12px;background:var(--red-soft);border-radius:var(--r-sm);font-size:11px;font-weight:600;color:var(--red)">Current Quarter: NOT TRIGGERED · CET1 = 13.23%</div>
+    </div>
+
+    <div class="break-card p1">
+      <span class="break-sev sev-p1">P1 · Critical</span>
+      <div class="break-name">Unexplained IFRS-to-CET1 Gap &gt; $100M</div>
+      <div class="break-thr">Threshold: Waterfall gap &gt; $100M vs. prior calculation run</div>
+      <div class="break-item"><span>→</span><span>Agent 02 reconciles current vs prior quarter deductions line by line</span></div>
+      <div class="break-item"><span>→</span><span>AI-generated driver attribution — identifies which deduction moved and why</span></div>
+      <div class="break-item"><span>→</span><span>If unexplained after attribution, P1 escalation to capital team within 15 minutes</span></div>
+      <div class="break-item"><span>→</span><span>Full GL account detail provided with break — no manual investigation needed</span></div>
+      <div style="margin-top:12px;padding:8px 12px;background:var(--red-soft);border-radius:var(--r-sm);font-size:11px;font-weight:600;color:var(--red)">Current Quarter: NOT TRIGGERED · Largest movement explained</div>
+    </div>
+
+    <div class="break-card p2">
+      <span class="break-sev sev-p2">P2 · High</span>
+      <div class="break-name">BlackLine Open Item Above $50M Materiality</div>
+      <div class="break-thr">Threshold: Any open reconciling item with &gt;$50M potential CET1 impact</div>
+      <div class="break-item"><span>→</span><span>Agent pulls BlackLine open item detail via API</span></div>
+      <div class="break-item"><span>→</span><span>Assesses CET1 impact using OSFI deduction mapping</span></div>
+      <div class="break-item"><span>→</span><span>Escalation to Capital Analyst and BlackLine rec owner</span></div>
+      <div class="break-item"><span>→</span><span>Conservative estimate applied to waterfall pending resolution</span></div>
+      <div style="margin-top:12px;padding:8px 12px;background:var(--amber-soft);border-radius:var(--r-sm);font-size:11px;font-weight:600;color:var(--amber)">Current Quarter: OI-01 OPEN · D05 Pension $95M · Assigned: Jan 3 deadline</div>
+    </div>
+
+    <div class="break-card p2">
+      <span class="break-sev sev-p2">P2 · High</span>
+      <div class="break-name">IRB EL Shortfall Sign Change</div>
+      <div class="break-thr">Threshold: EL shortfall flips from positive to negative (or vice versa)</div>
+      <div class="break-item"><span>→</span><span>EL shortfall changing sign means CET1 deduction becomes T2 excess (or vice versa)</span></div>
+      <div class="break-item"><span>→</span><span>Material capital impact — requires IRB model team confirmation</span></div>
+      <div class="break-item"><span>→</span><span>Agent 05 cross-check initiated automatically</span></div>
+      <div class="break-item"><span>→</span><span>Escalation to Capital Modelling and CRO team</span></div>
+      <div style="margin-top:12px;padding:8px 12px;background:var(--amber-soft);border-radius:var(--r-sm);font-size:11px;font-weight:600;color:var(--amber)">Current Quarter: OI-02 OPEN · Q4 model update in progress · $580M shortfall maintained</div>
+    </div>
+
+    <div class="break-card p3">
+      <span class="break-sev sev-p3">P3 · Routine</span>
+      <div class="break-name">New GL Account Not in Mapping Table</div>
+      <div class="break-thr">Threshold: Any new S/4HANA account not in OSFI mapping Knowledge Base</div>
+      <div class="break-item"><span>→</span><span>Agent 02 flags new account with prior-quarter balance comparison</span></div>
+      <div class="break-item"><span>→</span><span>AI suggests probable OSFI category based on GL account number range and description</span></div>
+      <div class="break-item"><span>→</span><span>Capital Analyst confirms mapping — Knowledge Base auto-updated</span></div>
+      <div class="break-item"><span>→</span><span>Resolution target: same business day</span></div>
+      <div style="margin-top:12px;padding:8px 12px;background:var(--blue-soft);border-radius:var(--r-sm);font-size:11px;font-weight:600;color:var(--blue)">Current Quarter: 3 new accounts · AI suggested mapping confirmed by analyst in 20 min</div>
+    </div>
+
+    <div class="break-card p3">
+      <span class="break-sev sev-p3">P3 · Routine</span>
+      <div class="break-name">FX Rounding / Timing Difference &lt; $5M</div>
+      <div class="break-thr">Threshold: Unexplained difference &lt; $5M between GL and capital calc</div>
+      <div class="break-item"><span>→</span><span>Agent applies standard FX and rounding resolution rules</span></div>
+      <div class="break-item"><span>→</span><span>Cross-checks against prior quarter for recurring pattern</span></div>
+      <div class="break-item"><span>→</span><span>Auto-documents resolution in OSFI audit trail</span></div>
+      <div class="break-item"><span>→</span><span>No human intervention required — fully automated resolution</span></div>
+      <div style="margin-top:12px;padding:8px 12px;background:var(--blue-soft);border-radius:var(--r-sm);font-size:11px;font-weight:600;color:var(--blue)">Current Quarter: $2.1M FX rounding — auto-resolved and documented</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ TAB: AI AUTOMATION ════ -->
+<div id="automation" class="tab-panel">
+  <div class="kicker">AI Automation Points · Agent 02 Specific</div>
+  <div class="section-title">8 Automation Points — How Bedrock Eliminates Manual Work</div>
+  <div class="section-sub">Each automation point maps a specific manual step to an AWS Bedrock capability. Together they reduce the GL-to-Capital reconciliation from 49 manual hours to 3.8 automated hours.</div>
+  <div class="sp"></div>
+
+  <div class="ai-grid">
+    <div class="ai-card">
+      <div class="ai-num">AI-01</div>
+      <div>
+        <div class="ai-name">S/4HANA GL Account Mapping</div>
+        <div class="ai-desc">Automatically maps all S/4HANA GL accounts to OSFI capital categories using a governed Knowledge Base. Replaces manual VLOOKUP-based mapping spreadsheet maintained by capital team.</div>
+        <div class="ai-compare"><span class="ai-from">14 hrs</span><span class="ai-arrow">→</span><span class="ai-to">0.3 hrs</span><span class="ai-unit">per quarter</span></div>
+        <div class="ai-source"><span class="ai-chip">S/4HANA OData API</span><span class="ai-chip">Bedrock KB</span><span class="ai-chip">OSFI CAR §2</span></div>
+      </div>
+    </div>
+
+    <div class="ai-card">
+      <div class="ai-num">AI-02</div>
+      <div>
+        <div class="ai-name">Threshold Deduction Iterative Solver (D07/D11/D12)</div>
+        <div class="ai-desc">The 10%/17.65% combined threshold for DTA, Significant Investments, and MSR requires iterative computation — CET1 changes with each deduction. Bedrock runs 5-iteration convergence algorithm that was previously done manually in Excel.</div>
+        <div class="ai-compare"><span class="ai-from">12 hrs</span><span class="ai-arrow">→</span><span class="ai-to">0.1 hrs</span><span class="ai-unit">per quarter</span></div>
+        <div class="ai-source"><span class="ai-chip">Bedrock Agents</span><span class="ai-chip">OSFI CAR §2.1.10</span><span class="ai-chip">Iterative Solver</span></div>
+      </div>
+    </div>
+
+    <div class="ai-card">
+      <div class="ai-num">AI-03</div>
+      <div>
+        <div class="ai-name">IRB Expected Loss Integration (D10)</div>
+        <div class="ai-desc">Agent 02 calls Agent 05 (IRB/EL Agent) via Bedrock API to retrieve the period EL shortfall. Previously required a 2-day email chain with capital modelling team — now resolved in seconds with automated cross-agent handshake.</div>
+        <div class="ai-compare"><span class="ai-from">8 hrs</span><span class="ai-arrow">→</span><span class="ai-to">0.05 hrs</span><span class="ai-unit">per quarter</span></div>
+        <div class="ai-source"><span class="ai-chip">Agent 05 API</span><span class="ai-chip">Capital Engine</span><span class="ai-chip">OSFI CAR §2.1.13</span></div>
+      </div>
+    </div>
+
+    <div class="ai-card">
+      <div class="ai-num">AI-04</div>
+      <div>
+        <div class="ai-name">BlackLine Reconciliation Auto-Ingestion</div>
+        <div class="ai-desc">BlackLine REST API delivers certified balances and open item status for all 40+ capital-relevant accounts. Agent assesses each open item's potential CET1 impact and classifies P1/P2/P3 automatically.</div>
+        <div class="ai-compare"><span class="ai-from">5 hrs</span><span class="ai-arrow">→</span><span class="ai-to">0.2 hrs</span><span class="ai-unit">per quarter</span></div>
+        <div class="ai-source"><span class="ai-chip">BlackLine REST API</span><span class="ai-chip">Materiality Engine</span><span class="ai-chip">Break Classification</span></div>
+      </div>
+    </div>
+
+    <div class="ai-card">
+      <div class="ai-num">AI-05</div>
+      <div>
+        <div class="ai-name">QoQ Variance Commentary Generation</div>
+        <div class="ai-desc">AI generates plain-English commentary explaining CET1 movements quarter-over-quarter. Each deduction line explained with driver attribution (e.g., "D01 Goodwill +$350M: XYZ acquisition Q3, goodwill allocated Q4"). Replaces 2-day manual write-up.</div>
+        <div class="ai-compare"><span class="ai-from">6 hrs</span><span class="ai-arrow">→</span><span class="ai-to">0.5 hrs</span><span class="ai-unit">per quarter</span></div>
+        <div class="ai-source"><span class="ai-chip">Claude Sonnet</span><span class="ai-chip">Prior Quarter Data</span><span class="ai-chip">M&A Registry</span></div>
+      </div>
+    </div>
+
+    <div class="ai-card">
+      <div class="ai-num">AI-06</div>
+      <div>
+        <div class="ai-name">OSFI Workpaper Auto-Generation</div>
+        <div class="ai-desc">Produces the complete OSFI-formatted GL-to-Capital reconciliation workpaper including all GL account references, OSFI CAR section citations, BlackLine certification status, and open item log. Previously took capital analyst 2 days to produce from scratch.</div>
+        <div class="ai-compare"><span class="ai-from">8 hrs</span><span class="ai-arrow">→</span><span class="ai-to">0.1 hrs</span><span class="ai-unit">per quarter</span></div>
+        <div class="ai-source"><span class="ai-chip">OSFI Template KB</span><span class="ai-chip">Bedrock Agent</span><span class="ai-chip">BCBS 239 Tags</span></div>
+      </div>
+    </div>
+
+    <div class="ai-card">
+      <div class="ai-num">AI-07</div>
+      <div>
+        <div class="ai-name">Break Classification + Auto-Resolution (P3)</div>
+        <div class="ai-desc">All reconciliation breaks classified P1/P2/P3 automatically. P3 items (FX rounding, minor timing, new accounts with high-confidence mapping) resolved without human intervention. Full audit trail maintained for OSFI review.</div>
+        <div class="ai-compare"><span class="ai-from">4 hrs</span><span class="ai-arrow">→</span><span class="ai-to">0.2 hrs</span><span class="ai-unit">per quarter</span></div>
+        <div class="ai-source"><span class="ai-chip">Break Rules Engine</span><span class="ai-chip">Pattern Matching</span><span class="ai-chip">Audit Trail API</span></div>
+      </div>
+    </div>
+
+    <div class="ai-card">
+      <div class="ai-num">AI-08</div>
+      <div>
+        <div class="ai-name">Capital Instrument Eligibility Validation</div>
+        <div class="ai-desc">Agent 02 validates AT1 (NVCC Preferred) and T2 (Subordinated Debt) instrument eligibility against OSFI CAR Chapters 3 and 4 criteria. Checks NVCC triggers, step-up provisions, and maturity schedules. Previously a manual 1-day review by legal and capital team.</div>
+        <div class="ai-compare"><span class="ai-from">6 hrs</span><span class="ai-arrow">→</span><span class="ai-to">0.3 hrs</span><span class="ai-unit">per quarter</span></div>
+        <div class="ai-source"><span class="ai-chip">Instrument Registry</span><span class="ai-chip">OSFI CAR Ch.3-4</span><span class="ai-chip">Legal Docs API</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Total Savings Banner -->
+  <div class="savings-banner">
+    <div class="sav-item">
+      <div class="sav-val">49 hrs → 3.8</div>
+      <div class="sav-lbl">Manual hours reduced · 92% saving</div>
+    </div>
+    <div class="sav-item">
+      <div class="sav-val">6 days → 1</div>
+      <div class="sav-lbl">Calendar days for GL-to-CET1</div>
+    </div>
+    <div class="sav-item">
+      <div class="sav-val">3 FTEs → 0.3</div>
+      <div class="sav-lbl">Analyst equivalent in capital calc</div>
+    </div>
+    <div class="sav-item">
+      <div class="sav-val">Zero</div>
+      <div class="sav-lbl">Spreadsheets · Full BCBS 239 trail</div>
+    </div>
+  </div>
+
+  <div class="sp"></div>
+  <div class="info-box"><strong>OSFI E-23 Model Risk Compliance:</strong> All AI automation points are governed under OSFI's E-23 Model Risk Management guideline. Each Bedrock agent is registered as a model in the bank's model inventory. Agent 02 carries a Low/Medium model risk rating — calculations are deterministic (rule-based, not predictive), with full output audit trail and quarterly back-validation against manual spot checks.</div>
+</div>
+
+<script>
+function go(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(name).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+</script>
+</body>
+</html>

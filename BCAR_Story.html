@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BCAR Agentic AI — Transformation Story</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:'Inter',sans-serif;background:#0A0C10;overflow:hidden;color:#fff;}
+
+/* TOP BAR */
+#topbar{
+  position:fixed;top:0;left:0;right:0;height:50px;
+  background:rgba(10,12,16,0.94);backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(255,255,255,0.07);
+  display:flex;align-items:center;padding:0 24px;gap:14px;z-index:100;
+}
+.tb-logo{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:#E8D5A3;letter-spacing:0.06em;flex-shrink:0;}
+.tb-sep{width:1px;height:20px;background:rgba(255,255,255,0.1);}
+.tb-act{font-size:10px;color:rgba(255,255,255,0.38);letter-spacing:0.1em;text-transform:uppercase;}
+.tb-scene{font-size:12px;color:rgba(255,255,255,0.75);font-weight:500;flex:1;}
+.tb-controls{display:flex;gap:8px;align-items:center;}
+.tb-btn{
+  height:28px;padding:0 11px;border:1px solid rgba(255,255,255,0.12);border-radius:6px;
+  background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.62);font-size:11px;
+  font-family:'Inter',sans-serif;cursor:pointer;display:flex;align-items:center;gap:5px;
+  transition:all 0.2s;white-space:nowrap;
+}
+.tb-btn:hover{background:rgba(255,255,255,0.1);color:#fff;}
+.tb-btn.active{background:rgba(232,213,163,0.12);border-color:rgba(232,213,163,0.35);color:#E8D5A3;}
+.tb-btn.muted{color:rgba(255,255,255,0.22);border-color:rgba(255,255,255,0.06);}
+#tts-wave{display:none;align-items:center;gap:2px;height:14px;margin-right:3px;}
+#tts-wave span{display:block;width:2px;background:#E8D5A3;border-radius:2px;animation:waveanim 0.75s ease-in-out infinite;}
+#tts-wave span:nth-child(2){animation-delay:0.1s;}
+#tts-wave span:nth-child(3){animation-delay:0.2s;}
+#tts-wave span:nth-child(4){animation-delay:0.3s;}
+#tts-wave span:nth-child(5){animation-delay:0.4s;}
+@keyframes waveanim{0%,100%{height:3px}50%{height:11px}}
+
+/* STAGE */
+#stage{position:fixed;top:50px;bottom:62px;left:0;right:0;overflow:hidden;}
+
+/* BACKDROP */
+#backdrop{position:absolute;inset:0;transition:background 1.4s ease;}
+.bdrop-day{background:linear-gradient(180deg,#C4B49E 0%,#DDD0BC 28%,#EDE3D5 58%,#7A6347 58.1%,#6B5238 100%);}
+.bdrop-night{background:linear-gradient(180deg,#0A1220 0%,#161E30 28%,#1E2540 58%,#150E08 58.1%,#0E0A05 100%);}
+.bdrop-trans{background:radial-gradient(ellipse at 50% 40%,#0D1828 0%,#080C18 70%,#04060C 100%);}
+
+/* CITY WINDOW */
+#city-window{
+  position:absolute;top:7%;right:7%;width:26%;height:36%;
+  border:2px solid rgba(255,255,255,0.18);border-radius:3px;overflow:hidden;
+}
+.cw-day{background:linear-gradient(180deg,#87CEEB 0%,#B8D8EA 65%,#4A6B3A 65%);}
+.cw-night{background:linear-gradient(180deg,#03060F 0%,#080C1A 65%,#100C05 65%);}
+#bldgs{position:absolute;bottom:35%;left:0;right:0;display:flex;align-items:flex-end;gap:1px;padding:0 3px;}
+.bldg{flex-shrink:0;background:rgba(55,65,80,0.7);}
+.bldg.lit{background:rgba(70,82,105,0.85);}
+.bw-grid{display:grid;padding:2px;gap:1px;}
+.bw{width:3px;height:3px;border-radius:0.5px;background:transparent;}
+.bw.on{background:rgba(255,215,80,0.85);}
+#ground{position:absolute;bottom:0;left:0;right:0;height:35%;background:#3D4F2E;}
+#ground.night{background:#160F07;}
+
+/* DESK */
+#desk{
+  position:absolute;bottom:0;left:4%;right:4%;height:20%;
+  background:linear-gradient(180deg,#8A6912 0%,#795C0F 45%,#664D0A 100%);
+  border-top:3px solid #9E7A1C;border-radius:4px 4px 0 0;
+}
+#desk.night{background:linear-gradient(180deg,#3A2808 0%,#2E1F05 45%,#201603 100%);border-top-color:#4A3210;}
+.desk-objects{position:absolute;top:-10px;left:0;right:0;display:flex;align-items:flex-end;padding:0 18px;gap:14px;}
+.d-cup{width:17px;height:19px;background:#3E2818;border-radius:2px 2px 4px 4px;position:relative;}
+.d-cup::before{content:'';position:absolute;top:-3px;left:50%;transform:translateX(-50%);width:11px;height:3px;background:#8A6912;border-radius:2px;}
+.d-papers{width:32px;height:4px;background:#F4EFE7;border-radius:1px;position:relative;}
+.d-papers::before{content:'';position:absolute;top:-3px;left:3px;right:3px;height:3px;background:#EDE8D6;border-radius:1px;}
+.d-laptop{width:52px;height:34px;background:#232323;border-radius:3px;position:relative;}
+.d-laptop::after{content:'';position:absolute;inset:3px;background:#142E4A;border-radius:2px;}
+.d-phone{width:15px;height:27px;background:#181818;border-radius:3px;}
+
+/* SCENE PANEL */
+#scene-panel{
+  position:absolute;inset:0;display:flex;align-items:flex-end;
+  justify-content:center;gap:0;padding:30px 55px 0;
+}
+.char-card{display:flex;flex-direction:column;align-items:center;animation:charIn 0.65s ease-out both;flex:1;max-width:200px;}
+@keyframes charIn{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+.char-avatar{position:relative;width:130px;height:185px;}
+.char-emotion-tag{
+  position:absolute;top:4px;right:-6px;width:26px;height:26px;border-radius:50%;
+  background:rgba(10,12,18,0.75);border:1.5px solid rgba(255,255,255,0.14);
+  display:flex;align-items:center;justify-content:center;font-size:13px;
+}
+.stress-row{position:absolute;top:-24px;left:50%;transform:translateX(-50%);display:flex;gap:3px;}
+.s-bar{width:7px;height:14px;border-radius:2px;background:rgba(255,255,255,0.08);}
+.s-bar.on{background:#D84030;animation:stresspulse 0.9s ease-in-out infinite;}
+@keyframes stresspulse{0%,100%{opacity:1}50%{opacity:0.52}}
+.char-badge{
+  margin-top:-4px;padding:6px 12px;text-align:center;
+  background:rgba(5,8,18,0.72);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,0.1);border-radius:8px;
+}
+.char-badge-name{font-size:12px;font-weight:600;color:#fff;}
+.char-badge-role{font-size:9.5px;color:rgba(255,255,255,0.42);letter-spacing:0.04em;text-transform:uppercase;margin-top:1px;}
+
+/* SCREEN WIDGET */
+#screen-wrap{
+  position:absolute;top:6%;right:3%;width:36%;
+  background:rgba(7,10,18,0.94);backdrop-filter:blur(18px);
+  border:1px solid rgba(255,255,255,0.09);border-radius:10px;
+  overflow:hidden;box-shadow:0 18px 56px rgba(0,0,0,0.55);
+  animation:screenIn 0.7s ease-out 0.25s both;max-height:57%;
+}
+@keyframes screenIn{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:translateX(0)}}
+.screen-chrome{
+  height:26px;background:rgba(255,255,255,0.05);
+  border-bottom:1px solid rgba(255,255,255,0.07);
+  display:flex;align-items:center;padding:0 9px;gap:5px;
+}
+.chr-dot{width:7px;height:7px;border-radius:50%;}
+.chr-lbl{font-size:9.5px;color:rgba(255,255,255,0.27);margin-left:5px;}
+
+/* SAP */
+.sap-hdr{background:#081E08;padding:5px 8px;font-size:8.5px;color:#5AB45A;display:flex;gap:10px;border-bottom:1px solid rgba(90,180,90,0.18);font-family:'Courier New',monospace;}
+.sap-body{padding:8px;}
+.sap-stitle{font-size:10px;font-weight:600;color:rgba(255,255,255,0.62);letter-spacing:0.04em;text-transform:uppercase;margin-bottom:6px;font-family:'Inter',sans-serif;}
+.sap-rows{font-family:'Courier New',monospace;font-size:8px;}
+.sap-row{display:flex;gap:6px;padding:2px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+.sap-row.serr{background:rgba(255,50,40,0.07);}
+.sc{color:rgba(255,255,255,0.54);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sc.sred{color:#FF6060;} .sc.samber{color:#FFB040;} .sc.sright{text-align:right;}
+.sap-errbox{margin-top:8px;background:rgba(255,50,40,0.11);border:1px solid rgba(255,50,40,0.27);border-radius:4px;padding:6px 8px;font-size:8.5px;color:#FF7060;font-family:'Courier New',monospace;}
+
+/* Excel */
+.xl-tabs{display:flex;border-bottom:1px solid rgba(255,255,255,0.08);}
+.xl-tab{padding:4px 9px;font-size:8.5px;color:rgba(255,255,255,0.33);border-right:1px solid rgba(255,255,255,0.06);}
+.xl-tab.on{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.74);}
+.xl-fbar{background:rgba(255,255,255,0.03);padding:3px 8px;font-size:8.5px;color:#FF6060;font-family:'Courier New',monospace;border-bottom:1px solid rgba(255,255,255,0.06);}
+.xl-title{padding:6px 8px;font-size:9px;color:rgba(255,255,255,0.54);font-family:'Inter',sans-serif;}
+.xl-grid{display:grid;grid-template-columns:24px repeat(5,1fr);font-size:7.5px;font-family:'Courier New',monospace;}
+.xc{padding:2px 3px;border-right:1px solid rgba(255,255,255,0.04);border-bottom:1px solid rgba(255,255,255,0.04);color:rgba(255,255,255,0.54);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.xc.xhdr{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.32);text-align:center;}
+.xc.xerr{color:#FF6060;background:rgba(255,50,40,0.08);}
+.xc.xnum{text-align:right;color:rgba(165,205,255,0.78);}
+.xc.xgap{color:#FF9040;}
+
+/* Agent */
+.ag-hdr{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.07);}
+.ag-dot{width:8px;height:8px;border-radius:50%;background:#50C464;box-shadow:0 0 5px #50C464;animation:agpulse 1.4s ease-in-out infinite;}
+@keyframes agpulse{0%,100%{opacity:1}50%{opacity:0.42}}
+.ag-name{font-size:11px;color:rgba(255,255,255,0.82);font-weight:600;}
+.ag-model{font-size:8.5px;color:rgba(255,255,255,0.27);}
+.ag-log{padding:8px 10px;display:flex;flex-direction:column;gap:4px;}
+.log-row{display:flex;gap:6px;font-size:8.5px;font-family:'Courier New',monospace;}
+.lt{color:rgba(255,255,255,0.21);flex-shrink:0;} .lm{color:rgba(255,255,255,0.6);}
+.lm.ok{color:#50C464;} .lm.hl{color:#E8D5A3;font-weight:700;}
+.log-pbar{background:rgba(255,255,255,0.06);height:5px;border-radius:2px;margin:2px 0;overflow:hidden;}
+.log-pfill{height:100%;background:linear-gradient(90deg,#50C464,#80D880);border-radius:2px;animation:pfill 2.8s ease-out both;}
+@keyframes pfill{from{width:0}to{width:100%}}
+
+/* CET1 */
+.cet-hdr{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;justify-content:space-between;align-items:center;}
+.cet-title{font-size:11px;color:rgba(255,255,255,0.75);font-weight:600;}
+.cet-ratio{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#50C464;}
+.cet-query{padding:6px 10px;font-size:8.5px;color:rgba(255,255,255,0.33);border-bottom:1px solid rgba(255,255,255,0.05);font-style:italic;}
+.cet-resp{padding:3px 10px 5px;font-size:9px;color:#50C464;}
+.wf-row{display:flex;justify-content:space-between;padding:3px 10px;}
+.wf-row.wftotal{background:rgba(80,196,100,0.1);border-left:3px solid #50C464;}
+.wf-row.wfded{background:rgba(220,80,60,0.08);border-left:3px solid #D84040;}
+.wf-row.wfadd{background:rgba(100,170,255,0.08);border-left:3px solid #64AAFF;}
+.wf-lbl{font-size:8.5px;color:rgba(255,255,255,0.54);}
+.wf-val{font-size:8.5px;color:rgba(255,255,255,0.7);font-family:'Courier New',monospace;}
+
+/* Audit */
+.aud-hdr{background:rgba(70,90,180,0.12);padding:8px 10px;border-bottom:1px solid rgba(70,90,180,0.24);}
+.aud-title{font-size:11px;color:#7888E0;font-weight:600;}
+.aud-badge{display:inline-block;margin-top:4px;padding:2px 8px;background:rgba(80,196,100,0.14);border:1px solid rgba(80,196,100,0.34);border-radius:10px;font-size:8.5px;color:#50C464;}
+.aud-list{padding:8px 10px;display:flex;flex-direction:column;gap:4px;}
+.aud-item{display:flex;justify-content:space-between;align-items:center;padding:4px 7px;background:rgba(255,255,255,0.03);border-radius:4px;border-left:2px solid rgba(80,196,100,0.48);}
+.aud-lbl{font-size:8.5px;color:rgba(255,255,255,0.54);}
+.aud-sub{font-size:7.5px;color:rgba(255,255,255,0.28);}
+.aud-chk{font-size:13px;}
+
+/* DIALOGUE BOX */
+#dialogue-box{
+  position:absolute;bottom:0;left:0;right:0;
+  background:rgba(4,6,12,0.93);backdrop-filter:blur(18px);
+  border-top:1px solid rgba(255,255,255,0.07);
+  padding:14px 44px;min-height:76px;
+  display:flex;flex-direction:column;gap:3px;
+}
+#dlg-speaker{font-size:10px;font-weight:600;color:#E8D5A3;letter-spacing:0.07em;text-transform:uppercase;}
+#dlg-text{font-size:13.5px;color:rgba(255,255,255,0.88);line-height:1.65;max-width:860px;}
+#dlg-sub{font-size:10.5px;color:rgba(255,255,255,0.33);font-style:italic;margin-top:1px;}
+
+/* BOTTOM NAV */
+#bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;height:62px;
+  background:rgba(5,7,13,0.96);backdrop-filter:blur(14px);
+  border-top:1px solid rgba(255,255,255,0.06);
+  display:flex;align-items:center;justify-content:center;gap:8px;padding:0 24px;
+}
+.nav-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.17);cursor:pointer;transition:all 0.3s;}
+.nav-dot.cs-dot{background:rgba(210,70,55,0.44);}
+.nav-dot.cs-dot.active{background:#D84040;transform:scale(1.45);}
+.nav-dot.fs-dot{background:rgba(72,172,88,0.44);}
+.nav-dot.fs-dot.active{background:#48AC58;transform:scale(1.45);}
+.nav-dot.ph-dot{background:rgba(96,134,245,0.44);}
+.nav-dot.ph-dot.active{background:#6086F5;transform:scale(1.45);}
+.nav-btn{
+  height:34px;padding:0 18px;border-radius:7px;border:1px solid rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.62);font-size:11.5px;
+  font-family:'Inter',sans-serif;font-weight:500;cursor:pointer;transition:all 0.2s;
+}
+.nav-btn:hover{background:rgba(255,255,255,0.1);color:#fff;}
+.nav-btn:disabled{opacity:0.28;cursor:default;}
+.nav-btn.primary{background:rgba(232,213,163,0.12);border-color:rgba(232,213,163,0.34);color:#E8D5A3;}
+.nav-btn.primary:hover{background:rgba(232,213,163,0.22);}
+
+/* PROGRESS */
+#prog-bar{position:fixed;bottom:62px;left:0;height:2px;background:linear-gradient(90deg,#E8D5A3,#D4A840);transition:width 0.55s ease;z-index:99;}
+
+/* TITLE SCREEN */
+#title-screen{
+  position:fixed;inset:50px 0 0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at 50% 38%,#16213A 0%,#090C18 55%,#050710 100%);
+  z-index:60;
+}
+.ttl-eyebrow{font-size:10px;letter-spacing:0.18em;color:rgba(232,213,163,0.5);text-transform:uppercase;margin-bottom:14px;}
+.ttl-main{font-family:'Playfair Display',serif;font-size:clamp(40px,5.5vw,70px);font-weight:900;color:#fff;text-align:center;line-height:1.08;}
+.ttl-main .gold{color:#E8D5A3;}
+.ttl-sub{font-size:15px;color:rgba(255,255,255,0.42);text-align:center;margin-top:10px;font-weight:300;}
+.ttl-tags{display:flex;gap:28px;margin-top:36px;}
+.ttl-tag{display:flex;align-items:center;gap:7px;padding:7px 16px;border:1px solid rgba(255,255,255,0.1);border-radius:20px;font-size:10.5px;color:rgba(255,255,255,0.44);}
+.t-dot{width:6px;height:6px;border-radius:50%;}
+.t-red{background:#D84040;} .t-green{background:#48AC58;}
+.start-btn{
+  margin-top:44px;padding:13px 46px;border-radius:11px;
+  background:linear-gradient(135deg,#E8D5A3 0%,#D4A840 100%);
+  border:none;font-family:'Playfair Display',serif;font-size:15px;font-weight:700;
+  color:#080A10;cursor:pointer;letter-spacing:0.03em;
+  box-shadow:0 8px 30px rgba(232,213,163,0.28);transition:all 0.3s;
+  animation:pulsebtn 2.2s ease-in-out infinite;
+}
+.start-btn:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(232,213,163,0.44);}
+@keyframes pulsebtn{0%,100%{box-shadow:0 8px 30px rgba(232,213,163,0.28)}50%{box-shadow:0 8px 44px rgba(232,213,163,0.48)}}
+
+/* PHASE / END SCREENS */
+#phase-screen,#end-screen{
+  position:fixed;inset:50px 0 62px;
+  display:none;flex-direction:column;align-items:center;justify-content:center;gap:22px;
+  z-index:55;
+}
+#phase-screen{background:radial-gradient(ellipse at 50% 48%,#091A09 0%,#050A05 60%,#030603 100%);}
+#end-screen{background:radial-gradient(ellipse at 50% 48%,#0A1A0A 0%,#060C06 60%,#030503 100%);}
+.ph-icon{font-size:60px;animation:phicon 2.2s ease-in-out infinite;}
+@keyframes phicon{0%,100%{transform:scale(1)}50%{transform:scale(1.06);filter:brightness(1.16)}}
+.ph-title{font-family:'Playfair Display',serif;font-size:44px;font-weight:900;text-align:center;}
+.ph-sub{font-size:15px;color:rgba(255,255,255,0.44);text-align:center;max-width:480px;line-height:1.65;}
+.ph-metrics{display:flex;gap:40px;margin-top:10px;}
+.ph-metric{text-align:center;}
+.ph-val{font-family:'Playfair Display',serif;font-size:34px;font-weight:700;color:#E8D5A3;}
+.ph-lbl{font-size:10px;color:rgba(255,255,255,0.33);margin-top:2px;letter-spacing:0.06em;text-transform:uppercase;}
+
+/* KB HINTS */
+#kb-hints{position:fixed;bottom:70px;right:14px;font-size:9px;color:rgba(255,255,255,0.17);display:flex;flex-direction:column;gap:2px;text-align:right;pointer-events:none;z-index:98;}
+kbd{display:inline-block;padding:1px 4px;border:1px solid rgba(255,255,255,0.11);border-radius:3px;font-size:8px;font-family:'Inter',sans-serif;color:rgba(255,255,255,0.24);}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div class="tb-logo">BCAR INTELLIGENCE</div>
+  <div class="tb-sep"></div>
+  <div class="tb-act" id="tb-act">NORTH AMERICAN D-SIB</div>
+  <div class="tb-sep"></div>
+  <div class="tb-scene" id="tb-scene">Capital Reporting Transformation</div>
+  <div class="tb-controls">
+    <div id="tts-wave"><span></span><span></span><span></span><span></span><span></span></div>
+    <button class="tb-btn active" id="tts-btn" onclick="toggleTTS()">&#128266; Voice</button>
+    <button class="tb-btn" id="music-btn" onclick="toggleMusic()">&#9834; Music</button>
+  </div>
+</div>
+
+<!-- TITLE SCREEN -->
+<div id="title-screen">
+  <div class="ttl-eyebrow">OSFI-Regulated &middot; D-SIB &middot; AWS Bedrock &middot; SAP S/4HANA</div>
+  <div class="ttl-main">BCAR &amp; the <span class="gold">Agentic AI</span><br>Transformation</div>
+  <div class="ttl-sub">A capital reporting story &mdash; six characters, two acts</div>
+  <div class="ttl-tags">
+    <div class="ttl-tag"><div class="t-dot t-red"></div>Act I &mdash; Current State</div>
+    <div class="ttl-tag"><div class="t-dot t-green"></div>Act II &mdash; Future State</div>
+  </div>
+  <button class="start-btn" onclick="startStory()">&#9654; Begin Story</button>
+</div>
+
+<!-- PHASE SCREEN -->
+<div id="phase-screen">
+  <div class="ph-icon">&#9889;</div>
+  <div class="ph-title" style="color:#48AC58;">BCAR Agentic AI</div>
+  <div class="ph-sub">The platform transforms manual capital reporting into a continuous, intelligent, audit-ready process.</div>
+  <div class="ph-metrics">
+    <div class="ph-metric"><div class="ph-val">80%</div><div class="ph-lbl">Manual Effort Reduced</div></div>
+    <div class="ph-metric"><div class="ph-val">4.5s</div><div class="ph-lbl">Avg Query Response</div></div>
+    <div class="ph-metric"><div class="ph-val">100%</div><div class="ph-lbl">Audit Trail Coverage</div></div>
+  </div>
+</div>
+
+<!-- END SCREEN -->
+<div id="end-screen">
+  <div class="ph-icon">&#127942;</div>
+  <div class="ph-title" style="color:#E8D5A3;">Transformation Complete</div>
+  <div class="ph-sub">From 15-day manual close to continuous intelligent capital reporting.</div>
+  <div class="ph-metrics">
+    <div class="ph-metric"><div class="ph-val">80%</div><div class="ph-lbl">Effort Saved</div></div>
+    <div class="ph-metric"><div class="ph-val">4.5s</div><div class="ph-lbl">AI Response</div></div>
+    <div class="ph-metric"><div class="ph-val">0</div><div class="ph-lbl">Audit Findings</div></div>
+    <div class="ph-metric"><div class="ph-val">100%</div><div class="ph-lbl">OSFI Coverage</div></div>
+  </div>
+  <button class="start-btn" onclick="goTo(0)" style="font-size:13px;padding:11px 36px;margin-top:8px;">&#8635; Watch Again</button>
+</div>
+
+<!-- STAGE -->
+<div id="stage">
+  <div id="backdrop" class="bdrop-day"></div>
+  <div id="city-window" class="cw-day">
+    <div id="bldgs"></div>
+    <div id="ground"></div>
+  </div>
+  <div id="desk">
+    <div class="desk-objects">
+      <div class="d-cup"></div>
+      <div class="d-papers"></div>
+      <div class="d-laptop"></div>
+      <div class="d-papers"></div>
+      <div class="d-phone"></div>
+    </div>
+  </div>
+  <div id="scene-panel"></div>
+  <div id="screen-wrap" style="display:none;"></div>
+  <div id="dialogue-box" style="display:none;">
+    <div id="dlg-speaker"></div>
+    <div id="dlg-text"></div>
+    <div id="dlg-sub"></div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div id="bottom-nav">
+  <button class="nav-btn" id="prev-btn" onclick="navigate(-1)" disabled>&#8592; Back</button>
+  <div id="dots" style="display:flex;gap:8px;align-items:center;"></div>
+  <button class="nav-btn primary" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+</div>
+<div id="prog-bar" style="width:0%"></div>
+
+<!-- KB HINTS -->
+<div id="kb-hints">
+  <div><kbd>&#8592;</kbd><kbd>&#8594;</kbd> navigate</div>
+  <div><kbd>N</kbd> voice &nbsp;<kbd>M</kbd> music</div>
+</div>
+
+<audio id="bgmusic" loop preload="none"></audio>
+
+<script>
+// ================================================
+//  CHARACTER DEFINITIONS
+// ================================================
+var CHARS = {
+  sarah:  {name:'Sarah Chen',   role:'Controller',       skin:'#C88040',hair:'#150800',shirt:'#2C487A',tie:null,     glasses:false},
+  omar:   {name:'Omar Hassan',  role:'Capital Analyst',  skin:'#B46828',hair:'#0C0400',shirt:'#1A3818',tie:null,     glasses:true},
+  diana:  {name:'Diana Park',   role:'CFO',              skin:'#E8B498',hair:'#180A00',shirt:'#3C1E62',tie:null,     glasses:false},
+  marcus: {name:'Marcus Webb',  role:'OSFI Examiner',    skin:'#F0D0B8',hair:'#343030',shirt:'#22303E',tie:'#8A1818',glasses:true},
+  alex:   {name:'Alex Rivera',  role:'AI Platform Lead', skin:'#D2906A',hair:'#0C0700',shirt:'#1A1A2C',tie:null,     glasses:false},
+  wei:    {name:'Wei Zhang',    role:'Risk Manager',     skin:'#D4B08A',hair:'#110600',shirt:'#1A2E30',tie:null,     glasses:true}
+};
+
+// ================================================
+//  NARRATION SCRIPTS (short)
+// ================================================
+var NARRATION = {
+  title: "BCAR. Before and after Agentic AI. Six characters. Two acts. One transformation.",
+  cs1:   "7:45 AM. Third manual SAP export. System timing out. 47 tabs open.",
+  cs2:   "47 formula errors. Column header changed. D07 broken. 15 days to OSFI.",
+  cs3:   "11:17 PM. 847 thousand won't reconcile. CRO calling.",
+  phase: "The BCAR Agentic AI Platform. From manual chaos to intelligent capital reporting.",
+  fs1:   "Same deadline. 12,847 records. Four minutes 32 seconds. Coffee still hot.",
+  fs2:   "CFO asks. AI answers in 3.2 seconds. Full regulatory sourcing. Board deck ready.",
+  fs3:   "Audit week. Seven OSFI requests. Cleared in four hours. Zero findings."
+};
+
+// ================================================
+//  SCENE DATA
+// ================================================
+var SCENES = [
+  {
+    id:'cs1', act:'ACT I \u2014 CURRENT STATE', label:'The Export Loop',
+    time:'day', chars:['sarah'], stressed:['sarah'],
+    speaker:'SARAH CHEN \u2014 Controller',
+    dialogue:"System timed out again. This is the third attempt. I have 47 tabs open and none of them have the right mapping file.",
+    sub:'Day 1 of close. SAP RFC export failing. BCAR deadline in 15 days.',
+    screen:'sap', emotion:'\uD83D\uDE24'
+  },
+  {
+    id:'cs2', act:'ACT I \u2014 CURRENT STATE', label:'The Formula Cascade',
+    time:'day', chars:['omar','sarah'], stressed:['omar','sarah'],
+    speaker:'OMAR HASSAN \u2014 Capital Analyst',
+    dialogue:"Forty-seven errors. Someone changed the column header in D07 \u2014 the entire CET1 waterfall broke. I'm tracing every reference manually.",
+    sub:'Excel BCAR model \u2014 VLOOKUP cascade failure across 8 sheets.',
+    screen:'excel_err', emotion:'\uD83D\uDE30'
+  },
+  {
+    id:'cs3', act:'ACT I \u2014 CURRENT STATE', label:'The Midnight Gap',
+    time:'night', chars:['sarah','wei'], stressed:['sarah','wei'],
+    speaker:'WEI ZHANG \u2014 Risk Manager',
+    dialogue:"It's $847,000. I've been here since 2 PM. The CRO calls every 30 minutes and I still cannot explain this gap.",
+    sub:'Reconciliation gap: SAP GL vs. Essbase capital calc \u2014 source unknown. T\u201112 days.',
+    screen:'excel_gap', emotion:'\uD83D\uDE31'
+  },
+  {
+    id:'phase', act:'TRANSFORMATION', label:'Agentic AI Platform',
+    time:'day', chars:[], stressed:[],
+    speaker:'', dialogue:'', sub:'',
+    screen:null, emotion:null, isPhase:true
+  },
+  {
+    id:'fs1', act:'ACT II \u2014 FUTURE STATE', label:'Automated Ingestion',
+    time:'day', chars:['alex','sarah'], stressed:[],
+    speaker:'ALEX RIVERA \u2014 AI Platform Lead',
+    dialogue:"The ingestion agent pulled 12,847 records from SAP, Essbase, and BlackLine. Reconciled. Validated. Ready. Four minutes, thirty-two seconds.",
+    sub:'AWS Bedrock orchestration \u2014 automated extraction, mapping, reconciliation pipeline.',
+    screen:'agent', emotion:'\u2705'
+  },
+  {
+    id:'fs2', act:'ACT II \u2014 FUTURE STATE', label:'Instant Capital Intelligence',
+    time:'day', chars:['diana'], stressed:[],
+    speaker:'DIANA PARK \u2014 CFO',
+    dialogue:"I typed my question at 8:04. Answer in 3.2 seconds. CET1 ratio, RWA breakdown, full regulatory citation. The board deck writes itself.",
+    sub:'Capital Intelligence Agent \u2014 natural language query \u2192 regulatory-grade response.',
+    screen:'cet1', emotion:'\uD83C\uDFAF'
+  },
+  {
+    id:'fs3', act:'ACT II \u2014 FUTURE STATE', label:'The Clean Audit',
+    time:'day', chars:['marcus','alex'], stressed:[],
+    speaker:'MARCUS WEBB \u2014 OSFI Examiner',
+    dialogue:"Seven requests. Every calculation trace, every source mapping, every validation log \u2014 immutable, timestamped, complete. This is what we expect.",
+    sub:'Audit week: 7 OSFI requests cleared in 4 hours. Zero findings.',
+    screen:'audit', emotion:'\u2705'
+  }
+];
+
+var currentIdx = -1;
+var TOTAL = SCENES.length;
+
+// ================================================
+//  COLOR HELPERS
+// ================================================
+function hexToRgb(h){ return [parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)]; }
+function rgbToHex(r,g,b){ return '#'+[r,g,b].map(function(v){return Math.min(255,Math.max(0,Math.round(v))).toString(16).padStart(2,'0');}).join(''); }
+function lighten(h,a){ var c=hexToRgb(h); return rgbToHex(c[0]+a,c[1]+a,c[2]+a); }
+function darken(h,a){ return lighten(h,-a); }
+
+// ================================================
+//  SVG CHARACTER BUILDER
+// ================================================
+function buildSVG(id, stressed) {
+  var c = CHARS[id];
+  if (!c) return '';
+  var sL = lighten(c.skin,20), sD = darken(c.skin,22);
+  var stL = lighten(c.shirt,14), stD = darken(c.shirt,14);
+  var browE = stressed ? 'M34,62 Q40,59 46,62' : 'M34,63 Q40,65 46,63';
+  var mouthE = stressed ? 'M37,76 Q40,74 43,76' : 'M37,77 Q40,79 43,77';
+  var gl = '';
+  if (c.glasses) {
+    gl += '<rect x="32" y="66" width="12" height="9" rx="3" fill="none" stroke="rgba(200,210,225,0.54)" stroke-width="1.2"/>';
+    gl += '<rect x="46" y="66" width="12" height="9" rx="3" fill="none" stroke="rgba(200,210,225,0.54)" stroke-width="1.2"/>';
+    gl += '<line x1="44" y1="70" x2="46" y2="70" stroke="rgba(200,210,225,0.44)" stroke-width="1"/>';
+    gl += '<line x1="32" y1="70" x2="28" y2="72" stroke="rgba(200,210,225,0.38)" stroke-width="1"/>';
+    gl += '<line x1="58" y1="70" x2="62" y2="72" stroke="rgba(200,210,225,0.38)" stroke-width="1"/>';
+  }
+  var tie = '';
+  if (c.tie) {
+    tie += '<polygon points="50,112 47,118 50,150 53,118" fill="'+c.tie+'"/>';
+    tie += '<polygon points="50,112 47,116 50,121 53,116" fill="'+darken(c.tie,18)+'"/>';
+  }
+  var stress = '';
+  if (stressed) {
+    stress += '<line x1="53" y1="56" x2="57" y2="50" stroke="rgba(210,70,55,0.65)" stroke-width="1.3" stroke-linecap="round"/>';
+    stress += '<line x1="58" y1="60" x2="63" y2="57" stroke="rgba(210,70,55,0.52)" stroke-width="1.1" stroke-linecap="round"/>';
+  }
+  var out = '<svg viewBox="0 0 100 210" xmlns="http://www.w3.org/2000/svg" width="130" height="185">';
+  out += '<defs>';
+  out += '<radialGradient id="sg'+id+'" cx="50%" cy="32%" r="60%">';
+  out += '<stop offset="0%" stop-color="'+sL+'"/><stop offset="100%" stop-color="'+sD+'"/></radialGradient>';
+  out += '<radialGradient id="sh'+id+'" cx="50%" cy="28%" r="70%">';
+  out += '<stop offset="0%" stop-color="'+stL+'"/><stop offset="100%" stop-color="'+stD+'"/></radialGradient>';
+  out += '</defs>';
+  out += '<rect x="27" y="108" width="46" height="98" rx="8" fill="url(#sh'+id+')"/>';
+  out += '<path d="M43,109 L50,122 L57,109" fill="'+sL+'" opacity="0.5"/>';
+  out += tie;
+  out += '<rect x="44" y="97" width="12" height="15" rx="3" fill="url(#sg'+id+')"/>';
+  out += '<ellipse cx="50" cy="76" rx="19" ry="22" fill="url(#sg'+id+')"/>';
+  out += '<ellipse cx="50" cy="57" rx="20" ry="12" fill="'+c.hair+'"/>';
+  out += '<rect x="30" y="57" width="40" height="10" rx="3" fill="'+c.hair+'"/>';
+  out += '<ellipse cx="39" cy="71" rx="5.5" ry="5.5" fill="white"/>';
+  out += '<ellipse cx="61" cy="71" rx="5.5" ry="5.5" fill="white"/>';
+  out += '<ellipse cx="40" cy="72" rx="3" ry="3.5" fill="#221005"/>';
+  out += '<ellipse cx="62" cy="72" rx="3" ry="3.5" fill="#221005"/>';
+  out += '<ellipse cx="41" cy="71" rx="1" ry="1" fill="white"/>';
+  out += '<ellipse cx="63" cy="71" rx="1" ry="1" fill="white"/>';
+  out += gl;
+  out += '<path d="'+browE+'" stroke="'+darken(c.hair,5)+'" stroke-width="2.2" fill="none" stroke-linecap="round"/>';
+  out += '<path d="M49,77 Q47,83 49,85 Q51,86 53,85 Q55,83 51,77" stroke="'+darken(c.skin,28)+'" stroke-width="0.8" fill="none" opacity="0.62"/>';
+  out += '<path d="'+mouthE+'" stroke="'+darken(c.skin,38)+'" stroke-width="1.8" fill="none" stroke-linecap="round"/>';
+  out += '<ellipse cx="31" cy="76" rx="3.5" ry="5" fill="url(#sg'+id+')"/>';
+  out += '<ellipse cx="69" cy="76" rx="3.5" ry="5" fill="url(#sg'+id+')"/>';
+  out += stress;
+  out += '</svg>';
+  return out;
+}
+
+// ================================================
+//  CITY BUILDER
+// ================================================
+function buildCity(isNight) {
+  var cw = document.getElementById('city-window');
+  cw.className = isNight ? 'cw-night' : 'cw-day';
+  var be = document.getElementById('bldgs');
+  var ge = document.getElementById('ground');
+  ge.className = isNight ? 'night' : '';
+  var cfgs = [{w:16,h:52},{w:20,h:70},{w:14,h:40},{w:24,h:86},{w:18,h:62},{w:16,h:48},{w:22,h:76},{w:12,h:36},{w:20,h:58},{w:18,h:68}];
+  be.innerHTML = '';
+  cfgs.forEach(function(cfg) {
+    var b = document.createElement('div');
+    b.className = 'bldg' + (isNight ? ' lit' : '');
+    b.style.width = cfg.w + 'px'; b.style.height = cfg.h + 'px'; b.style.minWidth = cfg.w + 'px';
+    if (isNight) {
+      var rows = Math.floor(cfg.h/7), cols = Math.floor(cfg.w/5);
+      var g = document.createElement('div');
+      g.className = 'bw-grid'; g.style.gridTemplateColumns = 'repeat('+cols+',1fr)';
+      for (var i=0; i<rows*cols; i++) {
+        var bw = document.createElement('div');
+        bw.className = 'bw' + (Math.random()>0.38?' on':'');
+        g.appendChild(bw);
+      }
+      b.appendChild(g);
+    }
+    be.appendChild(b);
+  });
+}
+
+// ================================================
+//  SCREEN BUILDERS
+// ================================================
+function buildSAPScreen() {
+  var rows = [
+    ['GL0021','RWA_CREDIT','47,281,440','ERROR'],
+    ['GL0022','CET1_ADJ','(12,847,330)','WARN'],
+    ['GL0023','T2_CAPITAL','8,440,000','ERROR'],
+    ['GL0024','FRTB_MKT','31,200,000','--'],
+    ['GL0025','AT1_NVCC','15,000,000','--']
+  ];
+  var rh = rows.map(function(r) {
+    var e = r[3]==='ERROR';
+    return '<div class="sap-row'+(e?' serr':'')+'">'+
+      '<span class="sc">'+r[0]+'</span><span class="sc">'+r[1]+'</span>'+
+      '<span class="sc sright">'+r[2]+'</span>'+
+      '<span class="sc '+(e?'sred':r[3]==='WARN'?'samber':'')+'">'+r[3]+'</span></div>';
+  }).join('');
+  return '<div class="sap-hdr"><span>SAP RFC Extract</span><span>BCAR_FY2024_Q4</span><span style="color:#FF5050">TIMEOUT</span></div>'+
+    '<div class="sap-body"><div class="sap-stitle">Capital Ledger Export \u2014 Attempt 3/3</div>'+
+    '<div class="sap-rows">'+rh+'</div>'+
+    '<div class="sap-errbox">\u26a0 RFC_READ_TABLE timed out after 45s. 3 of 8 extracts complete.</div></div>';
+}
+
+function buildExcelErrScreen() {
+  var hdr = ['','A','B','C','D','E'].map(function(h){return '<div class="xc xhdr">'+h+'</div>';}).join('');
+  var data = [
+    ['3','CET1_CAP','#REF!','--','--','--'],
+    ['4','RWA_TOT','#REF!','--','--','--'],
+    ['5','CAR_RATIO','#REF!','--','--','--'],
+    ['6','THRESHOLD','11.5%','--','--','--'],
+    ['7','CET1_ADJ','#VALUE!','--','--','--']
+  ].map(function(r){
+    var e=r[2].indexOf('#')>=0;
+    return '<div class="xc">'+r[0]+'</div>'+
+      '<div class="xc">'+r[1]+'</div>'+
+      '<div class="xc '+(e?'xerr':'xnum')+'">'+r[2]+'</div>'+
+      '<div class="xc">'+r[3]+'</div><div class="xc">'+r[4]+'</div><div class="xc">'+r[5]+'</div>';
+  }).join('');
+  return '<div class="xl-tabs"><div class="xl-tab on">BCAR_Model_v14</div><div class="xl-tab">RWA_CREDIT</div><div class="xl-tab">CET1_Bridge</div></div>'+
+    '<div class="xl-fbar">=VLOOKUP(D07,SAP_MAP!A:C,3,0) \u2192 #REF! \u2014 47 errors</div>'+
+    '<div class="xl-title">CET1 Waterfall \u2014 Formula Cascade</div>'+
+    '<div class="xl-grid">'+hdr+data+'</div>';
+}
+
+function buildExcelGapScreen() {
+  var hdr = ['','A','B','C','D','E'].map(function(h){return '<div class="xc xhdr">'+h+'</div>';}).join('');
+  var data = [
+    ['7','GL Balance','847,293,440','Essbase','846,446,440','(847,000)'],
+    ['8','RWA Credit','228,441,000','RWA Credit','228,441,000','\u2014'],
+    ['9','CET1 Ratio','12.84%','CET1 Ratio','#ERROR!','???'],
+    ['10','Diff','\u2014','\u2014','\u2014','#ERROR!']
+  ].map(function(r){
+    var e4=r[4].indexOf('#')>=0, e5=r[5].indexOf('#')>=0, g5=r[5].indexOf('847')>=0;
+    return '<div class="xc">'+r[0]+'</div><div class="xc">'+r[1]+'</div>'+
+      '<div class="xc xnum">'+r[2]+'</div><div class="xc">'+r[3]+'</div>'+
+      '<div class="xc '+(e4?'xerr':'xnum')+'">'+r[4]+'</div>'+
+      '<div class="xc '+(e5?'xerr':g5?'xgap':'xnum')+'">'+r[5]+'</div>';
+  }).join('');
+  return '<div class="xl-tabs"><div class="xl-tab on">RECON_Final</div><div class="xl-tab">GL_Map</div><div class="xl-tab">Essbase</div></div>'+
+    '<div class="xl-fbar">=B7-D7 \u2192 (847,000) \u2014 SOURCE UNKNOWN</div>'+
+    '<div class="xl-title">Reconciliation \u2014 $847K Gap Unresolved</div>'+
+    '<div class="xl-grid">'+hdr+data+'</div>';
+}
+
+function buildAgentScreen() {
+  return '<div class="ag-hdr"><div class="ag-dot"></div>'+
+    '<div><div class="ag-name">BCAR Ingestion Agent</div>'+
+    '<div class="ag-model">AWS Bedrock \u00b7 Claude 3.5 \u00b7 SAP + BlackLine + Essbase</div></div></div>'+
+    '<div class="ag-log">'+
+    '<div class="log-row"><span class="lt">07:44:12</span><span class="lm ok">\u2713 SAP RFC extract \u2014 4,281 records</span></div>'+
+    '<div class="log-row"><span class="lt">07:44:38</span><span class="lm ok">\u2713 Essbase capital extract \u2014 3,847 records</span></div>'+
+    '<div class="log-row"><span class="lt">07:45:01</span><span class="lm ok">\u2713 BlackLine recs \u2014 4,719 items</span></div>'+
+    '<div class="log-row"><span class="lt">07:45:22</span><span class="lm">Running cross-source reconciliation\u2026</span></div>'+
+    '<div class="log-pbar"><div class="log-pfill"></div></div>'+
+    '<div class="log-row"><span class="lt">07:48:44</span><span class="lm hl">\u2713 12,847 records reconciled. Zero gaps.</span></div>'+
+    '<div class="log-row"><span class="lt">07:48:44</span><span class="lm ok">CET1: 12.84% | RWA: $164.4B | Threshold: 11.5%</span></div>'+
+    '</div>';
+}
+
+function buildCET1Screen() {
+  var wf = [
+    ['wftotal','CET1 Capital','+$18.4B'],
+    ['wfded','RWA (Credit Risk)','$143.3B'],
+    ['wfded','RWA (Market Risk)','$12.4B'],
+    ['wfded','RWA (Op Risk \u2014 SMA)','$8.7B'],
+    ['wftotal','Total RWA','$164.4B'],
+    ['wfadd','CET1 Ratio','12.84%'],
+    ['wfadd','OSFI Minimum (CAR)','11.50%'],
+    ['wfadd','Headroom','1.34%']
+  ].map(function(r){
+    return '<div class="wf-row '+r[0]+'"><span class="wf-lbl">'+r[1]+'</span><span class="wf-val">'+r[2]+'</span></div>';
+  }).join('');
+  return '<div class="cet-hdr"><div class="cet-title">Capital Intelligence Agent</div><div class="cet-ratio">12.84%</div></div>'+
+    '<div class="cet-query">Query: "What is our CET1 headroom vs OSFI minimum?"</div>'+
+    '<div class="cet-resp">\u25b8 Response in 3.2s \u00b7 Source: SAP GL + OSFI CAR \u00a71.2</div>'+
+    wf;
+}
+
+function buildAuditScreen() {
+  var items = [
+    ['CET1 Calculation Trace','Complete \u00b7 847 line items'],
+    ['RWA Source Mapping','Complete \u00b7 SAP GL \u2192 Essbase'],
+    ['AT1/T2 Instrument Schedule','Complete \u00b7 22 instruments'],
+    ['DTA Deduction Workings','Complete \u00b7 IAS 12 compliant'],
+    ['FRTB Sensitivity Report','Complete \u00b7 156 positions'],
+    ['Reconciliation Logs','Complete \u00b7 Zero gaps'],
+    ['Model Change Log','Complete \u00b7 Immutable trail']
+  ].map(function(item){
+    return '<div class="aud-item"><div><div class="aud-lbl">'+item[0]+'</div><div class="aud-sub">'+item[1]+'</div></div><div class="aud-chk">\u2705</div></div>';
+  }).join('');
+  return '<div class="aud-hdr"><div class="aud-title">OSFI Audit Response \u2014 Q4 2024</div>'+
+    '<div class="aud-badge">\u2713 ALL CLEARED \u2014 4 HOURS</div></div>'+
+    '<div class="aud-list">'+items+'</div>';
+}
+
+// ================================================
+//  TTS — Web Speech API
+// ================================================
+var synth = window.speechSynthesis;
+var ttsEnabled = true;
+var isSpeaking = false;
+
+function ensureVoices(cb) {
+  var v = synth ? synth.getVoices() : [];
+  if (v.length) { cb(v); return; }
+  if (synth) {
+    synth.onvoiceschanged = function() { cb(synth.getVoices()); };
+    setTimeout(function() { cb(synth ? synth.getVoices() : []); }, 1200);
+  } else { cb([]); }
+}
+
+function pickVoice(voices) {
+  var tests = [
+    function(v){return v.name==='Samantha';},
+    function(v){return v.name==='Karen';},
+    function(v){return v.name==='Daniel';},
+    function(v){return v.name.indexOf('Google UK English Female')>=0;},
+    function(v){return v.name.indexOf('Google US English')>=0;},
+    function(v){return v.lang==='en-GB';},
+    function(v){return v.lang==='en-US' && v.name.indexOf('Zira')<0;},
+    function(v){return v.lang && v.lang.indexOf('en')===0;}
+  ];
+  for (var i=0; i<tests.length; i++) {
+    var found = voices.filter(tests[i]);
+    if (found.length) return found[0];
+  }
+  return voices[0] || null;
+}
+
+function speak(text) {
+  if (!ttsEnabled || !synth || !text) return;
+  synth.cancel();
+  setTimeout(function() {
+    ensureVoices(function(voices) {
+      var u = new SpeechSynthesisUtterance(text);
+      u.rate = 0.91; u.pitch = 1.0; u.volume = 1.0;
+      var v = pickVoice(voices);
+      if (v) u.voice = v;
+      isSpeaking = true; updateTTSUI(); musicDuckDown();
+      u.onend = function() { isSpeaking = false; updateTTSUI(); musicDuckUp(); };
+      u.onerror = function() { isSpeaking = false; updateTTSUI(); musicDuckUp(); };
+      synth.speak(u);
+    });
+  }, 80);
+}
+
+function stopSpeech() {
+  if (synth) synth.cancel();
+  isSpeaking = false; updateTTSUI(); musicDuckUp();
+}
+
+function toggleTTS() {
+  ttsEnabled = !ttsEnabled;
+  if (!ttsEnabled) stopSpeech();
+  updateTTSUI();
+}
+
+function updateTTSUI() {
+  var btn = document.getElementById('tts-btn');
+  var wave = document.getElementById('tts-wave');
+  btn.className = 'tb-btn' + (ttsEnabled ? ' active' : ' muted');
+  btn.textContent = ttsEnabled ? '\uD83D\uDD0A Voice' : '\uD83D\uDD07 Voice';
+  wave.style.display = isSpeaking ? 'flex' : 'none';
+}
+
+// ================================================
+//  MUSIC
+// ================================================
+var audio = document.getElementById('bgmusic');
+var musicLoaded = false;
+var musicPlaying = false;
+var targetVol = 0.42;
+var duckIv = null;
+
+function initMusic() {
+  if (audio.src && audio.src.indexOf('Enigmae') >= 0) return;
+  audio.src = 'Enigmae.m4a';
+  audio.volume = 0;
+  audio.load();
+  audio.oncanplaythrough = function() { musicLoaded = true; };
+  audio.onerror = function() { musicLoaded = false; };
+}
+
+function toggleMusic() {
+  if (!musicLoaded) {
+    initMusic();
+    var attempts = 0;
+    var tryStart = function() {
+      attempts++;
+      if (musicLoaded) { musicPlaying = true; audio.play().catch(function(){}); fadeInMusic(); updateMusicBtn(); }
+      else if (attempts < 6) { setTimeout(tryStart, 500); }
+    };
+    setTimeout(tryStart, 600);
+    return;
+  }
+  if (musicPlaying) { musicPlaying = false; fadeOutMusic(); updateMusicBtn(); }
+  else { musicPlaying = true; audio.play().catch(function(){}); fadeInMusic(); updateMusicBtn(); }
+}
+
+function fadeInMusic() {
+  clearInterval(duckIv);
+  duckIv = setInterval(function() {
+    audio.volume = Math.min(targetVol, audio.volume + 0.018);
+    if (audio.volume >= targetVol) clearInterval(duckIv);
+  }, 50);
+}
+
+function fadeOutMusic() {
+  clearInterval(duckIv);
+  duckIv = setInterval(function() {
+    audio.volume = Math.max(0, audio.volume - 0.022);
+    if (audio.volume <= 0) { clearInterval(duckIv); audio.pause(); }
+  }, 50);
+}
+
+function musicDuckDown() {
+  if (!musicLoaded || !musicPlaying) return;
+  clearInterval(duckIv);
+  duckIv = setInterval(function() {
+    audio.volume = Math.max(0.07, audio.volume - 0.04);
+    if (audio.volume <= 0.07) clearInterval(duckIv);
+  }, 40);
+}
+
+function musicDuckUp() {
+  if (!musicLoaded || !musicPlaying) return;
+  clearInterval(duckIv);
+  duckIv = setInterval(function() {
+    audio.volume = Math.min(targetVol, audio.volume + 0.022);
+    if (audio.volume >= targetVol) clearInterval(duckIv);
+  }, 40);
+}
+
+function updateMusicBtn() {
+  var btn = document.getElementById('music-btn');
+  btn.className = 'tb-btn' + (musicPlaying ? ' active' : '');
+  btn.textContent = musicPlaying ? '\u266B Music' : '\u266A Music';
+}
+
+// ================================================
+//  DOTS
+// ================================================
+function buildDots() {
+  var c = document.getElementById('dots');
+  c.innerHTML = '';
+  SCENES.forEach(function(s, i) {
+    var d = document.createElement('div');
+    var cls = 'nav-dot ';
+    if (s.isPhase) cls += 'ph-dot';
+    else if (s.id.indexOf('cs') === 0) cls += 'cs-dot';
+    else cls += 'fs-dot';
+    d.className = cls; d.title = s.label;
+    (function(idx){ d.onclick = function(){ goTo(idx); }; })(i);
+    c.appendChild(d);
+  });
+}
+
+function updateDots(idx) {
+  document.querySelectorAll('.nav-dot').forEach(function(d, i) {
+    d.classList.toggle('active', i === idx);
+  });
+}
+
+// ================================================
+//  RENDER SCENE
+// ================================================
+function renderScene(idx) {
+  var s = SCENES[idx];
+  stopSpeech();
+
+  document.getElementById('tb-act').textContent = s.act;
+  document.getElementById('tb-scene').textContent = s.label;
+
+  var phEl = document.getElementById('phase-screen');
+  var enEl = document.getElementById('end-screen');
+  var dlEl = document.getElementById('dialogue-box');
+  var swEl = document.getElementById('screen-wrap');
+  var panel = document.getElementById('scene-panel');
+  var bd = document.getElementById('backdrop');
+
+  phEl.style.display = 'none';
+  enEl.style.display = 'none';
+
+  if (s.isPhase) {
+    phEl.style.display = 'flex';
+    dlEl.style.display = 'none';
+    swEl.style.display = 'none';
+    panel.innerHTML = '';
+    bd.className = 'bdrop-trans';
+    buildCity(false);
+    document.getElementById('desk').className = '';
+    setTimeout(function() { speak(NARRATION.phase); }, 600);
+    return;
+  }
+
+  var isNight = (s.time === 'night');
+  bd.className = isNight ? 'bdrop-night' : 'bdrop-day';
+  document.getElementById('desk').className = isNight ? 'night' : '';
+  buildCity(isNight);
+
+  dlEl.style.display = 'flex';
+  panel.style.justifyContent = (s.chars.length === 1) ? 'center' : 'space-around';
+  panel.innerHTML = s.chars.map(function(cid, ci) {
+    var stressed = (s.stressed.indexOf(cid) >= 0);
+    var em = (s.emotion && ci === 0) ? '<div class="char-emotion-tag">'+s.emotion+'</div>' : '';
+    var st = stressed ? '<div class="stress-row">' +
+      [0,1,2,3,4].map(function(k){ return '<div class="s-bar'+(k<4?' on':'')+'"></div>'; }).join('') +
+      '</div>' : '';
+    return '<div class="char-card" style="animation-delay:'+(ci*0.14)+'s">'+
+      '<div class="char-avatar">'+em+st+buildSVG(cid,stressed)+'</div>'+
+      '<div class="char-badge"><div class="char-badge-name">'+CHARS[cid].name+'</div>'+
+      '<div class="char-badge-role">'+CHARS[cid].role+'</div></div></div>';
+  }).join('');
+
+  if (s.screen) {
+    swEl.style.display = 'block';
+    var titles = {
+      sap:'SAP S/4HANA \u2014 RFC Extract',
+      excel_err:'BCAR_Model_v14.xlsx',
+      excel_gap:'Reconciliation \u2014 Gap Analysis',
+      agent:'BCAR Ingestion Agent',
+      cet1:'Capital Intelligence Agent',
+      audit:'OSFI Audit Trail'
+    };
+    var content = '';
+    switch (s.screen) {
+      case 'sap':       content = buildSAPScreen(); break;
+      case 'excel_err': content = buildExcelErrScreen(); break;
+      case 'excel_gap': content = buildExcelGapScreen(); break;
+      case 'agent':     content = buildAgentScreen(); break;
+      case 'cet1':      content = buildCET1Screen(); break;
+      case 'audit':     content = buildAuditScreen(); break;
+    }
+    swEl.innerHTML = '<div class="screen-chrome">'+
+      '<div class="chr-dot" style="background:#FF5F57"></div>'+
+      '<div class="chr-dot" style="background:#FFBD2E"></div>'+
+      '<div class="chr-dot" style="background:#28CA41"></div>'+
+      '<span class="chr-lbl">'+(titles[s.screen]||'')+'</span>'+
+      '</div>'+content;
+  } else {
+    swEl.style.display = 'none';
+  }
+
+  document.getElementById('dlg-speaker').textContent = s.speaker;
+  document.getElementById('dlg-text').textContent = s.dialogue;
+  document.getElementById('dlg-sub').textContent = s.sub;
+
+  if (NARRATION[s.id]) {
+    setTimeout(function() { speak(NARRATION[s.id]); }, 700);
+  }
+}
+
+// ================================================
+//  FLOW CONTROL
+// ================================================
+function startStory() {
+  document.getElementById('title-screen').style.display = 'none';
+  initMusic();
+  setTimeout(function() {
+    if (musicLoaded && !musicPlaying) {
+      musicPlaying = true;
+      audio.play().then(function(){ fadeInMusic(); updateMusicBtn(); }).catch(function(){});
+    }
+  }, 350);
+  setTimeout(function() { speak(NARRATION.title); }, 500);
+  goTo(0);
+}
+
+function goTo(idx) {
+  if (idx < 0 || idx >= TOTAL) return;
+  currentIdx = idx;
+  updateDots(idx);
+  updateProgress(idx);
+  renderScene(idx);
+  document.getElementById('prev-btn').disabled = (idx === 0);
+  document.getElementById('next-btn').textContent = (idx === TOTAL-1) ? 'Finish \u2713' : 'Next \u2192';
+}
+
+function navigate(dir) {
+  var next = currentIdx + dir;
+  if (next < 0) return;
+  if (next >= TOTAL) { showEndScreen(); return; }
+  goTo(next);
+}
+
+function updateProgress(idx) {
+  document.getElementById('prog-bar').style.width = (((idx+1)/TOTAL)*100) + '%';
+}
+
+function showEndScreen() {
+  stopSpeech();
+  currentIdx = TOTAL;
+  document.getElementById('end-screen').style.display = 'flex';
+  document.getElementById('phase-screen').style.display = 'none';
+  document.getElementById('scene-panel').innerHTML = '';
+  document.getElementById('screen-wrap').style.display = 'none';
+  document.getElementById('dialogue-box').style.display = 'none';
+  document.getElementById('tb-act').textContent = 'TRANSFORMATION COMPLETE';
+  document.getElementById('tb-scene').textContent = 'BCAR Agentic AI Platform';
+  document.getElementById('prog-bar').style.width = '100%';
+  setTimeout(function() {
+    speak("Transformation complete. From 15-day manual close to continuous intelligent capital reporting.");
+  }, 600);
+}
+
+// ================================================
+//  KEYBOARD
+// ================================================
+document.addEventListener('keydown', function(e) {
+  if (currentIdx < 0) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); startStory(); }
+    return;
+  }
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); navigate(1); }
+  else if (e.key === 'ArrowLeft') navigate(-1);
+  else if (e.key === 'n' || e.key === 'N') toggleTTS();
+  else if (e.key === 'm' || e.key === 'M') toggleMusic();
+});
+
+// ================================================
+//  INIT
+// ================================================
+buildDots();
+initMusic();
+if (synth) { synth.getVoices(); }
+</script>
+</body>
+</html>

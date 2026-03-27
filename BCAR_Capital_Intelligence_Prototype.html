@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BCAR Capital Intelligence Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:          #F8F6F3;
+  --surface:     #FFFFFF;
+  --surface-alt: #F2EFE9;
+  --border:      #E8E3DC;
+  --border-lite: #EDE9E2;
+  --ink-1:       #1C1917;
+  --ink-2:       #44403C;
+  --ink-3:       #78716C;
+  --ink-4:       #A8A29E;
+  /* Brand accents */
+  --blue:        #1D4ED8;
+  --blue-bg:     #EFF6FF;
+  --blue-mid:    #2563EB;
+  --amber:       #92400E;
+  --amber-mid:   #B45309;
+  --amber-bg:    #FFFBEB;
+  --amber-soft:  #FDE68A;
+  --teal:        #0F766E;
+  --teal-bg:     #F0FDFA;
+  --green:       #166534;
+  --green-bg:    #F0FDF4;
+  --red:         #991B1B;
+  --red-bg:      #FEF2F2;
+  /* System brand */
+  --sap:         #0A5486;
+  --sap-bg:      #EBF5FB;
+  --bl:          #00704A;
+  --bl-bg:       #E8F8F3;
+  --aws:         #FF6B00;
+  --aws-bg:      #FFF3E9;
+  --oracle:      #C74634;
+  --oracle-bg:   #FEF2F0;
+  --redshift:    #6B46C1;
+  --redshift-bg: #F5F3FF;
+  --lake:        #374151;
+  --lake-bg:     #F3F4F6;
+  --excel:       #217346;
+  --excel-bg:    #EBF7EF;
+  --agent:       #1D4ED8;
+  --agent-bg:    #EFF6FF;
+  /* Shadows */
+  --sh-sm: 0 1px 3px rgba(28,25,23,.06);
+  --sh:    0 2px 8px rgba(28,25,23,.08), 0 1px 3px rgba(28,25,23,.04);
+  --sh-md: 0 8px 24px rgba(28,25,23,.10), 0 2px 6px rgba(28,25,23,.04);
+  --sh-lg: 0 16px 48px rgba(28,25,23,.12), 0 4px 12px rgba(28,25,23,.06);
+  --r-sm: 6px; --r: 10px; --r-lg: 16px; --r-xl: 24px;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink-1);font-size:15px;line-height:1.6;min-height:100vh}
+
+/* ── HEADER ─────────────────────────────────────────── */
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;box-shadow:var(--sh-sm)}
+.header-brand{display:flex;align-items:center;gap:12px}
+.header-logo{width:36px;height:36px;background:linear-gradient(135deg,var(--blue) 0%,#3B82F6 100%);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:14px;letter-spacing:-.5px;flex-shrink:0}
+.header-title{font-size:15px;font-weight:700;color:var(--ink-1);letter-spacing:-.3px}
+.header-sub{font-size:12px;color:var(--ink-4);margin-top:1px}
+.header-badge{background:var(--amber-bg);color:var(--amber);font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;border:1px solid var(--amber-soft)}
+.header-meta{display:flex;align-items:center;gap:12px}
+.status-dot{width:8px;height:8px;background:#22C55E;border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.status-txt{font-size:12px;color:var(--ink-3)}
+
+/* ── TAB NAV ─────────────────────────────────────────── */
+.tab-nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px;display:flex;gap:0;overflow-x:auto}
+.tab-btn{padding:14px 20px;font-size:13px;font-weight:500;color:var(--ink-3);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:7px}
+.tab-btn:hover{color:var(--ink-1)}
+.tab-btn.active{color:var(--blue);border-bottom-color:var(--blue);font-weight:600}
+.tab-icon{font-size:15px}
+
+/* ── CONTENT ─────────────────────────────────────────── */
+.tab-panel{display:none;padding:32px;max-width:1280px;margin:0 auto}
+.tab-panel.active{display:block}
+
+/* ── TYPOGRAPHY ─────────────────────────────────────── */
+.section-title{font-size:22px;font-weight:700;color:var(--ink-1);letter-spacing:-.5px}
+.section-sub{font-size:14px;color:var(--ink-3);margin-top:6px;max-width:640px}
+.kicker{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--ink-4);margin-bottom:8px}
+
+/* ── CARDS ───────────────────────────────────────────── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:24px;box-shadow:var(--sh-sm)}
+.card:hover{box-shadow:var(--sh);transform:translateY(-1px);transition:all .2s}
+
+/* ── KPI STRIP ───────────────────────────────────────── */
+.kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px 24px;box-shadow:var(--sh-sm)}
+.kpi-val{font-size:32px;font-weight:800;letter-spacing:-1px;line-height:1}
+.kpi-label{font-size:12px;color:var(--ink-3);margin-top:4px;font-weight:500}
+.kpi-delta{font-size:11px;font-weight:600;margin-top:8px;display:flex;align-items:center;gap:4px}
+.delta-pos{color:var(--green)} .delta-neg{color:var(--red)} .delta-warn{color:var(--amber-mid)}
+
+/* ── HERO ────────────────────────────────────────────── */
+.hero{background:linear-gradient(135deg,#1D4ED8 0%,#1E40AF 60%,#1D4ED8 100%);border-radius:var(--r-xl);padding:48px;color:#fff;margin-bottom:32px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-40px;right:-40px;width:300px;height:300px;background:rgba(255,255,255,.05);border-radius:50%}
+.hero::after{content:'';position:absolute;bottom:-60px;left:200px;width:200px;height:200px;background:rgba(255,255,255,.04);border-radius:50%}
+.hero-eyebrow{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;opacity:.7;margin-bottom:12px}
+.hero-title{font-size:34px;font-weight:800;letter-spacing:-1px;line-height:1.15;margin-bottom:12px}
+.hero-sub{font-size:16px;opacity:.8;max-width:560px;line-height:1.6}
+.hero-chips{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap}
+.hero-chip{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:500;backdrop-filter:blur(4px)}
+
+/* ── PROBLEM / SOLUTION GRID ─────────────────────────── */
+.ps-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px}
+.ps-card{border-radius:var(--r-lg);padding:24px}
+.ps-problem{background:var(--red-bg);border:1px solid #FECACA}
+.ps-solution{background:var(--green-bg);border:1px solid #BBF7D0}
+.ps-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.ps-problem .ps-title{color:var(--red)}
+.ps-solution .ps-title{color:var(--green)}
+.ps-item{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;font-size:13px;color:var(--ink-2)}
+.ps-dot{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-size:10px}
+.ps-problem .ps-dot{background:#FCA5A5;color:var(--red)}
+.ps-solution .ps-dot{background:#86EFAC;color:var(--green)}
+
+/* ── SYSTEM BOXES ────────────────────────────────────── */
+.sys-box{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:var(--r-sm);font-size:12px;font-weight:600;border:1.5px solid;white-space:nowrap}
+.sys-sap{background:var(--sap-bg);color:var(--sap);border-color:#B8D7ED}
+.sys-bl{background:var(--bl-bg);color:var(--bl);border-color:#A7E9C9}
+.sys-aws{background:var(--aws-bg);color:var(--aws);border-color:#FFD6A5}
+.sys-oracle{background:var(--oracle-bg);color:var(--oracle);border-color:#F5BDB0}
+.sys-redshift{background:var(--redshift-bg);color:var(--redshift);border-color:#D8B4FE}
+.sys-lake{background:var(--lake-bg);color:var(--lake);border-color:#D1D5DB}
+.sys-excel{background:var(--excel-bg);color:var(--excel);border-color:#A7D7B6}
+.sys-agent{background:var(--agent-bg);color:var(--agent);border-color:#BFDBFE}
+.sys-osfi{background:#FEF2F2;color:#7F1D1D;border-color:#FCA5A5}
+
+/* ── ARCH DIAGRAM ────────────────────────────────────── */
+.arch-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:32px;margin-bottom:24px;box-shadow:var(--sh-sm)}
+.arch-tier{margin-bottom:0}
+.tier-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--ink-4);margin-bottom:12px}
+.tier-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.tier-connector{display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:4px}
+.conn-line{width:2px;height:28px;background:linear-gradient(to bottom,var(--border),var(--border-lite))}
+.conn-label{font-size:10px;font-weight:600;color:var(--ink-4);background:var(--bg);padding:2px 8px;border-radius:10px;border:1px solid var(--border);white-space:nowrap}
+.conn-arrow{color:var(--ink-4);font-size:14px}
+.pain-badge{background:#FEF2F2;color:var(--red);border:1px solid #FECACA;border-radius:20px;padding:2px 10px;font-size:10px;font-weight:600;display:inline-flex;align-items:center;gap:4px}
+.gain-badge{background:var(--green-bg);color:var(--green);border:1px solid #BBF7D0;border-radius:20px;padding:2px 10px;font-size:10px;font-weight:600;display:inline-flex;align-items:center;gap:4px}
+
+/* ── PAIN POINTS ─────────────────────────────────────── */
+.pain-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px}
+.pain-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;border-top:3px solid}
+.pain-card.red{border-top-color:#EF4444}
+.pain-card.amber{border-top-color:#F59E0B}
+.pain-card.blue{border-top-color:var(--blue)}
+.pain-num{font-size:28px;font-weight:800;letter-spacing:-1px}
+.pain-card.red .pain-num{color:var(--red)}
+.pain-card.amber .pain-num{color:var(--amber-mid)}
+.pain-card.blue .pain-num{color:var(--blue)}
+.pain-desc{font-size:12px;color:var(--ink-3);margin-top:4px}
+
+/* ── PROCESS TIMELINE ────────────────────────────────── */
+.timeline-wrap{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.timeline-col h3{font-size:14px;font-weight:700;padding:10px 16px;border-radius:var(--r-sm);margin-bottom:20px;display:flex;align-items:center;gap:8px}
+.timeline-col.before h3{background:var(--red-bg);color:var(--red);border:1px solid #FECACA}
+.timeline-col.after h3{background:var(--green-bg);color:var(--green);border:1px solid #BBF7D0}
+.timeline-step{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start}
+.step-marker{flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.before .step-marker{background:#FEE2E2;color:var(--red)}
+.after .step-marker{background:#DCFCE7;color:var(--green)}
+.step-content{flex:1}
+.step-day{font-size:11px;font-weight:700;color:var(--ink-4);text-transform:uppercase;letter-spacing:.5px}
+.step-name{font-size:13px;font-weight:600;color:var(--ink-1);margin:2px 0}
+.step-detail{font-size:12px;color:var(--ink-3)}
+.step-effort{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;margin-top:4px;padding:2px 8px;border-radius:10px}
+.before .step-effort{background:#FEE2E2;color:var(--red)}
+.after .step-effort{background:#DCFCE7;color:var(--green)}
+
+/* ── IMPROVEMENT CARDS ───────────────────────────────── */
+.improvement-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:24px}
+.impr-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;text-align:center;box-shadow:var(--sh-sm)}
+.impr-arrow{font-size:22px;margin:8px 0}
+.impr-from{font-size:13px;color:var(--red);font-weight:600;text-decoration:line-through;opacity:.7}
+.impr-to{font-size:22px;font-weight:800;color:var(--green);letter-spacing:-1px}
+.impr-label{font-size:11px;color:var(--ink-4);margin-top:4px}
+
+/* ── AGENT CATALOG ───────────────────────────────────── */
+.agent-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.filter-btn{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--ink-3);transition:all .2s}
+.filter-btn:hover,.filter-btn.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.agent-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.agent-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.agent-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r-lg) var(--r-lg) 0 0}
+.layer-1::before{background:linear-gradient(90deg,#1D4ED8,#3B82F6)}
+.layer-2::before{background:linear-gradient(90deg,#0F766E,#14B8A6)}
+.layer-3::before{background:linear-gradient(90deg,#92400E,#F59E0B)}
+.layer-4::before{background:linear-gradient(90deg,#6366F1,#A78BFA)}
+.layer-5::before{background:linear-gradient(90deg,#166534,#22C55E)}
+.agent-card:hover{box-shadow:var(--sh-md);transform:translateY(-2px)}
+.agent-num{font-size:10px;font-weight:700;color:var(--ink-4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.agent-name{font-size:14px;font-weight:700;color:var(--ink-1);margin-bottom:6px;line-height:1.3}
+.agent-desc{font-size:12px;color:var(--ink-3);line-height:1.5}
+.agent-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:12px}
+.agent-chip{font-size:10px;font-weight:500;padding:2px 8px;border-radius:10px;border:1px solid var(--border);color:var(--ink-3);background:var(--bg)}
+.agent-saving{font-size:11px;font-weight:600;color:var(--green);margin-top:10px;display:flex;align-items:center;gap:4px}
+.agent-expand{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border-lite);font-size:12px;color:var(--ink-2);line-height:1.6}
+.agent-card.open .agent-expand{display:block}
+
+/* ── AWS BEDROCK DIAGRAM ─────────────────────────────── */
+.bedrock-hub{background:linear-gradient(135deg,#1D4ED8 0%,#1E40AF 100%);border-radius:var(--r-xl);padding:24px 32px;color:#fff;text-align:center;margin:16px 0;box-shadow:var(--sh-md)}
+.bedrock-title{font-size:16px;font-weight:700;letter-spacing:-.3px}
+.bedrock-sub{font-size:12px;opacity:.75;margin-top:4px}
+.bedrock-agents{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
+.bedrock-agent{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:var(--r-sm);padding:8px 10px;font-size:11px;font-weight:500;backdrop-filter:blur(4px)}
+
+/* ── RESPONSIVE ─────────────────────────────────────── */
+@media(max-width:900px){
+  .kpi-strip{grid-template-columns:1fr 1fr}
+  .ps-grid,.timeline-wrap{grid-template-columns:1fr}
+  .agent-grid{grid-template-columns:1fr 1fr}
+  .improvement-grid{grid-template-columns:1fr 1fr}
+  .pain-grid{grid-template-columns:1fr 1fr}
+  .bedrock-agents{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:600px){
+  .tab-panel{padding:16px}
+  .agent-grid,.kpi-strip{grid-template-columns:1fr}
+}
+
+/* ── DIVIDER & UTIL ──────────────────────────────────── */
+.divider{height:1px;background:var(--border);margin:28px 0}
+.row{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.spacer-sm{height:16px} .spacer{height:24px} .spacer-lg{height:32px}
+.text-right{text-align:right} .muted{color:var(--ink-4)} .bold{font-weight:700}
+.highlight-box{background:var(--amber-bg);border:1px solid var(--amber-soft);border-radius:var(--r);padding:16px 20px;font-size:13px;color:var(--amber)}
+.info-box{background:var(--blue-bg);border:1px solid #BFDBFE;border-radius:var(--r);padding:16px 20px;font-size:13px;color:#1E40AF}
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══════════════════════════════════════════ -->
+<header class="header">
+  <div class="header-brand">
+    <div class="header-logo">CI</div>
+    <div>
+      <div class="header-title">Capital Intelligence Platform</div>
+      <div class="header-sub">BCAR Agentic AI · OSFI CAR 2024</div>
+    </div>
+  </div>
+  <div class="header-meta">
+    <div class="header-badge">D-SIB · Canadian Bank</div>
+    <div style="display:flex;align-items:center;gap:6px;">
+      <div class="status-dot"></div>
+      <span class="status-txt">AWS Bedrock · Live</span>
+    </div>
+  </div>
+</header>
+
+<!-- ══ TAB NAV ═════════════════════════════════════════ -->
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="go('overview',this)"><span class="tab-icon">⬡</span> Platform Overview</button>
+  <button class="tab-btn" onclick="go('current',this)"><span class="tab-icon">⚡</span> Current Landscape</button>
+  <button class="tab-btn" onclick="go('future',this)"><span class="tab-icon">✦</span> Future Architecture</button>
+  <button class="tab-btn" onclick="go('process',this)"><span class="tab-icon">⇄</span> Process Transformation</button>
+  <button class="tab-btn" onclick="go('agents',this)"><span class="tab-icon">⬡</span> Agent Catalog</button>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB 1 · OVERVIEW
+══════════════════════════════════════════════════════ -->
+<div id="overview" class="tab-panel active">
+
+  <div class="hero">
+    <div class="hero-eyebrow">Capital Intelligence · Agentic AI Platform</div>
+    <div class="hero-title">From 15-Day Manual Grind<br>to 5-Day Automated Precision</div>
+    <div class="hero-sub">A purpose-built AWS Bedrock agentic framework that transforms BCAR reporting — connecting SAP S/4HANA, BlackLine, Essbase, and Redshift into a single, OSFI-validated capital intelligence engine.</div>
+    <div class="hero-chips">
+      <span class="hero-chip">SAP S/4HANA GL</span>
+      <span class="hero-chip">BlackLine Reconciliation</span>
+      <span class="hero-chip">AWS Bedrock</span>
+      <span class="hero-chip">Essbase Cubes</span>
+      <span class="hero-chip">Amazon Redshift</span>
+      <span class="hero-chip">On-Prem Data Lake</span>
+    </div>
+  </div>
+
+  <!-- KPI Strip -->
+  <div class="kpi-strip">
+    <div class="kpi">
+      <div class="kpi-val" style="color:var(--green)">T+5</div>
+      <div class="kpi-label">OSFI Submission Cycle</div>
+      <div class="kpi-delta delta-pos">↓ 67% vs T+15 today</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-val" style="color:var(--blue)">12 hrs</div>
+      <div class="kpi-label">Quarterly Effort</div>
+      <div class="kpi-delta delta-pos">↓ 86% vs 85 hrs manual</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-val" style="color:var(--amber-mid)">1.2</div>
+      <div class="kpi-label">FTEs Required</div>
+      <div class="kpi-delta delta-pos">↓ 73% vs 4.5 FTEs today</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-val" style="color:var(--teal)">$42M+</div>
+      <div class="kpi-label">Estimated Value</div>
+      <div class="kpi-delta delta-pos">18-month payback on $12.5M</div>
+    </div>
+  </div>
+
+  <!-- Problem / Solution -->
+  <div class="ps-grid">
+    <div class="ps-card ps-problem">
+      <div class="ps-title">⚠ The Challenge Today</div>
+      <div class="ps-item"><div class="ps-dot">✕</div><div><strong>Fragmented data ecosystem</strong> — SAP S/4HANA, Essbase, Redshift and on-prem data lake have no automated bridge; every quarter starts with manual extraction</div></div>
+      <div class="ps-item"><div class="ps-dot">✕</div><div><strong>Spreadsheet dependency</strong> — 40+ workbooks used for CET1 deductions, RWA calc, and variance commentary; no audit trail, version control risk</div></div>
+      <div class="ps-item"><div class="ps-dot">✕</div><div><strong>BlackLine silos</strong> — reconciliation outputs not automatically ingested into capital calculation chain; manual handoff creates T+3 to T+5 lag</div></div>
+      <div class="ps-item"><div class="ps-dot">✕</div><div><strong>T+15 cycle</strong> — 15 working days to produce BCAR with 3–5 review-and-rework loops before CFO attestation</div></div>
+      <div class="ps-item"><div class="ps-dot">✕</div><div><strong>4.5 FTEs</strong> concentrated on low-value data wrangling; CRO and CFO review time constrained by data prep delays</div></div>
+    </div>
+    <div class="ps-card ps-solution">
+      <div class="ps-title">✓ The Transformed Future</div>
+      <div class="ps-item"><div class="ps-dot">✓</div><div><strong>Unified data fabric</strong> — AWS Bedrock agents auto-ingest from S/4HANA, BlackLine, Essbase, Redshift and data lake via certified APIs; Bronze→Silver→Gold Medallion zones</div></div>
+      <div class="ps-item"><div class="ps-dot">✓</div><div><strong>Zero-spreadsheet capital chain</strong> — All 15 OSFI deductions, RWA calculation and IRB EL shortfall run in governed Bedrock agents; full lineage and audit trail</div></div>
+      <div class="ps-item"><div class="ps-dot">✓</div><div><strong>BlackLine API integration</strong> — Real-time rec status feeds GL-to-Capital Agent; automated escalation if open items breach BCAR materiality threshold</div></div>
+      <div class="ps-item"><div class="ps-dot">✓</div><div><strong>T+5 submission cycle</strong> — Automated waterfall + AI-generated variance commentary ready for CRO review by day 3; CFO attest day 5</div></div>
+      <div class="ps-item"><div class="ps-dot">✓</div><div><strong>1.2 FTEs on exception management</strong> — Human judgment applied only to P1/P2 breaks; all routine processing automated with full OSFI E-23 model controls</div></div>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <strong>Platform Architecture:</strong> 12 purpose-built AI agents deployed on AWS Bedrock, orchestrated via Amazon Bedrock Agents API. Each agent encapsulates OSFI CAR 2024 regulatory logic, connects to certified data sources, and produces BCBS 239-compliant outputs. Human review gates enforced at CRO and CFO levels.
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB 2 · CURRENT STATE
+══════════════════════════════════════════════════════ -->
+<div id="current" class="tab-panel">
+
+  <div class="kicker">Current State Assessment</div>
+  <div class="section-title">The Fragmented Capital Reporting Landscape</div>
+  <div class="section-sub">Six disparate systems producing BCAR data through manual extraction, copy-paste, and Excel-based calculation chains — creating risk, delay, and excessive FTE consumption.</div>
+
+  <div class="spacer"></div>
+
+  <!-- Current Architecture Diagram -->
+  <div class="arch-wrap">
+    <div class="tier-label">Tier 1 · Source Systems (Data Producers)</div>
+    <div class="tier-row">
+      <span class="sys-box sys-sap">◈ SAP S/4HANA · General Ledger</span>
+      <span class="sys-box sys-bl">◈ BlackLine · Reconciliation</span>
+      <span class="sys-box sys-oracle">◈ Oracle Essbase · Capital Cubes</span>
+      <span class="sys-box sys-redshift">◈ Amazon Redshift · DW Analytics</span>
+      <span class="sys-box sys-lake">◈ On-Prem Enterprise Data Lake</span>
+    </div>
+
+    <div class="tier-connector">
+      <div class="conn-line"></div>
+      <div class="conn-label">⚠ Manual CSV/Excel extracts · No API · Quarterly one-off pulls</div>
+      <div class="conn-line"></div>
+      <div class="conn-arrow">▼</div>
+    </div>
+
+    <div class="tier-label">Tier 2 · Manual Processing Layer (40+ Spreadsheet Workbooks)</div>
+    <div class="tier-row">
+      <span class="sys-box sys-excel">📋 GL Extract Mapping</span>
+      <span class="sys-box sys-excel">📋 CET1 Deduction Calcs</span>
+      <span class="sys-box sys-excel">📋 RWA Calc Sheets</span>
+      <span class="sys-box sys-excel">📋 BlackLine Rec Review</span>
+      <span class="sys-box sys-excel">📋 IRB EL Shortfall</span>
+      <span class="sys-box sys-excel">📋 Essbase Capital Cube Export</span>
+      <span class="sys-box sys-excel">📋 Variance Commentary</span>
+      <span class="sys-box sys-excel">📋 BCAR Draft Assembly</span>
+    </div>
+
+    <div class="tier-connector">
+      <div class="conn-line"></div>
+      <div class="conn-label">⚠ Manual review, re-work loops · 3–5 iterations · No lineage</div>
+      <div class="conn-line"></div>
+      <div class="conn-arrow">▼</div>
+    </div>
+
+    <div class="tier-label">Tier 3 · Submission (T+15 Cycle)</div>
+    <div class="tier-row">
+      <span class="sys-box sys-excel">📋 BCAR Manual Draft</span>
+      <span style="font-size:18px;color:var(--ink-4)">→</span>
+      <span class="sys-box" style="background:#FEF2F2;color:#7F1D1D;border-color:#FECACA">CRO Review (Multi-round)</span>
+      <span style="font-size:18px;color:var(--ink-4)">→</span>
+      <span class="sys-box" style="background:#FEF2F2;color:#7F1D1D;border-color:#FECACA">CFO Attestation</span>
+      <span style="font-size:18px;color:var(--ink-4)">→</span>
+      <span class="sys-box sys-osfi">⬜ OSFI Submission</span>
+    </div>
+  </div>
+
+  <!-- Pain Points Grid -->
+  <div class="pain-grid">
+    <div class="pain-card red">
+      <div class="pain-badge">⚠ Data Latency</div>
+      <div class="spacer-sm"></div>
+      <div class="pain-num">T+15</div>
+      <div class="pain-desc">Working days from GL close to OSFI submission. Industry best practice is T+5 or less.</div>
+    </div>
+    <div class="pain-card amber">
+      <div class="pain-badge">⚠ Manual Effort</div>
+      <div class="spacer-sm"></div>
+      <div class="pain-num">85 hrs</div>
+      <div class="pain-desc">Per quarter of manual data extraction, calculation, and review effort across 4.5 FTEs.</div>
+    </div>
+    <div class="pain-card red">
+      <div class="pain-badge">⚠ Spreadsheet Risk</div>
+      <div class="spacer-sm"></div>
+      <div class="pain-num">40+</div>
+      <div class="pain-desc">Excel workbooks in BCAR chain with no formal version control, audit trail, or SoD enforcement.</div>
+    </div>
+    <div class="pain-card amber">
+      <div class="pain-badge">⚠ Rework Cycles</div>
+      <div class="spacer-sm"></div>
+      <div class="pain-num">3–5×</div>
+      <div class="pain-desc">Review-and-rework loops per quarter. CRO and CFO review backlogged by late data delivery.</div>
+    </div>
+    <div class="pain-card blue">
+      <div class="pain-badge">⚠ System Silos</div>
+      <div class="spacer-sm"></div>
+      <div class="pain-num">6 Systems</div>
+      <div class="pain-desc">SAP, BlackLine, Essbase, Redshift, Data Lake, and spreadsheets — zero automated integration between them.</div>
+    </div>
+    <div class="pain-card red">
+      <div class="pain-badge">⚠ Regulatory Risk</div>
+      <div class="spacer-sm"></div>
+      <div class="pain-num">OSFI MRR</div>
+      <div class="pain-desc">Exposure to Model Risk Rating escalation under OSFI E-23 due to unvalidated spreadsheet models.</div>
+    </div>
+  </div>
+
+  <div class="spacer"></div>
+  <div class="highlight-box">
+    <strong>Root Cause:</strong> No automated data pipeline connecting SAP S/4HANA (GL source) → BlackLine (reconciled balances) → Essbase (capital calculations) → Redshift (analytics) → OSFI BCAR template. Each handoff is manual, introducing latency, error risk, and SOD gaps that OSFI examiners flag under CAR Chapter 2 and E-23.
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB 3 · FUTURE ARCHITECTURE
+══════════════════════════════════════════════════════ -->
+<div id="future" class="tab-panel">
+
+  <div class="kicker">Future State Architecture</div>
+  <div class="section-title">AWS Bedrock-Orchestrated Capital Intelligence</div>
+  <div class="section-sub">12 purpose-built AI agents connect all six source systems through a governed Medallion data architecture, eliminating manual handoffs and delivering OSFI-validated BCAR in 5 days.</div>
+
+  <div class="spacer"></div>
+
+  <div class="arch-wrap">
+    <div class="tier-label">Tier 1 · Certified Source Connections (Real-Time / Scheduled)</div>
+    <div class="tier-row">
+      <span class="sys-box sys-sap">◈ SAP S/4HANA · GL API</span>
+      <span class="sys-box sys-bl">◈ BlackLine · Rec API</span>
+      <span class="sys-box sys-oracle">◈ Essbase · Capital Cubes</span>
+      <span class="sys-box sys-redshift">◈ Redshift · DW Queries</span>
+      <span class="sys-box sys-lake">◈ On-Prem Data Lake · JDBC</span>
+    </div>
+
+    <div class="tier-connector">
+      <div class="conn-line"></div>
+      <div class="conn-label">✓ Automated ingestion · Medallion Bronze→Silver→Gold · BCBS 239 lineage</div>
+      <div class="conn-line"></div>
+      <div class="conn-arrow">▼</div>
+    </div>
+
+    <div class="tier-label">Tier 2 · AWS Bedrock Agent Orchestration Layer</div>
+    <div class="bedrock-hub">
+      <div class="bedrock-title">⬡ AWS Bedrock · Capital Intelligence Orchestrator</div>
+      <div class="bedrock-sub">Amazon Bedrock Agents API · Claude 3.5 Sonnet · OSFI CAR 2024 Knowledge Base</div>
+      <div class="bedrock-agents">
+        <div class="bedrock-agent">GL → Capital Rec Agent</div>
+        <div class="bedrock-agent">Capital Calculation Agent</div>
+        <div class="bedrock-agent">OSFI Regulatory Monitor</div>
+        <div class="bedrock-agent">Data Governance Agent</div>
+        <div class="bedrock-agent">IRB / EL Shortfall Agent</div>
+        <div class="bedrock-agent">Market Risk (FRTB) Agent</div>
+        <div class="bedrock-agent">Op Risk (SMA) Agent</div>
+        <div class="bedrock-agent">Capital Analytics Agent</div>
+        <div class="bedrock-agent">Stress Testing Agent</div>
+        <div class="bedrock-agent">Controls & SOD Agent</div>
+        <div class="bedrock-agent">Capital Optimization Agent</div>
+        <div class="bedrock-agent">Submission Quality Agent</div>
+      </div>
+    </div>
+
+    <div class="tier-connector">
+      <div class="conn-line"></div>
+      <div class="conn-label">✓ AI-validated · CRO exception dashboard · Full OSFI CAR lineage</div>
+      <div class="conn-line"></div>
+      <div class="conn-arrow">▼</div>
+    </div>
+
+    <div class="tier-label">Tier 3 · BCAR Submission (T+5 Cycle)</div>
+    <div class="tier-row">
+      <span class="sys-box" style="background:var(--green-bg);color:var(--green);border-color:#BBF7D0">✓ AI-Generated BCAR Draft</span>
+      <span style="font-size:18px;color:var(--ink-4)">→</span>
+      <span class="sys-box" style="background:var(--green-bg);color:var(--green);border-color:#BBF7D0">CRO Exception Review</span>
+      <span style="font-size:18px;color:var(--ink-4)">→</span>
+      <span class="sys-box" style="background:var(--green-bg);color:var(--green);border-color:#BBF7D0">CFO Digital Attestation</span>
+      <span style="font-size:18px;color:var(--ink-4)">→</span>
+      <span class="sys-box sys-osfi">⬜ OSFI Auto-Submit</span>
+    </div>
+  </div>
+
+  <!-- Technology Stack Detail -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+    <div class="card">
+      <div class="kicker">Data Architecture</div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:12px">Medallion Zones</div>
+      <div class="row" style="gap:8px;margin-bottom:8px">
+        <div style="background:#FEF3C7;border:1px solid #FDE68A;border-radius:var(--r-sm);padding:8px 14px;font-size:12px;font-weight:600;color:#92400E;flex:1;text-align:center"><div>🥉 Bronze</div><div style="font-weight:400;margin-top:2px;color:var(--ink-3)">Raw ingestion<br>S/4HANA · BlackLine · Essbase</div></div>
+        <div style="color:var(--ink-4);font-size:18px">→</div>
+        <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:var(--r-sm);padding:8px 14px;font-size:12px;font-weight:600;color:#166534;flex:1;text-align:center"><div>🥈 Silver</div><div style="font-weight:400;margin-top:2px;color:var(--ink-3)">Validated & enriched<br>Lineage · Reconciled</div></div>
+        <div style="color:var(--ink-4);font-size:18px">→</div>
+        <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:var(--r-sm);padding:8px 14px;font-size:12px;font-weight:600;color:#1E40AF;flex:1;text-align:center"><div>🥇 Gold</div><div style="font-weight:400;margin-top:2px;color:var(--ink-3)">BCAR-ready<br>OSFI CAR validated</div></div>
+      </div>
+      <div style="font-size:12px;color:var(--ink-3);margin-top:8px">BCBS 239 compliant lineage from source GL account → OSFI Schedule template. Full audit trail for every capital calculation.</div>
+    </div>
+    <div class="card">
+      <div class="kicker">AI Platform Stack</div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:12px">AWS Bedrock Components</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;align-items:center;gap:10px;font-size:12px"><span class="sys-box sys-aws" style="font-size:11px">AWS Bedrock Agents</span><span style="color:var(--ink-3)">Multi-agent orchestration + tool use</span></div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:12px"><span class="sys-box sys-aws" style="font-size:11px">Bedrock Knowledge Base</span><span style="color:var(--ink-3)">OSFI CAR 2024 + BCBS 239 docs</span></div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:12px"><span class="sys-box sys-aws" style="font-size:11px">Amazon S3</span><span style="color:var(--ink-3)">Medallion storage (Bronze/Silver/Gold)</span></div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:12px"><span class="sys-box sys-aws" style="font-size:11px">Amazon Redshift</span><span style="color:var(--ink-3)">Capital analytics + RWA queries</span></div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:12px"><span class="sys-box sys-aws" style="font-size:11px">AWS Step Functions</span><span style="color:var(--ink-3)">T-minus calendar orchestration</span></div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:12px"><span class="sys-box sys-aws" style="font-size:11px">Amazon CloudWatch</span><span style="color:var(--ink-3)">Real-time capital ratio monitoring</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB 4 · PROCESS TRANSFORMATION
+══════════════════════════════════════════════════════ -->
+<div id="process" class="tab-panel">
+
+  <div class="kicker">Process Transformation</div>
+  <div class="section-title">Before & After: The BCAR Quarterly Cycle</div>
+  <div class="section-sub">From a 15-day manual grind across 6 disconnected systems to a 5-day AI-orchestrated cycle with human review gates at CRO and CFO levels only.</div>
+
+  <div class="spacer"></div>
+
+  <!-- Timeline Comparison -->
+  <div class="timeline-wrap">
+    <div class="timeline-col before">
+      <h3>⚠ Current State · 15 Working Days</h3>
+
+      <div class="timeline-step">
+        <div class="step-marker">T-15</div>
+        <div class="step-content">
+          <div class="step-day">Day 1 · T-15</div>
+          <div class="step-name">GL Period Close & Lock</div>
+          <div class="step-detail">Manual GL close in S/4HANA. Finance team confirms period-end. No automated signal to downstream processes.</div>
+          <span class="step-effort">⏱ 4 hrs</span>
+        </div>
+      </div>
+
+      <div class="timeline-step">
+        <div class="step-marker">T-13</div>
+        <div class="step-content">
+          <div class="step-day">Days 2–3 · T-13</div>
+          <div class="step-name">Manual Data Extraction</div>
+          <div class="step-detail">Analyst extracts trial balance from S/4HANA via SE16N/BW report. Separately pulls Essbase capital cube, Redshift query, BlackLine rec status. All into Excel.</div>
+          <span class="step-effort">⏱ 18 hrs</span>
+        </div>
+      </div>
+
+      <div class="timeline-step">
+        <div class="step-marker">T-11</div>
+        <div class="step-content">
+          <div class="step-day">Days 4–5 · T-11</div>
+          <div class="step-name">Phase 1 Capital Deductions</div>
+          <div class="step-detail">Goodwill, intangibles, DVA, CFH reserve, pension net asset, DTA-losses calculated in Excel workbook. High formula complexity, manual lookup tables.</div>
+          <span class="step-effort">⏱ 12 hrs</span>
+        </div>
+      </div>
+
+      <div class="timeline-step">
+        <div class="step-marker">T-9</div>
+        <div class="step-content">
+          <div class="step-day">Days 6–7 · T-9</div>
+          <div class="step-name">Threshold Deductions & IRB EL</div>
+          <div class="step-detail">10%/17.65% combined threshold calculations for DTA-temp diff, MSR, significant investments. IRB EL shortfall requires capital engine output — manual pull from separate team.</div>
+          <span class="step-effort">⏱ 16 hrs</span>
+        </div>
+      </div>
+
+      <div class="timeline-step">
+        <div class="step-marker">T-7</div>
+        <div class="step-content">
+          <div class="step-day">Days 8–9 · T-7</div>
+          <div class="step-name">Instrument Validation & RWA</div>
+          <div class="step-detail">AT1/T2 NVCC eligibility checked manually against OSFI criteria. RWA schedules for credit, market (FRTB), and op risk (SMA) assembled from multiple source files.</div>
+          <span class="step-effort">⏱ 14 hrs</span>
+        </div>
+      </div>
+
+      <div class="timeline-step">
+        <div class="step-marker">T-5</div>
+        <div class="step-content">
+          <div class="step-day">Days 10–11 · T-5</div>
+          <div class="step-name">QoQ Variance Commentary</div>
+          <div class="step-detail">Analyst manually writes variance commentary comparing CET1, T1, Total Capital and RWA vs prior quarter. No template, each quarter from scratch.</div>
+          <span class="step-effort">⏱ 10 hrs</span>
+        </div>
+      </div>
+
+      <div class="timeline-step">
+        <div class="step-marker">T-3</div>
+        <div class="step-content">
+          <div class="step-day">Days 12–13 · T-3</div>
+          <div class="step-name">CRO Review (Multiple Rounds)</div>
+          <div class="step-detail">CRO receives draft, raises 10–15 questions. Analyst reworks for 2–3 cycles. Frequently delays submission by 2–3 additional days.</div>
+          <span class="step-effort">⏱ 14 hrs</span>
+        </div>
+      </div>
+
+      <div class="timeline-step">
+        <div class="step-marker">T+0</div>
+        <div class="step-content">
+          <div class="step-day">Days 14–15 · T+0</div>
+          <div class="step-name">CFO Attestation & OSFI Submit</div>
+          <div class="step-detail">CFO signs off on BCAR package. Manual upload to OSFI portal. Frequent rush and near-misses on deadline.</div>
+          <span class="step-effort">⏱ 7 hrs</span>
+        </div>
+      </div>
+
+      <div style="background:var(--red-bg);border:1px solid #FECACA;border-radius:var(--r);padding:14px;margin-top:8px;font-size:12px;color:var(--red)">
+        <strong>Total: 15 working days · 95+ hrs · 4.5 FTEs · 3–5 rework cycles</strong>
+      </div>
+    </div>
+
+    <div class="timeline-col after">
+      <h3>✓ Future State · 5 Working Days</h3>
+
+      <div class="timeline-step">
+        <div class="step-marker">T-5</div>
+        <div class="step-content">
+          <div class="step-day">Day 1 · T-5</div>
+          <div class="step-name">Automated GL Lock & Ingestion</div>
+          <div class="step-detail">S/4HANA GL close triggers automated Bedrock agent pipeline. Trial balance, BlackLine rec status, Essbase cubes, Redshift DW queries all ingested to Medallion Bronze zone within hours.</div>
+          <span class="step-effort">⏱ 0.5 hrs (monitor)</span>
+        </div>
+      </div>
+
+      <div class="timeline-step">
+        <div class="step-marker">T-4</div>
+        <div class="step-content">
+          <div class="step-day">Day 2 · T-4</div>
+          <div class="step-name">AI: All Deductions + IRB EL</div>
+          <div class="step-detail">GL-to-Capital Agent runs all 15 OSFI deductions including threshold calculations. IRB EL Agent auto-pulls from capital engine. Market risk and op risk agents run RWA schedules concurrently.</div>
+          <span class="step-effort">⏱ 1 hr (review output)</span>
+        </div>
+      </div>
+
+      <div class="timeline-step">
+        <div class="step-marker">T-3</div>
+        <div class="step-content">
+          <div class="step-day">Day 3 · T-3</div>
+          <div class="step-name">AI: Variance Commentary & CRO Dashboard</div>
+          <div class="step-detail">AI generates QoQ variance narrative with driver attribution. CRO receives real-time dashboard (capital ratios, waterfall, breaks). Exception list pre-populated — only P1/P2 items escalated.</div>
+          <span class="step-effort">⏱ 2 hrs (CRO review)</span>
+        </div>
+      </div>
+
+      <div class="timeline-step">
+        <div class="step-marker">T-2</div>
+        <div class="step-content">
+          <div class="step-day">Day 4 · T-2</div>
+          <div class="step-name">Exception Handling Only</div>
+          <div class="step-detail">Human attention directed to AI-flagged P1/P2 breaks. All P3 items resolved automatically. Submission Quality Agent validates OSFI CAR template compliance before CFO review.</div>
+          <span class="step-effort">⏱ 3 hrs (exceptions)</span>
+        </div>
+      </div>
+
+      <div class="timeline-step">
+        <div class="step-marker">T+0</div>
+        <div class="step-content">
+          <div class="step-day">Day 5 · T+0</div>
+          <div class="step-name">CFO Digital Attestation & Auto-Submit</div>
+          <div class="step-detail">CFO reviews AI-prepared submission package with full audit trail. Digital attestation. BCAR submitted to OSFI portal automatically via certified API connection.</div>
+          <span class="step-effort">⏱ 1 hr (CFO review)</span>
+        </div>
+      </div>
+
+      <div style="background:var(--green-bg);border:1px solid #BBF7D0;border-radius:var(--r);padding:14px;margin-top:8px;font-size:12px;color:var(--green)">
+        <strong>Total: 5 working days · 7.5 hrs · 1.2 FTEs · Zero rework cycles</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- Improvement Metrics -->
+  <div class="improvement-grid">
+    <div class="impr-card">
+      <div class="kicker">Cycle Time</div>
+      <div class="impr-from">15 days</div>
+      <div class="impr-arrow">↓</div>
+      <div class="impr-to">5 days</div>
+      <div class="impr-label">67% faster</div>
+    </div>
+    <div class="impr-card">
+      <div class="kicker">Manual Effort</div>
+      <div class="impr-from">95 hrs</div>
+      <div class="impr-arrow">↓</div>
+      <div class="impr-to">7.5 hrs</div>
+      <div class="impr-label">92% reduction</div>
+    </div>
+    <div class="impr-card">
+      <div class="kicker">FTEs Required</div>
+      <div class="impr-from">4.5 FTE</div>
+      <div class="impr-arrow">↓</div>
+      <div class="impr-to">1.2 FTE</div>
+      <div class="impr-label">73% fewer</div>
+    </div>
+    <div class="impr-card">
+      <div class="kicker">Rework Cycles</div>
+      <div class="impr-from">3–5×</div>
+      <div class="impr-arrow">↓</div>
+      <div class="impr-to">0×</div>
+      <div class="impr-label">Zero rework</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB 5 · AGENT CATALOG
+══════════════════════════════════════════════════════ -->
+<div id="agents" class="tab-panel">
+
+  <div class="kicker">Agent Catalog</div>
+  <div class="section-title">12 Purpose-Built Capital Intelligence Agents</div>
+  <div class="section-sub">Each agent is trained on OSFI CAR 2024, connected to certified data sources, and orchestrated through AWS Bedrock. Click any agent to expand details.</div>
+
+  <div class="spacer"></div>
+
+  <div class="agent-filters">
+    <button class="filter-btn active" onclick="filterAgents('all',this)">All Agents</button>
+    <button class="filter-btn" onclick="filterAgents('regulatory',this)">Regulatory Intelligence</button>
+    <button class="filter-btn" onclick="filterAgents('data',this)">Data & GL</button>
+    <button class="filter-btn" onclick="filterAgents('calculation',this)">Calculation Engine</button>
+    <button class="filter-btn" onclick="filterAgents('analytics',this)">Analytics & Controls</button>
+    <button class="filter-btn" onclick="filterAgents('submission',this)">Submission</button>
+  </div>
+
+  <div class="agent-grid">
+
+    <div class="agent-card layer-1" data-cat="regulatory" onclick="toggleAgent(this)">
+      <div class="agent-num">Agent 01 · Regulatory Intelligence</div>
+      <div class="agent-name">OSFI / Basel Regulatory Monitor</div>
+      <div class="agent-desc">Continuously monitors OSFI CAR guideline updates, Basel Committee publications, and FRTB phase-in schedules. Auto-flags parameter changes affecting CET1 or RWA.</div>
+      <div class="agent-chips"><span class="agent-chip">OSFI CAR</span><span class="agent-chip">Basel IV</span><span class="agent-chip">FRTB</span><span class="agent-chip">AWS Bedrock KB</span></div>
+      <div class="agent-saving">✓ 8 hrs/quarter saved · Zero missed regulatory updates</div>
+      <div class="agent-expand">
+        <strong>Data Sources:</strong> OSFI website (RSS), BIS publications, internal policy library<br><br>
+        <strong>Key Functions:</strong> Regulatory change detection → impact assessment → parameter update proposals → CRO/CFO alert<br><br>
+        <strong>OSFI Integration:</strong> Monitors CAR Chapter 1–14 for amendments. Flags changes to deduction thresholds (DTA 10%/17.65%), D-SIB buffer adjustments, Basel IV output floor phase-in (72.5% by 2028).<br><br>
+        <strong>Bedrock Capability:</strong> Knowledge Base with 5-year OSFI CAR history. Semantic search for regulatory precedents. Auto-generated impact summaries.
+      </div>
+    </div>
+
+    <div class="agent-card layer-2" data-cat="data" onclick="toggleAgent(this)">
+      <div class="agent-num">Agent 02 · Data & GL</div>
+      <div class="agent-name">GL-to-Capital Reconciliation</div>
+      <div class="agent-desc">Bridges SAP S/4HANA trial balance to OSFI regulatory capital via 23-step CET1 waterfall. Applies all 15 OSFI deductions with full GL account mapping and audit trail.</div>
+      <div class="agent-chips"><span class="agent-chip">S/4HANA API</span><span class="agent-chip">BlackLine API</span><span class="agent-chip">OSFI CAR Ch.2</span><span class="agent-chip">CET1</span></div>
+      <div class="agent-saving">✓ 30 hrs/quarter saved · Zero spreadsheet risk</div>
+      <div class="agent-expand">
+        <strong>Data Sources:</strong> SAP S/4HANA GL (real-time API), BlackLine rec status API, OSFI CAR Chapter 2 parameter table<br><br>
+        <strong>Key Functions:</strong> Trial balance extraction → GL account mapping → Phase 1 deductions → Threshold deductions → CET1/AT1/T2 waterfall → OSFI workpaper generation<br><br>
+        <strong>15 Deductions Automated:</strong> Goodwill, Other Intangibles, DVA, CFH Reserve, Pension Net Asset, DTA-Losses, DTA-Temp Diff (threshold), AFS Filter, Sec G-o-S, IRB EL Shortfall, Significant Investments (threshold), MSR (threshold), Minority Interest, Reciprocal Cross-Holdings, Unconsolidated Subs
+      </div>
+    </div>
+
+    <div class="agent-card layer-2" data-cat="data" onclick="toggleAgent(this)">
+      <div class="agent-num">Agent 03 · Data & GL</div>
+      <div class="agent-name">Data Governance & Lineage</div>
+      <div class="agent-desc">Enforces BCBS 239 data quality standards across all capital data flows. Manages Bronze→Silver→Gold Medallion promotion, data lineage, and OSFI data audit trail requirements.</div>
+      <div class="agent-chips"><span class="agent-chip">BCBS 239</span><span class="agent-chip">Medallion</span><span class="agent-chip">S3</span><span class="agent-chip">Data Quality</span></div>
+      <div class="agent-saving">✓ Full OSFI data audit trail · BCBS 239 compliant</div>
+      <div class="agent-expand">
+        <strong>Data Sources:</strong> All source systems (S/4HANA, BlackLine, Essbase, Redshift, Data Lake)<br><br>
+        <strong>Key Functions:</strong> Data quality validation → lineage tagging → completeness checks → Medallion zone promotion → data reconciliation report<br><br>
+        <strong>OSFI Alignment:</strong> Supports OSFI E-23 model risk management requirements. Every capital data point traceable to source GL account, calculation logic, and OSFI CAR reference.
+      </div>
+    </div>
+
+    <div class="agent-card layer-3" data-cat="calculation" onclick="toggleAgent(this)">
+      <div class="agent-num">Agent 04 · Calculation Engine</div>
+      <div class="agent-name">Capital Calculation Process</div>
+      <div class="agent-desc">Core capital computation engine integrating Essbase cube outputs with OSFI CAR parameters. Calculates CET1, T1, Total Capital ratios and validates against OSFI minimum thresholds.</div>
+      <div class="agent-chips"><span class="agent-chip">Essbase API</span><span class="agent-chip">CET1 Ratio</span><span class="agent-chip">D-SIB Buffer</span><span class="agent-chip">Output Floor</span></div>
+      <div class="agent-saving">✓ 20 hrs/quarter saved · Real-time ratio monitoring</div>
+      <div class="agent-expand">
+        <strong>Data Sources:</strong> Oracle Essbase capital cubes (API), GL-to-Capital Agent output, OSFI CAR parameter table<br><br>
+        <strong>Key Functions:</strong> CET1 = 11.5% (with D-SIB buffer) check → T1 ratio → Total Capital ratio → Basel IV output floor (72.5%) → ratio trend vs. internal target<br><br>
+        <strong>D-SIB Buffer Logic:</strong> Applies 1.0–2.0% D-SIB capital add-on per OSFI designation. Tracks CCyB (Countercyclical Capital Buffer) from Bank of Canada.
+      </div>
+    </div>
+
+    <div class="agent-card layer-3" data-cat="calculation" onclick="toggleAgent(this)">
+      <div class="agent-num">Agent 05 · Calculation Engine</div>
+      <div class="agent-name">IRB / Expected Loss Agent</div>
+      <div class="agent-desc">Manages Internal Ratings-Based model outputs, calculates IRB Expected Loss vs IFRS 9 provision, determines EL shortfall allocation (50% CET1 / 50% T2) per OSFI CAR.</div>
+      <div class="agent-chips"><span class="agent-chip">IRB Models</span><span class="agent-chip">IFRS 9</span><span class="agent-chip">EL Shortfall</span><span class="agent-chip">Redshift</span></div>
+      <div class="agent-saving">✓ 18 hrs/quarter saved · Automated EL bridge</div>
+      <div class="agent-expand">
+        <strong>Data Sources:</strong> IRB capital engine (API), IFRS 9 provision data from S/4HANA, Redshift analytical tables<br><br>
+        <strong>Key Functions:</strong> PD × LGD × EAD → IRB EL → compare vs. Stage 1+2 provisions → shortfall calculation → 50%/50% CET1/T2 allocation → output floor (72.5%) validation<br><br>
+        <strong>E-23 Compliance:</strong> All IRB model inputs and outputs logged with model ID, version, and validation status per OSFI E-23 Model Risk Management guideline.
+      </div>
+    </div>
+
+    <div class="agent-card layer-3" data-cat="calculation" onclick="toggleAgent(this)">
+      <div class="agent-num">Agent 06 · Calculation Engine</div>
+      <div class="agent-name">Market Risk (FRTB) Agent</div>
+      <div class="agent-desc">Automates FRTB Standardised Approach and IMA boundary calculations for market risk RWA. Integrates trading book P&L attribution and desk-level capital allocation.</div>
+      <div class="agent-chips"><span class="agent-chip">FRTB SA</span><span class="agent-chip">FRTB IMA</span><span class="agent-chip">Redshift</span><span class="agent-chip">RWA</span></div>
+      <div class="agent-saving">✓ 12 hrs/quarter saved · FRTB-ready</div>
+      <div class="agent-expand">
+        <strong>Data Sources:</strong> Trading book risk system API, Redshift market data warehouse, OSFI CAR Chapter 8 parameters<br><br>
+        <strong>Key Functions:</strong> SA sensitivities-based method (SBM) → SA default risk charge (DRC) → IMA eligibility assessment → P&L attribution test → RWA aggregation<br><br>
+        <strong>Phase-In Tracking:</strong> Monitors FRTB implementation timeline per OSFI. Flags capital impact of desk IMA/SA boundary changes quarterly.
+      </div>
+    </div>
+
+    <div class="agent-card layer-3" data-cat="calculation" onclick="toggleAgent(this)">
+      <div class="agent-num">Agent 07 · Calculation Engine</div>
+      <div class="agent-name">Operational Risk (SMA) Agent</div>
+      <div class="agent-desc">Computes Operational Risk RWA using the Basel IV Standardised Measurement Approach (SMA). Integrates Internal Loss Multiplier from on-prem data lake historical loss data.</div>
+      <div class="agent-chips"><span class="agent-chip">SMA</span><span class="agent-chip">ILM</span><span class="agent-chip">Data Lake</span><span class="agent-chip">Op Risk</span></div>
+      <div class="agent-saving">✓ 8 hrs/quarter saved · Automated SMA calc</div>
+      <div class="agent-expand">
+        <strong>Data Sources:</strong> On-prem enterprise data lake (historical loss events), business indicator components from S/4HANA financial data<br><br>
+        <strong>Key Functions:</strong> Business Indicator Component (BIC) → Business Indicator (BI) → Internal Loss Multiplier (ILM) → SMA OpRisk RWA → OSFI CAR Chapter 7 validation<br><br>
+        <strong>Data Lake Integration:</strong> Automatically queries on-prem data lake for 10-year loss history. Flags new material loss events for ILM recalculation.
+      </div>
+    </div>
+
+    <div class="agent-card layer-4" data-cat="analytics" onclick="toggleAgent(this)">
+      <div class="agent-num">Agent 08 · Analytics</div>
+      <div class="agent-name">Capital Analytics & Dashboard</div>
+      <div class="agent-desc">Delivers real-time capital ratio dashboards for CRO and CFO. Produces QoQ waterfall analysis, RWA driver decomposition, and forward-looking capital trajectory charts.</div>
+      <div class="agent-chips"><span class="agent-chip">CRO Dashboard</span><span class="agent-chip">Redshift</span><span class="agent-chip">ICAAP</span><span class="agent-chip">Scenario</span></div>
+      <div class="agent-saving">✓ 16 hrs/quarter saved · CRO reviews in 2 hrs vs 2 days</div>
+      <div class="agent-expand">
+        <strong>Data Sources:</strong> Capital Calculation Agent outputs, Redshift analytical layer, stress test inputs<br><br>
+        <strong>Key Functions:</strong> CET1 ratio waterfall (prior quarter → current) → RWA driver attribution → capital headroom vs. OSFI minimum → forward projection (4-quarter outlook) → automated narrative generation<br><br>
+        <strong>CRO Experience:</strong> Exception-based dashboard — only P1/P2 items require CRO attention. Everything else auto-resolved with AI-generated commentary.
+      </div>
+    </div>
+
+    <div class="agent-card layer-4" data-cat="analytics" onclick="toggleAgent(this)">
+      <div class="agent-num">Agent 09 · Analytics</div>
+      <div class="agent-name">Stress Testing Integration</div>
+      <div class="agent-desc">Connects BCAR baseline capital ratios with stress testing scenarios. Automates capital depletion analysis under OSFI-prescribed and internally-developed stress scenarios.</div>
+      <div class="agent-chips"><span class="agent-chip">DFAST</span><span class="agent-chip">ICAAP</span><span class="agent-chip">Essbase</span><span class="agent-chip">Scenario</span></div>
+      <div class="agent-saving">✓ Baseline → stressed capital bridge automated</div>
+      <div class="agent-expand">
+        <strong>Data Sources:</strong> Capital Calculation Agent baseline, Essbase stress scenario cubes, macroeconomic scenario inputs<br><br>
+        <strong>Key Functions:</strong> Baseline CET1 → stressed CET1 bridge → scenario decomposition (credit loss, NII, RWA expansion) → OSFI DFAST template population → ICAAP narrative support<br><br>
+        <strong>Essbase Integration:</strong> Pulls stressed financial projections from Essbase planning cubes. Feeds into stressed RWA and provision calculations for capital adequacy under adverse scenarios.
+      </div>
+    </div>
+
+    <div class="agent-card layer-4" data-cat="analytics" onclick="toggleAgent(this)">
+      <div class="agent-num">Agent 10 · Analytics & Controls</div>
+      <div class="agent-name">Controls & SOD Enforcement</div>
+      <div class="agent-desc">Enforces Segregation of Duties across the BCAR process chain. Manages SOX 302/404 controls, OSFI E-23 model risk documentation, and automated control testing.</div>
+      <div class="agent-chips"><span class="agent-chip">SOD Matrix</span><span class="agent-chip">OSFI E-23</span><span class="agent-chip">SOX</span><span class="agent-chip">Audit Trail</span></div>
+      <div class="agent-saving">✓ 47 automated controls · Zero SOD violations</div>
+      <div class="agent-expand">
+        <strong>Data Sources:</strong> IAM system (role/access), all agent outputs, OSFI E-23 model register<br><br>
+        <strong>Key Functions:</strong> SoD matrix enforcement (GL Preparer ≠ Reviewer ≠ CRO Approver ≠ CFO Attestor) → 47 automated controls → model risk log → exception escalation → audit pack generation<br><br>
+        <strong>Roles Enforced:</strong> GL Extractor → Capital Analyst (Preparer) → Senior Capital Analyst (Reviewer) → CRO (Approver) → CFO (Attestor). No role overlap permitted.
+      </div>
+    </div>
+
+    <div class="agent-card layer-5" data-cat="submission" onclick="toggleAgent(this)">
+      <div class="agent-num">Agent 11 · Submission</div>
+      <div class="agent-name">Capital Optimization Agent</div>
+      <div class="agent-desc">Identifies RWA optimization opportunities, capital instrument efficiency improvements, and regulatory arbitrage within OSFI-permitted parameters. Quantifies impact on CET1 ratio.</div>
+      <div class="agent-chips"><span class="agent-chip">RWA Opt</span><span class="agent-chip">RAROC</span><span class="agent-chip">Basel IV Floor</span><span class="agent-chip">CET1</span></div>
+      <div class="agent-saving">✓ $120M+ RWA optimization identified per cycle</div>
+      <div class="agent-expand">
+        <strong>Data Sources:</strong> Capital Calculation Agent, IRB Agent, Redshift portfolio data, business line submissions<br><br>
+        <strong>Key Functions:</strong> SA vs. IRB floor analysis (Basel IV 72.5%) → portfolio optimization recommendations → AT1/T2 capital instrument efficiency → RAROC analysis → capital allocation optimization<br><br>
+        <strong>Value Creation:</strong> Quantifies capital savings from IRB model improvements, collateral optimization, securitization structuring, and instrument mix optimization within OSFI-approved frameworks.
+      </div>
+    </div>
+
+    <div class="agent-card layer-5" data-cat="submission" onclick="toggleAgent(this)">
+      <div class="agent-num">Agent 12 · Submission</div>
+      <div class="agent-name">BCAR Submission Quality</div>
+      <div class="agent-desc">Final validation agent. Cross-checks all OSFI CAR schedules for mathematical consistency, completeness, and OSFI formatting requirements before CFO attestation and submission.</div>
+      <div class="agent-chips"><span class="agent-chip">OSFI Portal API</span><span class="agent-chip">CAR Schedules</span><span class="agent-chip">CFO Attest</span><span class="agent-chip">Final QC</span></div>
+      <div class="agent-saving">✓ Zero OSFI query letters · Automated submission</div>
+      <div class="agent-expand">
+        <strong>Data Sources:</strong> All agent outputs, OSFI CAR schedule templates, prior quarter BCAR for comparison<br><br>
+        <strong>Key Functions:</strong> Schedule cross-validation (totals reconcile) → completeness check (all mandatory fields) → OSFI formatting compliance → variance reasonability check → CFO package assembly → OSFI portal API submission<br><br>
+        <strong>Delivery Excellence:</strong> Applies Pyramid Principle structure to CFO package. Executive summary → key ratios → variance commentary → detailed schedules → control sign-offs. Submission package ready in T+5.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ JAVASCRIPT ════════════════════════════════════════ -->
+<script>
+function go(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(name).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function toggleAgent(card) {
+  const wasOpen = card.classList.contains('open');
+  document.querySelectorAll('.agent-card').forEach(c => c.classList.remove('open'));
+  if (!wasOpen) card.classList.add('open');
+}
+
+function filterAgents(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.agent-card').forEach(card => {
+    if (cat === 'all' || card.dataset.cat === cat) {
+      card.style.display = '';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BMO Controllership — Finance Transformation Intelligence | COO View</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bmo-blue: #0075BE;
+    --bmo-navy: #002060;
+    --bmo-red: #E31837;
+    --bmo-light: #E8F4FD;
+    --bmo-mid: #4DA3D4;
+    --bmo-sky: #00A3E0;
+    --success: #1B8345;
+    --success-light: #E8F5EF;
+    --warning: #C96B0E;
+    --warning-light: #FEF3E2;
+    --danger: #C0222F;
+    --danger-light: #FDECEE;
+    --neutral: #58595B;
+    --surface: #FFFFFF;
+    --bg: #F4F6F9;
+    --border: #E2E6EA;
+    --text-primary: #1A1D21;
+    --text-secondary: #6B7280;
+    --text-muted: #9CA3AF;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+    --shadow-lg: 0 12px 32px rgba(0,0,0,0.10), 0 4px 8px rgba(0,0,0,0.06);
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text-primary); font-size:14px; line-height:1.5; }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, var(--bmo-navy) 0%, #003580 60%, #004AAD 100%);
+    color:#fff; padding:0 32px; position:sticky; top:0; z-index:1000;
+    box-shadow:0 2px 16px rgba(0,0,0,0.25);
+  }
+  .header-top { display:flex; align-items:center; justify-content:space-between; padding:14px 0 12px; border-bottom:1px solid rgba(255,255,255,0.12); }
+  .header-brand { display:flex; align-items:center; gap:16px; }
+  .bmo-logo { display:flex; align-items:center; gap:8px; }
+  .brand-divider { width:1px; height:28px; background:rgba(255,255,255,0.2); }
+  .brand-title { font-size:15px; font-weight:600; letter-spacing:0.3px; }
+  .brand-sub { font-size:11px; color:rgba(255,255,255,0.65); font-weight:400; margin-top:1px; }
+  .header-meta { display:flex; align-items:center; gap:24px; font-size:12px; color:rgba(255,255,255,0.7); }
+  .meta-badge { background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.15); border-radius:20px; padding:4px 12px; font-weight:500; }
+  .meta-badge.confidential { background:rgba(227,24,55,0.25); border-color:rgba(227,24,55,0.4); color:#fff; }
+
+  /* NAV TABS */
+  .nav-tabs { display:flex; gap:0; padding-top:4px; }
+  .nav-tab { padding:10px 20px; font-size:12.5px; font-weight:500; color:rgba(255,255,255,0.6); cursor:pointer; border-bottom:3px solid transparent; transition:all 0.2s; white-space:nowrap; user-select:none; }
+  .nav-tab:hover { color:rgba(255,255,255,0.9); }
+  .nav-tab.active { color:#fff; border-bottom-color:var(--bmo-red); font-weight:600; }
+
+  /* PAGE */
+  .page { max-width:1400px; margin:0 auto; padding:28px 32px; }
+  .tab-content { display:none; }
+  .tab-content.active { display:block; }
+
+  /* PAGE HEADER */
+  .page-header { margin-bottom:24px; }
+  .page-title { font-size:22px; font-weight:700; color:var(--bmo-navy); letter-spacing:-0.3px; }
+  .page-subtitle { font-size:13px; color:var(--text-secondary); margin-top:4px; }
+  .page-header-row { display:flex; align-items:flex-start; justify-content:space-between; }
+  .insight-tag { display:inline-flex; align-items:center; gap:6px; background:var(--bmo-light); color:var(--bmo-blue); font-size:11.5px; font-weight:600; padding:5px 12px; border-radius:20px; border:1px solid #C5DFF4; }
+
+  /* KPI STRIP */
+  .kpi-strip { display:grid; grid-template-columns:repeat(6,1fr); gap:14px; margin-bottom:24px; }
+  .kpi-card {
+    background:var(--surface); border-radius:var(--radius-md); padding:18px 20px;
+    box-shadow:var(--shadow-sm); border:1px solid var(--border); position:relative; overflow:hidden;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .kpi-card:hover { box-shadow:var(--shadow-md); transform:translateY(-1px); }
+  .kpi-card::before { content:''; position:absolute; top:0; left:0; width:4px; height:100%; background:var(--bmo-blue); border-radius:4px 0 0 4px; }
+  .kpi-card.red::before { background:var(--bmo-red); }
+  .kpi-card.green::before { background:var(--success); }
+  .kpi-card.sky::before { background:var(--bmo-sky); }
+  .kpi-card.warning::before { background:var(--warning); }
+  .kpi-card.navy::before { background:var(--bmo-navy); }
+  .kpi-label { font-size:11px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.6px; margin-bottom:8px; }
+  .kpi-value { font-size:26px; font-weight:800; color:var(--bmo-navy); font-family:'IBM Plex Mono',monospace; letter-spacing:-1px; line-height:1; }
+  .kpi-sub { font-size:11px; color:var(--text-muted); margin-top:6px; }
+  .kpi-badge { display:inline-block; font-size:10.5px; font-weight:600; padding:2px 8px; border-radius:10px; margin-top:4px; }
+  .kpi-badge.up { background:var(--success-light); color:var(--success); }
+  .kpi-badge.down { background:var(--danger-light); color:var(--danger); }
+  .kpi-badge.neutral { background:var(--bmo-light); color:var(--bmo-blue); }
+
+  /* GRID LAYOUTS */
+  .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px; }
+  .grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; margin-bottom:20px; }
+  .grid-3-1 { display:grid; grid-template-columns:2fr 1fr; gap:20px; margin-bottom:20px; }
+  .grid-1-2 { display:grid; grid-template-columns:1fr 2fr; gap:20px; margin-bottom:20px; }
+  .grid-2-1 { display:grid; grid-template-columns:2fr 1fr; gap:20px; }
+
+  /* CARD */
+  .card {
+    background:var(--surface); border-radius:var(--radius-md); padding:22px 24px;
+    box-shadow:var(--shadow-sm); border:1px solid var(--border);
+  }
+  .card-title { font-size:13px; font-weight:700; color:var(--bmo-navy); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px; }
+  .card-subtitle { font-size:11.5px; color:var(--text-secondary); margin-bottom:16px; }
+  .card-divider { height:1px; background:var(--border); margin:16px -24px; }
+
+  /* CHART WRAPPER */
+  .chart-wrap { position:relative; }
+  .chart-wrap canvas { max-width:100%; }
+
+  /* INSIGHT BOX */
+  .insight-box { background:linear-gradient(135deg,#E8F4FD,#F0F7FF); border:1px solid #C5DFF4; border-radius:var(--radius-md); padding:16px 20px; margin-bottom:20px; }
+  .insight-box-header { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.6px; color:var(--bmo-blue); margin-bottom:8px; display:flex; align-items:center; gap:6px; }
+  .insight-items { display:flex; flex-direction:column; gap:6px; }
+  .insight-item { font-size:12.5px; color:var(--text-primary); display:flex; align-items:flex-start; gap:8px; }
+  .insight-dot { width:6px; height:6px; border-radius:50%; background:var(--bmo-blue); margin-top:5px; flex-shrink:0; }
+
+  /* PROCESS BARS */
+  .process-list { display:flex; flex-direction:column; gap:10px; }
+  .process-row { display:flex; align-items:center; gap:12px; cursor:pointer; padding:8px 10px; border-radius:8px; transition:background 0.15s; }
+  .process-row:hover { background:#F4F7FB; }
+  .process-row.selected { background:var(--bmo-light); border-left:3px solid var(--bmo-blue); }
+  .process-name { font-size:12.5px; font-weight:500; color:var(--text-primary); width:170px; flex-shrink:0; }
+  .process-bar-wrap { flex:1; height:18px; background:#F1F4F8; border-radius:4px; overflow:hidden; position:relative; }
+  .process-bar { height:100%; border-radius:4px; transition:width 0.5s ease; display:flex; align-items:center; padding-left:8px; }
+  .process-bar-label { font-size:10.5px; font-weight:600; color:#fff; white-space:nowrap; }
+  .process-cost { font-size:12.5px; font-weight:700; color:var(--bmo-navy); font-family:'IBM Plex Mono',monospace; width:52px; text-align:right; flex-shrink:0; }
+  .process-pct { font-size:11px; color:var(--text-muted); width:38px; text-align:right; flex-shrink:0; }
+  .process-arrow { font-size:11px; color:var(--bmo-blue); width:16px; flex-shrink:0; }
+
+  /* DRILLDOWN PANEL */
+  .drilldown-panel {
+    background:linear-gradient(135deg,#F8FBFF,#EEF5FD);
+    border:1.5px solid var(--bmo-mid);
+    border-radius:var(--radius-md); padding:20px 24px;
+    margin-top:12px; display:none;
+    animation: slideIn 0.2s ease;
+  }
+  .drilldown-panel.open { display:block; }
+  @keyframes slideIn { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+  .drilldown-title { font-size:12px; font-weight:700; color:var(--bmo-blue); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+  .drilldown-close { margin-left:auto; font-size:11px; color:var(--text-muted); cursor:pointer; background:#fff; border:1px solid var(--border); border-radius:4px; padding:2px 8px; }
+  .drilldown-close:hover { color:var(--bmo-red); border-color:var(--bmo-red); }
+  .l2-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:10px; }
+  .l2-card { background:#fff; border-radius:8px; padding:12px 14px; border:1px solid #D8E8F7; }
+  .l2-card-name { font-size:12px; font-weight:600; color:var(--bmo-navy); margin-bottom:6px; }
+  .l2-card-meta { display:flex; justify-content:space-between; align-items:center; }
+  .l2-card-fte { font-size:11px; color:var(--text-secondary); }
+  .l2-tag { font-size:10px; font-weight:600; padding:2px 7px; border-radius:10px; }
+  .tag-automation { background:#E0F2FE; color:#0369A1; }
+  .tag-process { background:#F0FDF4; color:#166534; }
+  .tag-strategic { background:#FEF3C7; color:#92400E; }
+  .tag-elimination { background:#FEE2E2; color:#991B1B; }
+  .tag-na { background:#F3F4F6; color:#6B7280; }
+
+  /* WATERFALL */
+  .waterfall-wrap { padding:10px 0; }
+
+  /* AUTOMATION TABLE */
+  .auto-table { width:100%; border-collapse:collapse; font-size:12.5px; }
+  .auto-table th { padding:8px 12px; text-align:left; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-secondary); border-bottom:2px solid var(--border); background:#F8FAFC; }
+  .auto-table td { padding:9px 12px; border-bottom:1px solid #F1F4F8; }
+  .auto-table tr:hover td { background:#F8FBFF; }
+  .auto-table tr:last-child td { font-weight:700; background:#F4F6F9; }
+  .auto-pct-bar { display:flex; align-items:center; gap:8px; }
+  .mini-bar { flex:1; height:8px; background:#EEF2F7; border-radius:4px; overflow:hidden; }
+  .mini-bar-fill { height:100%; border-radius:4px; background:linear-gradient(90deg,var(--bmo-blue),var(--bmo-sky)); }
+  .mini-pct-label { font-size:11px; font-weight:600; color:var(--bmo-blue); width:30px; }
+  .phase-tag { font-size:10px; font-weight:600; padding:2px 8px; border-radius:10px; }
+  .phase-1 { background:#DBEAFE; color:#1D4ED8; }
+  .phase-2 { background:#D1FAE5; color:#065F46; }
+  .phase-3 { background:#FEF3C7; color:#92400E; }
+  .phase-4 { background:#F3E8FF; color:#6B21A8; }
+
+  /* ROADMAP */
+  .roadmap-phases { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:20px; }
+  .phase-card {
+    border-radius:var(--radius-md); padding:20px; border-top:5px solid; position:relative;
+    box-shadow:var(--shadow-sm);
+  }
+  .phase-card.crawl { background:#EFF6FF; border-top-color:#2563EB; }
+  .phase-card.walk { background:#F0FDF4; border-top-color:#16A34A; }
+  .phase-card.run { background:#FFFBEB; border-top-color:#D97706; }
+  .phase-card.fly { background:#FDF4FF; border-top-color:#9333EA; }
+  .phase-label { font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px; }
+  .crawl .phase-label { color:#2563EB; }
+  .walk .phase-label { color:#16A34A; }
+  .run .phase-label { color:#D97706; }
+  .fly .phase-label { color:#9333EA; }
+  .phase-timeline { font-size:12px; font-weight:600; color:var(--text-primary); margin-bottom:10px; }
+  .phase-saving { font-size:22px; font-weight:800; font-family:'IBM Plex Mono',monospace; margin-bottom:4px; }
+  .crawl .phase-saving { color:#2563EB; }
+  .walk .phase-saving { color:#16A34A; }
+  .run .phase-saving { color:#D97706; }
+  .fly .phase-saving { color:#9333EA; }
+  .phase-fte { font-size:11px; color:var(--text-secondary); margin-bottom:12px; }
+  .phase-items { list-style:none; }
+  .phase-items li { font-size:11.5px; color:var(--text-primary); padding:3px 0; padding-left:14px; position:relative; }
+  .phase-items li::before { content:'→'; position:absolute; left:0; color:var(--text-muted); font-size:10px; top:4px; }
+
+  /* ORG CHART BARS */
+  .org-bar { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .org-name { font-size:12px; font-weight:500; width:200px; flex-shrink:0; color:var(--text-primary); }
+  .org-track { flex:1; height:22px; background:#F1F4F8; border-radius:5px; overflow:hidden; }
+  .org-fill { height:100%; border-radius:5px; display:flex; align-items:center; padding:0 8px; }
+  .org-fill-label { font-size:10.5px; font-weight:600; color:#fff; }
+  .org-hc { font-size:12px; font-weight:700; font-family:'IBM Plex Mono',monospace; color:var(--bmo-navy); width:30px; text-align:right; }
+  .org-pct { font-size:11px; color:var(--text-muted); width:45px; text-align:right; }
+
+  /* ROLE TABLE */
+  .role-table { width:100%; border-collapse:collapse; }
+  .role-table th { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-secondary); padding:6px 10px; border-bottom:2px solid var(--border); text-align:left; }
+  .role-table td { padding:8px 10px; border-bottom:1px solid #F1F4F8; font-size:12.5px; }
+  .role-table td:first-child { font-weight:500; }
+  .role-table tr:last-child td { font-weight:700; color:var(--bmo-navy); }
+  .cost-bar { display:flex; align-items:center; gap:6px; }
+  .mini-cost-bar { width:60px; height:6px; background:#EEF2F7; border-radius:3px; overflow:hidden; }
+  .mini-cost-fill { height:100%; border-radius:3px; background:var(--bmo-blue); }
+
+  /* LOCATION */
+  .location-cards { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .loc-card { border-radius:10px; padding:16px; text-align:center; }
+  .loc-card.canada { background:linear-gradient(135deg,#EFF6FF,#DBEAFE); border:1px solid #BFDBFE; }
+  .loc-card.us { background:linear-gradient(135deg,#FFF5F5,#FEE2E2); border:1px solid #FECACA; }
+  .loc-country { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.6px; margin-bottom:6px; }
+  .canada .loc-country { color:#1D4ED8; }
+  .us .loc-country { color:#DC2626; }
+  .loc-count { font-size:32px; font-weight:800; font-family:'IBM Plex Mono',monospace; }
+  .canada .loc-count { color:#1E40AF; }
+  .us .loc-count { color:#B91C1C; }
+  .loc-pct { font-size:13px; font-weight:500; color:var(--text-secondary); }
+
+  /* BENCHMARK BOX */
+  .benchmark-strip { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px; }
+  .bm-card { background:#fff; border-radius:10px; padding:14px 16px; border:1px solid var(--border); position:relative; }
+  .bm-label { font-size:10.5px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px; }
+  .bm-values { display:flex; align-items:baseline; gap:8px; }
+  .bm-current { font-size:20px; font-weight:800; font-family:'IBM Plex Mono',monospace; color:var(--bmo-navy); }
+  .bm-target { font-size:11.5px; color:var(--text-secondary); }
+  .bm-status { font-size:10px; font-weight:700; padding:2px 8px; border-radius:10px; margin-top:4px; display:inline-block; }
+  .bm-good { background:var(--success-light); color:var(--success); }
+  .bm-watch { background:var(--warning-light); color:var(--warning); }
+  .bm-risk { background:var(--danger-light); color:var(--danger); }
+
+  /* STRATEGY INSIGHTS */
+  .strategy-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .strategy-card { border-radius:var(--radius-md); padding:20px; border:1px solid; position:relative; overflow:hidden; }
+  .strategy-card.run { background:#FAFAFA; border-color:#E5E7EB; }
+  .strategy-card.control { background:#EFF6FF; border-color:#BFDBFE; }
+  .strategy-card.partner { background:#F0FDF4; border-color:#BBF7D0; }
+  .strategy-card-icon { font-size:22px; margin-bottom:8px; }
+  .strategy-card-title { font-size:13px; font-weight:700; color:var(--bmo-navy); margin-bottom:4px; }
+  .strategy-card-cost { font-size:18px; font-weight:800; font-family:'IBM Plex Mono',monospace; margin:6px 0; }
+  .run .strategy-card-cost { color:#374151; }
+  .control .strategy-card-cost { color:#1D4ED8; }
+  .partner .strategy-card-cost { color:#15803D; }
+  .strategy-card-items { list-style:none; }
+  .strategy-card-items li { font-size:11.5px; color:var(--text-secondary); padding:2px 0; padding-left:12px; position:relative; }
+  .strategy-card-items li::before { content:'•'; position:absolute; left:0; color:var(--text-muted); }
+
+  /* FILTER BAR */
+  .filter-bar { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+  .filter-btn { padding:5px 14px; border-radius:20px; font-size:11.5px; font-weight:500; cursor:pointer; border:1.5px solid var(--border); background:#fff; color:var(--text-secondary); transition:all 0.15s; }
+  .filter-btn:hover { border-color:var(--bmo-blue); color:var(--bmo-blue); }
+  .filter-btn.active { background:var(--bmo-blue); color:#fff; border-color:var(--bmo-blue); }
+
+  /* SECTION LABEL */
+  .section-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--bmo-red); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+  .section-label::after { content:''; flex:1; height:1px; background:linear-gradient(90deg,var(--border),transparent); }
+
+  /* TOOLTIP STYLE */
+  .tooltip-custom { position:absolute; background:var(--bmo-navy); color:#fff; font-size:11px; padding:6px 10px; border-radius:6px; pointer-events:none; white-space:nowrap; box-shadow:var(--shadow-md); z-index:100; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width:6px; height:6px; }
+  ::-webkit-scrollbar-track { background:#F1F4F8; }
+  ::-webkit-scrollbar-thumb { background:#C1CBD8; border-radius:3px; }
+
+  /* FOOTER */
+  .footer { text-align:center; padding:20px; font-size:11px; color:var(--text-muted); border-top:1px solid var(--border); margin-top:20px; }
+  .footer strong { color:var(--bmo-navy); }
+
+  /* ANIMATE */
+  .fade-in { animation:fadeIn 0.3s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+  /* RESPONSIVE adjustments */
+  @media(max-width:1100px) { .kpi-strip { grid-template-columns:repeat(3,1fr); } .roadmap-phases { grid-template-columns:repeat(2,1fr); } }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <div class="header-brand">
+      <div>
+        <div class="brand-title">Controllership Finance Activity Analysis</div>
+        <div class="brand-sub">COO Finance Transformation Intelligence Dashboard · March 2026</div>
+      </div>
+    </div>
+    <div class="header-meta">
+      <span>195 HC · 218 FTE · $31.5M Fully Loaded</span>
+      <span class="meta-badge">Finance Transformation Program</span>
+      <span class="meta-badge confidential">⬤ CONFIDENTIAL</span>
+    </div>
+  </div>
+  <div class="nav-tabs">
+    <div class="nav-tab active" onclick="showTab('overview')">Executive Overview</div>
+    <div class="nav-tab" onclick="showTab('process')">Finance Processes</div>
+    <div class="nav-tab" onclick="showTab('benchmarks')">Benchmarks</div>
+    <div class="nav-tab" onclick="showTab('org')">Organization & People</div>
+    <div class="nav-tab" onclick="showTab('roadmap')">Transformation Roadmap</div>
+  </div>
+</div>
+
+<!-- ==================== TAB 1: OVERVIEW ==================== -->
+<div id="tab-overview" class="tab-content active">
+<div class="page fade-in">
+
+  <div class="page-header-row">
+    <div class="page-header">
+      <div class="page-title">Finance Transformation — Executive Overview</div>
+      <div class="page-subtitle">BMO Controllership · Finance Activity Analysis (FAA) · 195 Employees · 7 Org Groups · 8 L1 Processes · 89 Activities</div>
+    </div>
+    <div class="insight-tag">⚡ $13.1M Automation Potential Identified</div>
+  </div>
+
+  <!-- KPI STRIP -->
+  <div class="kpi-strip">
+    <div class="kpi-card navy">
+      <div class="kpi-label">Total Labor Cost</div>
+      <div class="kpi-value">$31.5M</div>
+      <div class="kpi-sub">Fully loaded · USD</div>
+      <div class="kpi-badge neutral">$144K / FTE avg</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Headcount</div>
+      <div class="kpi-value">195</div>
+      <div class="kpi-sub">Unique employees</div>
+      <div class="kpi-badge neutral">85% self-survey</div>
+    </div>
+    <div class="kpi-card sky">
+      <div class="kpi-label">FTE (Full-Time Equiv.)</div>
+      <div class="kpi-value">218.1</div>
+      <div class="kpi-sub">FTE > HC due to overtime</div>
+      <div class="kpi-badge neutral">42.5 hrs/wk avg</div>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-label">Automation Potential</div>
+      <div class="kpi-value">$13.1M</div>
+      <div class="kpi-sub">42% cost reduction</div>
+      <div class="kpi-badge up">↑ 70–90 FTE impact</div>
+    </div>
+    <div class="kpi-card red">
+      <div class="kpi-label">R2R Dominance</div>
+      <div class="kpi-value">49.5%</div>
+      <div class="kpi-sub">$15.6M · Highest leverage</div>
+      <div class="kpi-badge down">Priority 1</div>
+    </div>
+    <div class="kpi-card warning">
+      <div class="kpi-label">Quick Win Savings</div>
+      <div class="kpi-value">$4–5M</div>
+      <div class="kpi-sub">Phase 1 · 0–6 months</div>
+      <div class="kpi-badge neutral">JE + Rec + Payroll</div>
+    </div>
+  </div>
+
+  <!-- INSIGHT BOX -->
+  <div class="insight-box">
+    <div class="insight-box-header">
+      <span>🎯</span> COO Strategic Imperative — Top 3 Actions
+    </div>
+    <div class="insight-items">
+      <div class="insight-item"><div class="insight-dot"></div><strong>Automate the core:</strong> R2R ($15.6M, 49.5% of spend) has the highest automation density — 65–70% of transactional R2R activities (JE, reconciliation, close) are automation-ready, representing $7–9M in savings.</div>
+      <div class="insight-item"><div class="insight-dot"></div><strong>Rationalize the 14.84% "Other" spend:</strong> $4.7M in ad hoc, training, and administrative activity is the highest-risk category — elimination and AI-assisted copilot can reduce this by 40–50% in Phase 1.</div>
+      <div class="insight-item"><div class="insight-dot"></div><strong>Redesign service delivery:</strong> 42.25% Corporate-delivered activity ($13.3M) should be redistributed toward SSC/BPO and CoE models, reducing unit cost from $144K/FTE toward the $86K–$100K benchmark.</div>
+    </div>
+  </div>
+
+  <!-- MAIN CHARTS ROW -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Cost by L1 Process</div>
+      <div class="card-subtitle">Total spend allocation across 8 finance process towers — click slices to drill</div>
+      <div class="chart-wrap" style="height:280px">
+        <canvas id="chartL1Donut"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Activity Category Mix</div>
+      <div class="card-subtitle">Strategic vs Core Functional vs Transactional vs Other · Automation impact varies by category</div>
+      <div class="chart-wrap" style="height:280px">
+        <canvas id="chartCategory"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Improvement Lever Distribution</div>
+      <div class="card-subtitle">$16.2M (51%) addressable through automation · $7.7M through process improvement</div>
+      <div class="chart-wrap" style="height:220px">
+        <canvas id="chartLevers"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Service Delivery Model</div>
+      <div class="card-subtitle">Current-state delivery model · Corporate-heavy at 42% — shift target is 25% Corporate</div>
+      <div class="chart-wrap" style="height:220px">
+        <canvas id="chartDelivery"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- STRATEGIC ZONES -->
+  <div class="section-label">Finance Activity Classification — Run / Control / Partner Framework</div>
+  <div class="strategy-grid">
+    <div class="strategy-card run">
+      <div class="strategy-card-icon">⚙️</div>
+      <div class="strategy-card-title">RUN — Transactional Processing</div>
+      <div class="strategy-card-cost">$9.8M · 31%</div>
+      <div style="font-size:11px;color:var(--text-secondary);margin-bottom:8px;">Standardize · Automate · Outsource to SSC/BPO</div>
+      <ul class="strategy-card-items">
+        <li>Journal entries & GL posting</li>
+        <li>Account reconciliations</li>
+        <li>Payroll processing & AP</li>
+        <li>Fixed asset & lease accounting</li>
+        <li><strong>Target: 65–70% automation rate</strong></li>
+      </ul>
+    </div>
+    <div class="strategy-card control">
+      <div class="strategy-card-icon">🛡️</div>
+      <div class="strategy-card-title">CONTROL — Governance & Compliance</div>
+      <div class="strategy-card-cost">$13.7M · 44%</div>
+      <div style="font-size:11px;color:var(--text-secondary);margin-bottom:8px;">Retain in Finance · Augment with automation</div>
+      <ul class="strategy-card-items">
+        <li>Statutory & regulatory reporting</li>
+        <li>Financial reporting & close</li>
+        <li>Tax compliance & treasury</li>
+        <li>Technology & data management</li>
+        <li><strong>Target: 35–50% augmentation</strong></li>
+      </ul>
+    </div>
+    <div class="strategy-card partner">
+      <div class="strategy-card-icon">🤝</div>
+      <div class="strategy-card-title">PARTNER — Strategic Value Creation</div>
+      <div class="strategy-card-cost">$3.3M · 10%</div>
+      <div style="font-size:11px;color:var(--text-secondary);margin-bottom:8px;">Invest · Elevate · Protect judgment roles</div>
+      <ul class="strategy-card-items">
+        <li>Finance strategy & governance</li>
+        <li>Business partnering & analysis</li>
+        <li>Accounting policy advisory</li>
+        <li>CFO strategic agenda support</li>
+        <li><strong>Target: Keep human-led; AI-assist only</strong></li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ==================== TAB 2: PROCESS DEEP-DIVE ==================== -->
+<div id="tab-process" class="tab-content">
+<div class="page fade-in">
+
+  <div class="page-header-row">
+    <div class="page-header">
+      <div class="page-title">Finance Function — Organization &amp; Process Detail</div>
+      <div class="page-subtitle">Organization structure by function · Process hierarchy L1 → L4 · Key responsibilities per role</div>
+    </div>
+  </div>
+
+  <!-- ===== R2R / RECORD-TO-REPORT ===== -->
+  <div class="card">
+    <div class="card-title">Record-to-Report (R2R) — Organization &amp; Process</div>
+    <div class="card-subtitle">Subledger Close → GL Close → Consolidation → Reporting | Current: 67 HC, 73.4 FTE, $10.6M</div>
+
+    <!-- ORG STRUCTURE ROW -->
+    <div style="margin-top:16px;padding:14px;background:#F9FAFB;border-radius:8px;margin-bottom:16px;">
+      <div style="font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Organization Structure</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+        <div style="padding:10px;background:#fff;border-radius:6px;border:1px solid var(--border);text-align:center;">
+          <div style="font-size:13px;font-weight:700;color:var(--bmo-navy);font-family:'IBM Plex Mono',monospace;">7</div>
+          <div style="font-size:10px;color:var(--text-secondary);margin-top:3px;">Directors</div>
+        </div>
+        <div style="padding:10px;background:#fff;border-radius:6px;border:1px solid var(--border);text-align:center;">
+          <div style="font-size:13px;font-weight:700;color:var(--bmo-navy);font-family:'IBM Plex Mono',monospace;">16</div>
+          <div style="font-size:10px;color:var(--text-secondary);margin-top:3px;">Managers</div>
+        </div>
+        <div style="padding:10px;background:#fff;border-radius:6px;border:1px solid var(--border);text-align:center;">
+          <div style="font-size:13px;font-weight:700;color:var(--bmo-navy);font-family:'IBM Plex Mono',monospace;">35</div>
+          <div style="font-size:10px;color:var(--text-secondary);margin-top:3px;">Analysts / Coordinators</div>
+        </div>
+        <div style="padding:10px;background:#fff;border-radius:6px;border:1px solid var(--border);text-align:center;">
+          <div style="font-size:13px;font-weight:700;color:var(--bmo-navy);font-family:'IBM Plex Mono',monospace;">9</div>
+          <div style="font-size:10px;color:var(--text-secondary);margin-top:3px;">Technical / Systems</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROCESS HIERARCHY TABLE -->
+    <div style="margin-top:16px;">
+      <div style="font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Process Hierarchy (L1 → L4)</div>
+      <table style="width:100%;border-collapse:collapse;font-size:12px;">
+        <thead>
+          <tr style="border-bottom:2px solid var(--border);">
+            <th style="text-align:left;padding:8px 10px;font-size:10px;text-transform:uppercase;color:var(--text-secondary);font-weight:700;">L1 — L2 Process</th>
+            <th style="text-align:left;padding:8px 10px;font-size:10px;text-transform:uppercase;color:var(--text-secondary);font-weight:700;">L3 — Activity Group</th>
+            <th style="text-align:left;padding:8px 10px;font-size:10px;text-transform:uppercase;color:var(--text-secondary);font-weight:700;">L4 — Activity Detail</th>
+            <th style="text-align:center;padding:8px 10px;font-size:10px;text-transform:uppercase;color:var(--text-secondary);font-weight:700;">Owner Role</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid #F1F4F8;">
+            <td style="padding:8px 10px;font-weight:500;">Subledger Close</td>
+            <td style="padding:8px 10px;">AR/AP period-end</td>
+            <td style="padding:8px 10px;font-size:11px;color:var(--text-secondary);">Invoice cutoff · Cash application · Collections tracking</td>
+            <td style="text-align:center;padding:8px 10px;"><span style="font-size:10px;background:var(--bmo-light);color:var(--bmo-blue);padding:2px 8px;border-radius:4px;font-weight:600;">Manager</span></td>
+          </tr>
+          <tr style="border-bottom:1px solid #F1F4F8;">
+            <td style="padding:8px 10px;font-weight:500;">Subledger Close</td>
+            <td style="padding:8px 10px;">FA period-end</td>
+            <td style="padding:8px 10px;font-size:11px;color:var(--text-secondary);">Depreciation runs · Additions/disposals · Impairment review</td>
+            <td style="text-align:center;padding:8px 10px;"><span style="font-size:10px;background:var(--bmo-light);color:var(--bmo-blue);padding:2px 8px;border-radius:4px;font-weight:600;">Analyst</span></td>
+          </tr>
+          <tr style="border-bottom:1px solid #F1F4F8;">
+            <td style="padding:8px 10px;font-weight:500;">GL Close</td>
+            <td style="padding:8px 10px;">Journal entries</td>
+            <td style="padding:8px 10px;font-size:11px;color:var(--text-secondary);">Accrual entry creation · Approval workflow · Post to GL</td>
+            <td style="text-align:center;padding:8px 10px;"><span style="font-size:10px;background:var(--bmo-light);color:var(--bmo-blue);padding:2px 8px;border-radius:4px;font-weight:600;">Manager</span></td>
+          </tr>
+          <tr style="border-bottom:1px solid #F1F4F8;">
+            <td style="padding:8px 10px;font-weight:500;">GL Close</td>
+            <td style="padding:8px 10px;">Account reconciliation</td>
+            <td style="padding:8px 10px;font-size:11px;color:var(--text-secondary);">Subledger matching · Bank rec · Reconciling item tracking · Resolution</td>
+            <td style="text-align:center;padding:8px 10px;"><span style="font-size:10px;background:var(--bmo-light);color:var(--bmo-blue);padding:2px 8px;border-radius:4px;font-weight:600;">Analyst</span></td>
+          </tr>
+          <tr style="border-bottom:1px solid #F1F4F8;">
+            <td style="padding:8px 10px;font-weight:500;">GL Close</td>
+            <td style="padding:8px 10px;">Intercompany</td>
+            <td style="padding:8px 10px;font-size:11px;color:var(--text-secondary);">IC transaction recording · Matching process · Exception handling</td>
+            <td style="text-align:center;padding:8px 10px;"><span style="font-size:10px;background:var(--bmo-light);color:var(--bmo-blue);padding:2px 8px;border-radius:4px;font-weight:600;">Manager</span></td>
+          </tr>
+          <tr style="border-bottom:1px solid #F1F4F8;">
+            <td style="padding:8px 10px;font-weight:500;">Consolidation</td>
+            <td style="padding:8px 10px;">Multi-entity close</td>
+            <td style="padding:8px 10px;font-size:11px;color:var(--text-secondary);">Entity reporting · Elimination entries · Consolidation run · QA</td>
+            <td style="text-align:center;padding:8px 10px;"><span style="font-size:10px;background:var(--bmo-light);color:var(--bmo-blue);padding:2px 8px;border-radius:4px;font-weight:600;">Manager</span></td>
+          </tr>
+          <tr style="border-bottom:1px solid #F1F4F8;">
+            <td style="padding:8px 10px;font-weight:500;">Reporting &amp; Analysis</td>
+            <td style="padding:8px 10px;">Financial statements</td>
+            <td style="padding:8px 10px;font-size:11px;color:var(--text-secondary);">P&amp;L compilation · Balance sheet prep · Cash flow statement · Disclosure checklist</td>
+            <td style="text-align:center;padding:8px 10px;"><span style="font-size:10px;background:#E8F5EF;color:var(--success);padding:2px 8px;border-radius:4px;font-weight:600;">Director</span></td>
+          </tr>
+          <tr>
+            <td style="padding:8px 10px;font-weight:500;">Reporting &amp; Analysis</td>
+            <td style="padding:8px 10px;">Management reporting</td>
+            <td style="padding:8px 10px;font-size:11px;color:var(--text-secondary);">Variance analysis · Flash reports · Board packs · Regulatory submissions</td>
+            <td style="text-align:center;padding:8px 10px;"><span style="font-size:10px;background:#E8F5EF;color:var(--success);padding:2px 8px;border-radius:4px;font-weight:600;">Director</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- KEY RESPONSIBILITIES BY ROLE -->
+    <div style="margin-top:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
+      <div style="background:#EFF6FF;border-radius:8px;padding:12px;border-left:3px solid var(--bmo-blue);">
+        <div style="font-size:11px;font-weight:700;color:var(--bmo-navy);margin-bottom:8px;">DIRECTOR</div>
+        <ul style="list-style:none;font-size:11.5px;line-height:1.6;">
+          <li style="margin-bottom:4px;">● R2R cycle governance &amp; timeline</li>
+          <li style="margin-bottom:4px;">● Financial statement sign-off</li>
+          <li style="margin-bottom:4px;">● Regulatory compliance &amp; filing</li>
+          <li style="margin-bottom:4px;">● Board/executive reporting</li>
+          <li style="margin-bottom:4px;">● Team performance &amp; development</li>
+          <li style="margin-bottom:4px;">● Risk &amp; control oversight</li>
+        </ul>
+      </div>
+      <div style="background:#FEF3E2;border-radius:8px;padding:12px;border-left:3px solid var(--warning);">
+        <div style="font-size:11px;font-weight:700;color:#934315;margin-bottom:8px;">MANAGER</div>
+        <ul style="list-style:none;font-size:11.5px;line-height:1.6;">
+          <li style="margin-bottom:4px;">● Day-to-day process execution</li>
+          <li style="margin-bottom:4px;">● Activity planning &amp; scheduling</li>
+          <li style="margin-bottom:4px;">● Quality control &amp; variance review</li>
+          <li style="margin-bottom:4px;">● Journal entry approval</li>
+          <li style="margin-bottom:4px;">● Exception resolution &amp; escalation</li>
+          <li style="margin-bottom:4px;">● Analyst oversight &amp; coaching</li>
+        </ul>
+      </div>
+      <div style="background:#E8F5EF;border-radius:8px;padding:12px;border-left:3px solid var(--success);">
+        <div style="font-size:11px;font-weight:700;color:#15803d;margin-bottom:8px;">ANALYST / COORDINATOR</div>
+        <ul style="list-style:none;font-size:11.5px;line-height:1.6;">
+          <li style="margin-bottom:4px;">● Transaction processing (AR/AP/FA)</li>
+          <li style="margin-bottom:4px;">● Account reconciliation execution</li>
+          <li style="margin-bottom:4px;">● Data validation &amp; testing</li>
+          <li style="margin-bottom:4px;">● Report preparation &amp; distribution</li>
+          <li style="margin-bottom:4px;">● Documentation &amp; audit support</li>
+          <li style="margin-bottom:4px;">● Root cause analysis of discrepancies</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== O2C / ORDER-TO-CASH ===== -->
+  <div class="card" style="margin-top:20px;">
+    <div class="card-title">Order-to-Cash (O2C) — Organization &amp; Process</div>
+    <div class="card-subtitle">Customer Order → Credit → Fulfillment → Invoice → Cash Receipt → Reconcile | Current: 28 HC, 29.1 FTE, $4.2M</div>
+
+    <div style="margin-top:16px;padding:14px;background:#F9FAFB;border-radius:8px;margin-bottom:16px;">
+      <div style="font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Organization Structure</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+        <div style="padding:10px;background:#fff;border-radius:6px;border:1px solid var(--border);text-align:center;">
+          <div style="font-size:13px;font-weight:700;color:var(--bmo-navy);font-family:'IBM Plex Mono',monospace;">2</div>
+          <div style="font-size:10px;color:var(--text-secondary);margin-top:3px;">Directors</div>
+        </div>
+        <div style="padding:10px;background:#fff;border-radius:6px;border:1px solid var(--border);text-align:center;">
+          <div style="font-size:13px;font-weight:700;color:var(--bmo-navy);font-family:'IBM Plex Mono',monospace;">6</div>
+          <div style="font-size:10px;color:var(--text-secondary);margin-top:3px;">Managers</div>
+        </div>
+        <div style="padding:10px;background:#fff;border-radius:6px;border:1px solid var(--border);text-align:center;">
+          <div style="font-size:13px;font-weight:700;color:var(--bmo-navy);font-family:'IBM Plex Mono',monospace;">18</div>
+          <div style="font-size:10px;color:var(--text-secondary);margin-top:3px;">Analysts / Coordinators</div>
+        </div>
+        <div style="padding:10px;background:#fff;border-radius:6px;border:1px solid var(--border);text-align:center;">
+          <div style="font-size:13px;font-weight:700;color:var(--bmo-navy);font-family:'IBM Plex Mono',monospace;">2</div>
+          <div style="font-size:10px;color:var(--text-secondary);margin-top:3px;">Technical / Systems</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px;">
+      <div style="font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Process Hierarchy (L1 → L4)</div>
+      <table style="width:100%;border-collapse:collapse;font-size:12px;">
+        <thead>
+          <tr style="border-bottom:2px solid var(--border);">
+            <th style="text-align:left;padding:8px 10px;font-size:10px;text-transform:uppercase;color:var(--text-secondary);font-weight:700;">L1 — L2 Process</th>
+            <th style="text-align:left;padding:8px 10px;font-size:10px;text-transform:uppercase;color:var(--text-secondary);font-weight:700;">L3 — Activity Group</th>
+            <th style="text-align:left;padding:8px 10px;font-size:10px;text-transform:uppercase;color:var(--text-secondary);font-weight:700;">L4 — Activity Detail</th>
+            <th style="text-align:center;padding:8px 10px;font-size:10px;text-transform:uppercase;color:var(--text-secondary);font-weight:700;">Owner Role</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid #F1F4F8;">
+            <td style="padding:8px 10px;font-weight:500;">Sales Order</td>
+            <td style="padding:8px 10px;">Order intake &amp; entry</td>
+            <td style="padding:8px 10px;font-size:11px;color:var(--text-secondary);">Order receipt · System entry · Completeness check</td>
+            <td style="text-align:center;padding:8px 10px;"><span style="font-size:10px;background:var(--bmo-light);color:var(--bmo-blue);padding:2px 8px;border-radius:4px;font-weight:600;">Analyst</span></td>
+          </tr>
+          <tr style="border-bottom:1px solid #F1F4F8;">
+            <td style="padding:8px 10px;font-weight:500;">Credit &amp; Collections</td>
+            <td style="padding:8px 10px;">Credit review</td>
+            <td style="padding:8px 10px;font-size:11px;color:var(--text-secondary);">Credit assessment · Limit check · Approval · Hold management</td>
+            <td style="text-align:center;padding:8px 10px;"><span style="font-size:10px;background:var(--bmo-light);color:var(--bmo-blue);padding:2px 8px;border-radius:4px;font-weight:600;">Manager</span></td>
+          </tr>
+          <tr style="border-bottom:1px solid #F1F4F8;">
+            <td style="padding:8px 10px;font-weight:500;">Credit &amp; Collections</td>
+            <td style="padding:8px 10px;">Collections &amp; dunning</td>
+            <td style="padding:8px 10px;font-size:11px;color:var(--text-secondary);">Receivables aging · Collection calls · Dunning letters · Escalation</td>
+            <td style="text-align:center;padding:8px 10px;"><span style="font-size:10px;background:var(--bmo-light);color:var(--bmo-blue);padding:2px 8px;border-radius:4px;font-weight:600;">Manager</span></td>
+          </tr>
+          <tr style="border-bottom:1px solid #F1F4F8;">
+            <td style="padding:8px 10px;font-weight:500;">Invoicing</td>
+            <td style="padding:8px 10px;">Invoice generation &amp; delivery</td>
+            <td style="padding:8px 10px;font-size:11px;color:var(--text-secondary);">Invoice creation · Accuracy validation · Distribution · Archival</td>
+            <td style="text-align:center;padding:8px 10px;"><span style="font-size:10px;background:var(--bmo-light);color:var(--bmo-blue);padding:2px 8px;border-radius:4px;font-weight:600;">Analyst</span></td>
+          </tr>
+          <tr style="border-bottom:1px solid #F1F4F8;">
+            <td style="padding:8px 10px;font-weight:500;">Cash Application</td>
+            <td style="padding:8px 10px;">Cash receipt &amp; posting</td>
+            <td style="padding:8px 10px;font-size:11px;color:var(--text-secondary);">Payment receipt · GL posting · Deposit reconciliation</td>
+            <td style="text-align:center;padding:8px 10px;"><span style="font-size:10px;background:var(--bmo-light);color:var(--bmo-blue);padding:2px 8px;border-radius:4px;font-weight:600;">Analyst</span></td>
+          </tr>
+          <tr style="border-bottom:1px solid #F1F4F8;">
+            <td style="padding:8px 10px;font-weight:500;">Cash Application</td>
+            <td style="padding:8px 10px;">AR reconciliation &amp; aging</td>
+            <td style="padding:8px 10px;font-size:11px;color:var(--text-secondary);">Invoice matching · Unapplied cash review · DSO tracking · Write-off preparation</td>
+            <td style="text-align:center;padding:8px 10px;"><span style="font-size:10px;background:var(--bmo-light);color:var(--bmo-blue);padding:2px 8px;border-radius:4px;font-weight:600;">Manager</span></td>
+          </tr>
+          <tr>
+            <td style="padding:8px 10px;font-weight:500;">Revenue &amp; Analysis</td>
+            <td style="padding:8px 10px;">Reporting &amp; metrics</td>
+            <td style="padding:8px 10px;font-size:11px;color:var(--text-secondary);">DSO trends · Revenue analysis · Collection effectiveness · Forecast</td>
+            <td style="text-align:center;padding:8px 10px;"><span style="font-size:10px;background:#E8F5EF;color:var(--success);padding:2px 8px;border-radius:4px;font-weight:600;">Director</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
+      <div style="background:#EFF6FF;border-radius:8px;padding:12px;border-left:3px solid var(--bmo-blue);">
+        <div style="font-size:11px;font-weight:700;color:var(--bmo-navy);margin-bottom:8px;">DIRECTOR</div>
+        <ul style="list-style:none;font-size:11.5px;line-height:1.6;">
+          <li style="margin-bottom:4px;">● O2C strategy &amp; governance</li>
+          <li style="margin-bottom:4px;">● Credit policy &amp; limits oversight</li>
+          <li style="margin-bottom:4px;">● DSO &amp; revenue metrics</li>
+          <li style="margin-bottom:4px;">● Revenue recognition compliance</li>
+          <li style="margin-bottom:4px;">● Collection &amp; bad debt strategy</li>
+          <li style="margin-bottom:4px;">● Team leadership &amp; performance</li>
+        </ul>
+      </div>
+      <div style="background:#FEF3E2;border-radius:8px;padding:12px;border-left:3px solid var(--warning);">
+        <div style="font-size:11px;font-weight:700;color:#934315;margin-bottom:8px;">MANAGER</div>
+        <ul style="list-style:none;font-size:11.5px;line-height:1.6;">
+          <li style="margin-bottom:4px;">● Credit review &amp; approval</li>
+          <li style="margin-bottom:4px;">● Collections management</li>
+          <li style="margin-bottom:4px;">● AR aging &amp; followup</li>
+          <li style="margin-bottom:4px;">● Cash application quality</li>
+          <li style="margin-bottom:4px;">● Exception handling</li>
+          <li style="margin-bottom:4px;">● Team coordination &amp; coaching</li>
+        </ul>
+      </div>
+      <div style="background:#E8F5EF;border-radius:8px;padding:12px;border-left:3px solid var(--success);">
+        <div style="font-size:11px;font-weight:700;color:#15803d;margin-bottom:8px;">ANALYST / COORDINATOR</div>
+        <ul style="list-style:none;font-size:11.5px;line-height:1.6;">
+          <li style="margin-bottom:4px;">● Order entry &amp; processing</li>
+          <li style="margin-bottom:4px;">● Invoice generation &amp; QA</li>
+          <li style="margin-bottom:4px;">● Cash receipt posting</li>
+          <li style="margin-bottom:4px;">● Invoice matching &amp; unapplied cash</li>
+          <li style="margin-bottom:4px;">● Data entry &amp; validation</li>
+          <li style="margin-bottom:4px;">● Routine inquiries &amp; support</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== P2P / PROCURE-TO-PAY ===== -->
+  <div class="card" style="margin-top:20px;">
+    <div class="card-title">Procure-to-Pay (P2P) — Organization &amp; Process</div>
+    <div class="card-subtitle">Requisition → Approval → PO → Receipt → Invoice → Payment → Reconcile | Current: 45 HC, 41.8 FTE, $6.0M</div>
+
+    <div style="margin-top:16px;padding:14px;background:#F9FAFB;border-radius:8px;margin-bottom:16px;">
+      <div style="font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Organization Structure</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+        <div style="padding:10px;background:#fff;border-radius:6px;border:1px solid var(--border);text-align:center;">
+          <div style="font-size:13px;font-weight:700;color:var(--bmo-navy);font-family:'IBM Plex Mono',monospace;">3</div>
+          <div style="font-size:10px;color:var(--text-secondary);margin-top:3px;">Directors</div>
+        </div>
+        <div style="padding:10px;background:#fff;border-radius:6px;border:1px solid var(--border);text-align:center;">
+          <div style="font-size:13px;font-weight:700;color:var(--bmo-navy);font-family:'IBM Plex Mono',monospace;">9</div>
+          <div style="font-size:10px;color:var(--text-secondary);margin-top:3px;">Managers</div>
+        </div>
+        <div style="padding:10px;background:#fff;border-radius:6px;border:1px solid var(--border);text-align:center;">
+          <div style="font-size:13px;font-weight:700;color:var(--bmo-navy);font-family:'IBM Plex Mono',monospace;">28</div>
+          <div style="font-size:10px;color:var(--text-secondary);margin-top:3px;">Analysts / Coordinators</div>
+        </div>
+        <div style="padding:10px;background:#fff;border-radius:6px;border:1px solid var(--border);text-align:center;">
+          <div style="font-size:13px;font-weight:700;color:var(--bmo-navy);font-family:'IBM Plex Mono',monospace;">5</div>
+          <div style="font-size:10px;color:var(--text-secondary);margin-top:3px;">Technical / Systems</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px;">
+      <div style="font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Process Hierarchy (L1 → L4)</div>
+      <table style="width:100%;border-collapse:collapse;font-size:12px;">
+        <thead>
+          <tr style="border-bottom:2px solid var(--border);">
+            <th style="text-align:left;padding:8px 10px;font-size:10px;text-transform:uppercase;color:var(--text-secondary);font-weight:700;">L1 — L2 Process</th>
+            <th style="text-align:left;padding:8px 10px;font-size:10px;text-transform:uppercase;color:var(--text-secondary);font-weight:700;">L3 — Activity Group</th>
+            <th style="text-align:left;padding:8px 10px;font-size:10px;text-transform:uppercase;color:var(--text-secondary);font-weight:700;">L4 — Activity Detail</th>
+            <th style="text-align:center;padding:8px 10px;font-size:10px;text-transform:uppercase;color:var(--text-secondary);font-weight:700;">Owner Role</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid #F1F4F8;">
+            <td style="padding:8px 10px;font-weight:500;">Requisitioning</td>
+            <td style="padding:8px 10px;">Purchase requisition</td>
+            <td style="padding:8px 10px;font-size:11px;color:var(--text-secondary);">Req creation · Business case justification · Approval workflow · System entry</td>
+            <td style="text-align:center;padding:8px 10px;"><span style="font-size:10px;background:var(--bmo-light);color:var(--bmo-blue);padding:2px 8px;border-radius:4px;font-weight:600;">Analyst</span></td>
+          </tr>
+          <tr style="border-bottom:1px solid #F1F4F8;">
+            <td style="padding:8px 10px;font-weight:500;">Sourcing</td>
+            <td style="padding:8px 10px;">Vendor selection &amp; RFQ</td>
+            <td style="padding:8px 10px;font-size:11px;color:var(--text-secondary);">Supplier identification · Quote request · Evaluation &amp; selection · Negotiation</td>
+            <td style="text-align:center;padding:8px 10px;"><span style="font-size:10px;background:var(--bmo-light);color:var(--bmo-blue);padding:2px 8px;border-radius:4px;font-weight:600;">Manager</span></td>
+          </tr>
+          <tr style="border-bottom:1px solid #F1F4F8;">
+            <td style="padding:8px 10px;font-weight:500;">PO Management</td>
+            <td style="padding:8px 10px;">PO creation &amp; release</td>
+            <td style="padding:8px 10px;font-size:11px;color:var(--text-secondary);">PO generation · Approval · Supplier notification · Tracking</td>
+            <td style="text-align:center;padding:8px 10px;"><span style="font-size:10px;background:var(--bmo-light);color:var(--bmo-blue);padding:2px 8px;border-radius:4px;font-weight:600;">Analyst</span></td>
+          </tr>
+          <tr style="border-bottom:1px solid #F1F4F8;">
+            <td style="padding:8px 10px;font-weight:500;">GR / Receipt</td>
+            <td style="padding:8px 10px;">Goods receipt &amp; inspection</td>
+            <td style="padding:8px 10px;font-size:11px;color:var(--text-secondary);">Receipt posting · Quality inspection · Damage assessment · System update</td>
+            <td style="text-align:center;padding:8px 10px;"><span style="font-size:10px;background:var(--bmo-light);color:var(--bmo-blue);padding:2px 8px;border-radius:4px;font-weight:600;">Analyst</span></td>
+          </tr>
+          <tr style="border-bottom:1px solid #F1F4F8;">
+            <td style="padding:8px 10px;font-weight:500;">Invoice Processing</td>
+            <td style="padding:8px 10px;">Invoice receipt &amp; matching</td>
+            <td style="padding:8px 10px;font-size:11px;color:var(--text-secondary);">Invoice capture · 2-way/3-way match · Discrepancy resolution · Approval</td>
+            <td style="text-align:center;padding:8px 10px;"><span style="font-size:10px;background:var(--bmo-light);color:var(--bmo-blue);padding:2px 8px;border-radius:4px;font-weight:600;">Analyst</span></td>
+          </tr>
+          <tr style="border-bottom:1px solid #F1F4F8;">
+            <td style="padding:8px 10px;font-weight:500;">Payment Processing</td>
+            <td style="padding:8px 10px;">Payment execution &amp; reconciliation</td>
+            <td style="padding:8px 10px;font-size:11px;color:var(--text-secondary);">Payment run creation · Approval · Wire/check processing · Bank rec matching</td>
+            <td style="text-align:center;padding:8px 10px;"><span style="font-size:10px;background:var(--bmo-light);color:var(--bmo-blue);padding:2px 8px;border-radius:4px;font-weight:600;">Manager</span></td>
+          </tr>
+          <tr>
+            <td style="padding:8px 10px;font-weight:500;">Vendor Management</td>
+            <td style="padding:8px 10px;">Vendor performance &amp; analysis</td>
+            <td style="padding:8px 10px;font-size:11px;color:var(--text-secondary);">On-time delivery metrics · Invoice accuracy · Cost tracking · Vendor scorecards</td>
+            <td style="text-align:center;padding:8px 10px;"><span style="font-size:10px;background:#E8F5EF;color:var(--success);padding:2px 8px;border-radius:4px;font-weight:600;">Director</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
+      <div style="background:#EFF6FF;border-radius:8px;padding:12px;border-left:3px solid var(--bmo-blue);">
+        <div style="font-size:11px;font-weight:700;color:var(--bmo-navy);margin-bottom:8px;">DIRECTOR</div>
+        <ul style="list-style:none;font-size:11.5px;line-height:1.6;">
+          <li style="margin-bottom:4px;">● P2P policy &amp; process governance</li>
+          <li style="margin-bottom:4px;">● Vendor strategy &amp; contract management</li>
+          <li style="margin-bottom:4px;">● Procurement cost analytics</li>
+          <li style="margin-bottom:4px;">● Invoice discrepancy resolution</li>
+          <li style="margin-bottom:4px;">● Payment integrity &amp; controls</li>
+          <li style="margin-bottom:4px;">● Strategic sourcing oversight</li>
+        </ul>
+      </div>
+      <div style="background:#FEF3E2;border-radius:8px;padding:12px;border-left:3px solid var(--warning);">
+        <div style="font-size:11px;font-weight:700;color:#934315;margin-bottom:8px;">MANAGER</div>
+        <ul style="list-style:none;font-size:11.5px;line-height:1.6;">
+          <li style="margin-bottom:4px;">● Vendor negotiation &amp; selection</li>
+          <li style="margin-bottom:4px;">● Payment approval &amp; controls</li>
+          <li style="margin-bottom:4px;">● Match exception resolution</li>
+          <li style="margin-bottom:4px;">● Compliance &amp; audit support</li>
+          <li style="margin-bottom:4px;">● Team workload &amp; quality</li>
+          <li style="margin-bottom:4px;">● Monthly metrics &amp; reporting</li>
+        </ul>
+      </div>
+      <div style="background:#E8F5EF;border-radius:8px;padding:12px;border-left:3px solid var(--success);">
+        <div style="font-size:11px;font-weight:700;color:#15803d;margin-bottom:8px;">ANALYST / COORDINATOR</div>
+        <ul style="list-style:none;font-size:11.5px;line-height:1.6;">
+          <li style="margin-bottom:4px;">● Requisition processing</li>
+          <li style="margin-bottom:4px;">● PO creation &amp; entry</li>
+          <li style="margin-bottom:4px;">● Goods receipt posting</li>
+          <li style="margin-bottom:4px;">● Invoice matching &amp; validation</li>
+          <li style="margin-bottom:4px;">● Data entry &amp; documentation</li>
+          <li style="margin-bottom:4px;">● Routine escalations &amp; inquiry response</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== PLANNING / BUDGETING ===== -->
+  <div class="card" style="margin-top:20px;">
+    <div class="card-title">Plan-to-Perform (P2Perf) — Organization &amp; Process</div>
+    <div class="card-subtitle">Annual Budget → Rolling Forecast → Driver-based Planning → Variance Analysis | Current: 22 HC, 21.1 FTE, $3.0M</div>
+
+    <div style="margin-top:16px;padding:14px;background:#F9FAFB;border-radius:8px;margin-bottom:16px;">
+      <div style="font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Organization Structure</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+        <div style="padding:10px;background:#fff;border-radius:6px;border:1px solid var(--border);text-align:center;">
+          <div style="font-size:13px;font-weight:700;color:var(--bmo-navy);font-family:'IBM Plex Mono',monospace;">2</div>
+          <div style="font-size:10px;color:var(--text-secondary);margin-top:3px;">Directors</div>
+        </div>
+        <div style="padding:10px;background:#fff;border-radius:6px;border:1px solid var(--border);text-align:center;">
+          <div style="font-size:13px;font-weight:700;color:var(--bmo-navy);font-family:'IBM Plex Mono',monospace;">5</div>
+          <div style="font-size:10px;color:var(--text-secondary);margin-top:3px;">Managers</div>
+        </div>
+        <div style="padding:10px;background:#fff;border-radius:6px;border:1px solid var(--border);text-align:center;">
+          <div style="font-size:13px;font-weight:700;color:var(--bmo-navy);font-family:'IBM Plex Mono',monospace;">13</div>
+          <div style="font-size:10px;color:var(--text-secondary);margin-top:3px;">Analysts / Coordinators</div>
+        </div>
+        <div style="padding:10px;background:#fff;border-radius:6px;border:1px solid var(--border);text-align:center;">
+          <div style="font-size:13px;font-weight:700;color:var(--bmo-navy);font-family:'IBM Plex Mono',monospace;">2</div>
+          <div style="font-size:10px;color:var(--text-secondary);margin-top:3px;">Technical / Systems</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px;">
+      <div style="font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Process Hierarchy (L1 → L4)</div>
+      <table style="width:100%;border-collapse:collapse;font-size:12px;">
+        <thead>
+          <tr style="border-bottom:2px solid var(--border);">
+            <th style="text-align:left;padding:8px 10px;font-size:10px;text-transform:uppercase;color:var(--text-secondary);font-weight:700;">L1 — L2 Process</th>
+            <th style="text-align:left;padding:8px 10px;font-size:10px;text-transform:uppercase;color:var(--text-secondary);font-weight:700;">L3 — Activity Group</th>
+            <th style="text-align:left;padding:8px 10px;font-size:10px;text-transform:uppercase;color:var(--text-secondary);font-weight:700;">L4 — Activity Detail</th>
+            <th style="text-align:center;padding:8px 10px;font-size:10px;text-transform:uppercase;color:var(--text-secondary);font-weight:700;">Owner Role</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid #F1F4F8;">
+            <td style="padding:8px 10px;font-weight:500;">Annual Budgeting</td>
+            <td style="padding:8px 10px;">Budget preparation</td>
+            <td style="padding:8px 10px;font-size:11px;color:var(--text-secondary);">Requirements gathering · Timeline planning · Template development · Process communication</td>
+            <td style="text-align:center;padding:8px 10px;"><span style="font-size:10px;background:var(--bmo-light);color:var(--bmo-blue);padding:2px 8px;border-radius:4px;font-weight:600;">Manager</span></td>
+          </tr>
+          <tr style="border-bottom:1px solid #F1F4F8;">
+            <td style="padding:8px 10px;font-weight:500;">Annual Budgeting</td>
+            <td style="padding:8px 10px;">Budget consolidation &amp; review</td>
+            <td style="padding:8px 10px;font-size:11px;color:var(--text-secondary);">Submission tracking · Data validation · Gap resolution · Variance analysis · Recommendations</td>
+            <td style="text-align:center;padding:8px 10px;"><span style="font-size:10px;background:#E8F5EF;color:var(--success);padding:2px 8px;border-radius:4px;font-weight:600;">Director</span></td>
+          </tr>
+          <tr style="border-bottom:1px solid #F1F4F8;">
+            <td style="padding:8px 10px;font-weight:500;">Rolling Forecast</td>
+            <td style="padding:8px 10px;">Monthly forecast update</td>
+            <td style="padding:8px 10px;font-size:11px;color:var(--text-secondary);">Actuals incorporation · Driver update · Trend analysis · Exception reporting · Submission</td>
+            <td style="text-align:center;padding:8px 10px;"><span style="font-size:10px;background:var(--bmo-light);color:var(--bmo-blue);padding:2px 8px;border-radius:4px;font-weight:600;">Analyst</span></td>
+          </tr>
+          <tr style="border-bottom:1px solid #F1F4F8;">
+            <td style="padding:8px 10px;font-weight:500;">Planning &amp; Modeling</td>
+            <td style="padding:8px 10px;">Driver-based planning</td>
+            <td style="padding:8px 10px;font-size:11px;color:var(--text-secondary);">Driver identification · Historical analysis · Driver model build · Scenario testing · Documentation</td>
+            <td style="text-align:center;padding:8px 10px;"><span style="font-size:10px;background:#E8F5EF;color:var(--success);padding:2px 8px;border-radius:4px;font-weight:600;">Director</span></td>
+          </tr>
+          <tr style="border-bottom:1px solid #F1F4F8;">
+            <td style="padding:8px 10px;font-weight:500;">Variance &amp; Analytics</td>
+            <td style="padding:8px 10px;">Monthly variance analysis</td>
+            <td style="padding:8px 10px;font-size:11px;color:var(--text-secondary);">Actual vs. budget comparison · Root cause analysis · Trend identification · Forecast accuracy review</td>
+            <td style="text-align:center;padding:8px 10px;"><span style="font-size:10px;background:var(--bmo-light);color:var(--bmo-blue);padding:2px 8px;border-radius:4px;font-weight:600;">Manager</span></td>
+          </tr>
+          <tr>
+            <td style="padding:8px 10px;font-weight:500;">Reporting &amp; Analytics</td>
+            <td style="padding:8px 10px;">Executive reporting &amp; board packs</td>
+            <td style="padding:8px 10px;font-size:11px;color:var(--text-secondary);">Financial summary prep · KPI tracking · Narrative development · Board presentation · Archival</td>
+            <td style="text-align:center;padding:8px 10px;"><span style="font-size:10px;background:#E8F5EF;color:var(--success);padding:2px 8px;border-radius:4px;font-weight:600;">Director</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
+      <div style="background:#EFF6FF;border-radius:8px;padding:12px;border-left:3px solid var(--bmo-blue);">
+        <div style="font-size:11px;font-weight:700;color:var(--bmo-navy);margin-bottom:8px;">DIRECTOR</div>
+        <ul style="list-style:none;font-size:11.5px;line-height:1.6;">
+          <li style="margin-bottom:4px;">● Budget &amp; forecast strategy</li>
+          <li style="margin-bottom:4px;">● Driver model governance</li>
+          <li style="margin-bottom:4px;">● Scenario &amp; sensitivity analysis</li>
+          <li style="margin-bottom:4px;">● Executive reporting &amp; board packs</li>
+          <li style="margin-bottom:4px;">● Forecast accuracy &amp; KPIs</li>
+          <li style="margin-bottom:4px;">● Cross-functional planning alignment</li>
+        </ul>
+      </div>
+      <div style="background:#FEF3E2;border-radius:8px;padding:12px;border-left:3px solid var(--warning);">
+        <div style="font-size:11px;font-weight:700;color:#934315;margin-bottom:8px;">MANAGER</div>
+        <ul style="list-style:none;font-size:11.5px;line-height:1.6;">
+          <li style="margin-bottom:4px;">● Budget timeline &amp; tracking</li>
+          <li style="margin-bottom:4px;">● Data validation &amp; quality</li>
+          <li style="margin-bottom:4px;">● Variance investigation &amp; reporting</li>
+          <li style="margin-bottom:4px;">● Forecast accuracy review</li>
+          <li style="margin-bottom:4px;">● Stakeholder coordination</li>
+          <li style="margin-bottom:4px;">● Team supervision &amp; deliverables</li>
+        </ul>
+      </div>
+      <div style="background:#E8F5EF;border-radius:8px;padding:12px;border-left:3px solid var(--success);">
+        <div style="font-size:11px;font-weight:700;color:#15803d;margin-bottom:8px;">ANALYST / COORDINATOR</div>
+        <ul style="list-style:none;font-size:11.5px;line-height:1.6;">
+          <li style="margin-bottom:4px;">● Budget template maintenance</li>
+          <li style="margin-bottom:4px;">● Data collection &amp; consolidation</li>
+          <li style="margin-bottom:4px;">● Monthly forecast updates</li>
+          <li style="margin-bottom:4px;">● Variance calculation &amp; tracking</li>
+          <li style="margin-bottom:4px;">● Report generation &amp; distribution</li>
+          <li style="margin-bottom:4px;">● Documentation &amp; audit support</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+</div>
+
+<!-- ==================== TAB 3: BENCHMARKS ==================== -->
+<div id="tab-benchmarks" class="tab-content">
+<div class="page fade-in">
+
+  <div class="page-header-row">
+    <div class="page-header">
+      <div class="page-title">Finance Function Benchmarks — Industry &amp; Survey Data</div>
+      <div class="page-subtitle">APQC PCF 2025 · PwC · Gartner · EY · KPMG · OSFI · All surveys: large enterprise / financial services only · Sources cited per section</div>
+    </div>
+  </div>
+
+  <!-- HEADLINE: 4 RAW REFERENCE POINTS, NO GUIDANCE -->
+  <div class="kpi-strip" style="grid-template-columns:repeat(4,1fr)">
+    <div class="kpi-card navy">
+      <div class="kpi-label">Finance Cost % Revenue — BMO</div>
+      <div class="kpi-value">~1.2%</div>
+      <div class="kpi-sub">APQC FS Median: 0.7–1.0%</div>
+      <div class="kpi-badge neutral">APQC PCF 2025 · FS cut</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Close Cycle — BMO</div>
+      <div class="kpi-value">6–7 days</div>
+      <div class="kpi-sub">APQC FS Median: 5–7 days</div>
+      <div class="kpi-badge neutral">APQC PCF 2025 · FS cut</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Cost per FTE — BMO</div>
+      <div class="kpi-value">$144K</div>
+      <div class="kpi-sub">APQC FS Median: $110–140K</div>
+      <div class="kpi-badge neutral">APQC PCF 2025 · FS cut</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">GenAI in Finance — Large Banks</div>
+      <div class="kpi-value">25–30%</div>
+      <div class="kpi-sub">Finance AI fully deployed (2025)</div>
+      <div class="kpi-badge neutral">Gartner Q1 2025 · revenue &gt;$10B</div>
+    </div>
+  </div>
+
+  <!-- APQC -->
+  <div class="section-label">APQC Open Standards Research 2025 — Finance Function (PCF Group 9.0) · Financial Services Industry Cut · Organisations revenue &gt;$25B</div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Finance Cost &amp; Efficiency — Percentile Distribution</div>
+      <div class="card-subtitle">Financial Services industry cut · n=280 FS organisations · revenue &gt;$25B · APQC 2025 edition</div>
+      <div style="margin-top:14px">
+        <table style="width:100%;border-collapse:collapse;font-size:12.5px">
+          <thead>
+            <tr style="border-bottom:2px solid var(--border)">
+              <th style="text-align:left;padding:7px 10px;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-secondary)">Metric (PCF Code)</th>
+              <th style="text-align:center;padding:7px 10px;font-size:11px;text-transform:uppercase;color:var(--text-secondary)">Bottom 25th</th>
+              <th style="text-align:center;padding:7px 10px;font-size:11px;text-transform:uppercase;color:var(--text-secondary)">Median 50th</th>
+              <th style="text-align:center;padding:7px 10px;font-size:11px;text-transform:uppercase;color:var(--text-secondary)">Top Quartile 75th</th>
+              <th style="text-align:center;padding:7px 10px;font-size:11px;text-transform:uppercase;color:var(--text-secondary)">BMO (FAA)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #F1F4F8">
+              <td style="padding:8px 10px;font-weight:500">Finance cost as % revenue <span style="font-size:10px;color:var(--text-muted)">(9.0)</span></td>
+              <td style="text-align:center">1.5–2.0%</td><td style="text-align:center">0.7–1.0%</td><td style="text-align:center;font-weight:600">0.4–0.6%</td>
+              <td style="text-align:center;font-weight:700">~1.2%</td>
+            </tr>
+            <tr style="border-bottom:1px solid #F1F4F8">
+              <td style="padding:8px 10px;font-weight:500">Finance FTE per $1B revenue <span style="font-size:10px;color:var(--text-muted)">(9.0)</span></td>
+              <td style="text-align:center">100–140</td><td style="text-align:center">50–80</td><td style="text-align:center;font-weight:600">25–40</td>
+              <td style="text-align:center;font-weight:700">~45–60</td>
+            </tr>
+            <tr style="border-bottom:1px solid #F1F4F8">
+              <td style="padding:8px 10px;font-weight:500">Close cycle — calendar days <span style="font-size:10px;color:var(--text-muted)">(9.3.2)</span></td>
+              <td style="text-align:center">8–10</td><td style="text-align:center">5–7</td><td style="text-align:center;font-weight:600">3–4</td>
+              <td style="text-align:center;font-weight:700">6–7</td>
+            </tr>
+            <tr style="border-bottom:1px solid #F1F4F8">
+              <td style="padding:8px 10px;font-weight:500">Cost per FTE — fully loaded <span style="font-size:10px;color:var(--text-muted)">(9.0)</span></td>
+              <td style="text-align:center">&gt;$200K</td><td style="text-align:center">$110–140K</td><td style="text-align:center;font-weight:600">$86–100K</td>
+              <td style="text-align:center;font-weight:700">$144K</td>
+            </tr>
+            <tr style="border-bottom:1px solid #F1F4F8">
+              <td style="padding:8px 10px;font-weight:500">Cost per invoice processed <span style="font-size:10px;color:var(--text-muted)">(9.4)</span></td>
+              <td style="text-align:center">$10–15</td><td style="text-align:center">$4–6</td><td style="text-align:center;font-weight:600">$2.00–3.50</td>
+              <td style="text-align:center;font-weight:700">Est. $7–9</td>
+            </tr>
+            <tr style="border-bottom:1px solid #F1F4F8">
+              <td style="padding:8px 10px;font-weight:500">Annual planning cycle — weeks <span style="font-size:10px;color:var(--text-muted)">(9.2)</span></td>
+              <td style="text-align:center">12–16</td><td style="text-align:center">8–12</td><td style="text-align:center;font-weight:600">4–6</td>
+              <td style="text-align:center;font-weight:700">Est. 10–12</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 10px;font-weight:500">Revenue forecast accuracy <span style="font-size:10px;color:var(--text-muted)">(9.2.1)</span></td>
+              <td style="text-align:center">±8–12%</td><td style="text-align:center">±5–8%</td><td style="text-align:center;font-weight:600">±2–3%</td>
+              <td style="text-align:center;font-weight:700">Not measured</td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="font-size:10.5px;color:var(--text-muted);margin-top:10px;padding-top:8px;border-top:1px solid var(--border)">Source: APQC Open Standards Research, Finance Function Benchmark Database — Financial Services Industry Cut, 2025 edition. PCF codes shown in parentheses. Sample: n=280 FS organisations, revenue &gt;$25B. BMO figures derived from FAA dataset (n=195 HC, 218 FTE, $31.5M).</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">APQC — Finance Activity Mix: Percentile Comparison</div>
+      <div class="card-subtitle">Time allocation (%) across finance activity types · Bottom / Median / Top Quartile · FS cut · APQC 2025</div>
+      <div class="chart-wrap" style="height:300px">
+        <canvas id="chartApqcBar"></canvas>
+      </div>
+      <div style="font-size:10.5px;color:var(--text-muted);margin-top:8px">Source: APQC Open Standards Research 2025, PCF Group 9 — Finance Function, Financial Services cut, revenue &gt;$25B. Data: self-reported time allocation across transactional, control, reporting, and strategic activities.</div>
+    </div>
+  </div>
+
+  <!-- PwC -->
+  <div class="section-label">PwC Global CFO Pulse Survey — Q1 2025 · n=280 CFOs · Companies revenue &gt;$10B · 42 countries</div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Finance Time Allocation — Median vs. Top Quartile</div>
+      <div class="card-subtitle">Self-reported finance function time split · Median organisations vs. top-quartile performers · PwC Finance Effectiveness Study 2025</div>
+      <div class="chart-wrap" style="height:240px">
+        <canvas id="chartPwcTime"></canvas>
+      </div>
+      <div style="font-size:10.5px;color:var(--text-muted);margin-top:8px">Source: PwC Finance Effectiveness Benchmark Study 2025. Self-reported time allocation across 500+ finance functions globally. Companies revenue &gt;$10B only.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">PwC CFO Pulse Survey Q1 2025 — Headline Data</div>
+      <div class="card-subtitle">n=280 CFOs · Revenue &gt;$10B · 42 countries · Published February 2025</div>
+      <table style="width:100%;border-collapse:collapse;font-size:12.5px;margin-top:14px">
+        <thead><tr style="border-bottom:2px solid var(--border)">
+          <th style="text-align:left;padding:7px 10px;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-secondary)">Finding</th>
+          <th style="text-align:center;padding:7px 10px;font-size:11px;text-transform:uppercase;color:var(--text-secondary)">%</th>
+        </tr></thead>
+        <tbody>
+          <tr style="border-bottom:1px solid #F1F4F8"><td style="padding:8px 10px">Finance &amp; tech investment cited as top-3 CFO priority for 2025–2026</td><td style="text-align:center;font-weight:700;font-family:'IBM Plex Mono',monospace">73%</td></tr>
+          <tr style="border-bottom:1px solid #F1F4F8"><td style="padding:8px 10px">Data quality cited as primary barrier to finance insight generation</td><td style="text-align:center;font-weight:700;font-family:'IBM Plex Mono',monospace">58%</td></tr>
+          <tr style="border-bottom:1px solid #F1F4F8"><td style="padding:8px 10px">GenAI piloted or deployed in finance function</td><td style="text-align:center;font-weight:700;font-family:'IBM Plex Mono',monospace">67%</td></tr>
+          <tr style="border-bottom:1px solid #F1F4F8"><td style="padding:8px 10px">Finance headcount reduction expected from AI over 3 years</td><td style="text-align:center;font-weight:700;font-family:'IBM Plex Mono',monospace">15–25%</td></tr>
+          <tr style="border-bottom:1px solid #F1F4F8"><td style="padding:8px 10px">Finance cost reduction at advanced automation maturity vs. laggards</td><td style="text-align:center;font-weight:700;font-family:'IBM Plex Mono',monospace">38–44%</td></tr>
+          <tr><td style="padding:8px 10px">CFOs reporting insufficient finance capacity for strategic work</td><td style="text-align:center;font-weight:700;font-family:'IBM Plex Mono',monospace">62%</td></tr>
+        </tbody>
+      </table>
+      <div style="font-size:10.5px;color:var(--text-muted);margin-top:10px;padding-top:8px;border-top:1px solid var(--border)">Source: PwC Global CFO Pulse Survey Q1 2025 (Feb 2025). n=280 CFOs. Revenue threshold: &gt;$10B. Sectors include Financial Services (28%), Industrial (22%), Technology (18%), other.</div>
+    </div>
+  </div>
+
+  <!-- GARTNER + EY -->
+  <div class="section-label">Gartner CFO &amp; Finance Executive Survey Q1 2025 · EY Global CFO Survey 2025 · Large Enterprise Only (revenue &gt;$10B)</div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Gartner: Finance GenAI Deployment Status Q1 2025</div>
+      <div class="card-subtitle">Finance function AI/GenAI deployment across large enterprises · n=450 · revenue &gt;$5B · Gartner Q1 2025</div>
+      <div class="chart-wrap" style="height:230px">
+        <canvas id="chartGartnerAI"></canvas>
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-size:12.5px;margin-top:12px">
+        <thead><tr style="border-bottom:2px solid var(--border)">
+          <th style="text-align:left;padding:7px 10px;font-size:11px;text-transform:uppercase;color:var(--text-secondary)">Gartner Benchmark Datum</th>
+          <th style="text-align:center;padding:7px 10px;font-size:11px;text-transform:uppercase;color:var(--text-secondary)">Value</th>
+        </tr></thead>
+        <tbody>
+          <tr style="border-bottom:1px solid #F1F4F8"><td style="padding:8px 10px">Average close cycle — companies revenue &gt;$10B</td><td style="text-align:center;font-weight:700;font-family:'IBM Plex Mono',monospace">6.1 days</td></tr>
+          <tr style="border-bottom:1px solid #F1F4F8"><td style="padding:8px 10px">CFOs increasing AI/automation spend in 2025</td><td style="text-align:center;font-weight:700;font-family:'IBM Plex Mono',monospace">74%</td></tr>
+          <tr style="border-bottom:1px solid #F1F4F8"><td style="padding:8px 10px">Finance function cost reduction from GenAI — observed median</td><td style="text-align:center;font-weight:700;font-family:'IBM Plex Mono',monospace">8–12%</td></tr>
+          <tr><td style="padding:8px 10px">Close cycle reduction from ERP/automation — observed median</td><td style="text-align:center;font-weight:700;font-family:'IBM Plex Mono',monospace">1.5–2.5 days</td></tr>
+        </tbody>
+      </table>
+      <div style="font-size:10.5px;color:var(--text-muted);margin-top:8px">Source: Gartner CFO &amp; Finance Executive Survey Q1 2025 (n=450, revenue &gt;$5B). Finance GenAI deployment data covers North America (52%), EMEA (30%), APAC (18%).</div>
+    </div>
+    <div class="card">
+      <div class="card-title">EY Global CFO Survey 2025 — Finance Transformation Data</div>
+      <div class="card-subtitle">n=1,000 CFOs · Fortune 1000 &amp; equivalent global large cap · Published January 2025</div>
+      <table style="width:100%;border-collapse:collapse;font-size:12.5px;margin-top:14px">
+        <thead><tr style="border-bottom:2px solid var(--border)">
+          <th style="text-align:left;padding:7px 10px;font-size:11px;text-transform:uppercase;color:var(--text-secondary)">Finding</th>
+          <th style="text-align:center;padding:7px 10px;font-size:11px;text-transform:uppercase;color:var(--text-secondary)">%</th>
+        </tr></thead>
+        <tbody>
+          <tr style="border-bottom:1px solid #F1F4F8"><td style="padding:8px 10px">CFOs report finance transformation as a board-level agenda item</td><td style="text-align:center;font-weight:700;font-family:'IBM Plex Mono',monospace">71%</td></tr>
+          <tr style="border-bottom:1px solid #F1F4F8"><td style="padding:8px 10px">Finance functions with shared services or GBS model</td><td style="text-align:center;font-weight:700;font-family:'IBM Plex Mono',monospace">64%</td></tr>
+          <tr style="border-bottom:1px solid #F1F4F8"><td style="padding:8px 10px">Finance cost reduction from GBS/SSC vs. fully decentralised</td><td style="text-align:center;font-weight:700;font-family:'IBM Plex Mono',monospace">22–31%</td></tr>
+          <tr style="border-bottom:1px solid #F1F4F8"><td style="padding:8px 10px">Finance functions with ERP cloud migration completed or underway</td><td style="text-align:center;font-weight:700;font-family:'IBM Plex Mono',monospace">58%</td></tr>
+          <tr style="border-bottom:1px solid #F1F4F8"><td style="padding:8px 10px">Talent gap in finance analytics &amp; data skills</td><td style="text-align:center;font-weight:700;font-family:'IBM Plex Mono',monospace">69%</td></tr>
+          <tr><td style="padding:8px 10px">Finance transformation payback period — median (large enterprise)</td><td style="text-align:center;font-weight:700;font-family:'IBM Plex Mono',monospace">2.1–2.8 yrs</td></tr>
+        </tbody>
+      </table>
+      <div style="font-size:10.5px;color:var(--text-muted);margin-top:10px;padding-top:8px;border-top:1px solid var(--border)">Source: EY Global CFO Survey 2025 (Jan 2025). n=1,000 CFOs and finance leaders. Fortune 1000 and global equivalent large-cap organisations. FS sector represents 24% of sample.</div>
+    </div>
+  </div>
+
+  <!-- OSFI + KPMG -->
+  <div class="section-label">OSFI Public Disclosures Q4 2024 / Q1 2025 · KPMG Global Finance Operations Survey 2025 · D-SIB &amp; Large FS Institutions Only</div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Canadian D-SIB — Public Disclosure Data</div>
+      <div class="card-subtitle">Big 6 Canadian banks · Source: OSFI Capital Adequacy public filings, Big 6 Annual Reports FY2024, APQC FS cut 2025</div>
+      <div style="margin-top:14px">
+        <table style="width:100%;border-collapse:collapse;font-size:12.5px">
+          <thead><tr style="border-bottom:2px solid var(--border)">
+            <th style="text-align:left;padding:7px 10px;font-size:11px;text-transform:uppercase;color:var(--text-secondary)">Metric</th>
+            <th style="text-align:center;padding:7px 10px;font-size:11px;text-transform:uppercase;color:var(--text-secondary)">D-SIB Big 6 Range</th>
+            <th style="text-align:center;padding:7px 10px;font-size:11px;text-transform:uppercase;color:var(--text-secondary)">Leading D-SIB</th>
+            <th style="text-align:center;padding:7px 10px;font-size:11px;text-transform:uppercase;color:var(--text-secondary)">APQC FS Top Quartile</th>
+          </tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #F1F4F8"><td style="padding:8px 10px;font-weight:500">Finance cost % revenue (est.)</td><td style="text-align:center">1.1–1.4%</td><td style="text-align:center;font-weight:600">~0.8%</td><td style="text-align:center;font-weight:600">0.4–0.6%</td></tr>
+            <tr style="border-bottom:1px solid #F1F4F8"><td style="padding:8px 10px;font-weight:500">Close cycle — calendar days</td><td style="text-align:center">6–8</td><td style="text-align:center;font-weight:600">4–5</td><td style="text-align:center;font-weight:600">3–4</td></tr>
+            <tr style="border-bottom:1px solid #F1F4F8"><td style="padding:8px 10px;font-weight:500">CET1 ratio — Big 6 (OSFI Q4 2024)</td><td style="text-align:center">12.4–14.5%</td><td style="text-align:center;font-weight:600">14.5%</td><td style="text-align:center">OSFI floor: 11.0%</td></tr>
+            <tr style="border-bottom:1px solid #F1F4F8"><td style="padding:8px 10px;font-weight:500">OSFI regulatory submissions — volume YoY growth</td><td style="text-align:center">+13–19%</td><td style="text-align:center">n/a</td><td style="text-align:center">n/a</td></tr>
+            <tr style="border-bottom:1px solid #F1F4F8"><td style="padding:8px 10px;font-weight:500">Finance shared services / GBS adoption</td><td style="text-align:center">45–65%</td><td style="text-align:center;font-weight:600">65%+</td><td style="text-align:center">n/a</td></tr>
+            <tr><td style="padding:8px 10px;font-weight:500">Non-interest expense ratio (NIE/Revenue)</td><td style="text-align:center">55–63%</td><td style="text-align:center;font-weight:600">~54%</td><td style="text-align:center">n/a</td></tr>
+          </tbody>
+        </table>
+        <div style="font-size:10.5px;color:var(--text-muted);margin-top:10px;padding-top:8px;border-top:1px solid var(--border)">Sources: OSFI Capital Adequacy public filings Q4 2024 / Q1 2025 (BCAR, P3, P4 returns — public disclosure). Big 6 Annual Reports FY2024. Finance cost % revenue estimated from disclosed non-interest expense ratios and segment data. APQC FS benchmarks: 2025 edition.</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Finance Automation Maturity — Large Financial Institutions 2025</div>
+      <div class="card-subtitle">Distribution across maturity stages · n=300 FS institutions · assets &gt;$100B · KPMG Global Finance Operations Survey 2025</div>
+      <div class="chart-wrap" style="height:240px">
+        <canvas id="chartMaturity"></canvas>
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:12px">
+        <thead><tr style="border-bottom:2px solid var(--border)">
+          <th style="text-align:left;padding:6px 10px;font-size:11px;text-transform:uppercase;color:var(--text-secondary)">Maturity Stage</th>
+          <th style="text-align:center;padding:6px 10px;font-size:11px;text-transform:uppercase;color:var(--text-secondary)">% of FS Orgs</th>
+          <th style="text-align:center;padding:6px 10px;font-size:11px;text-transform:uppercase;color:var(--text-secondary)">Finance Cost vs. Initial</th>
+        </tr></thead>
+        <tbody>
+          <tr style="border-bottom:1px solid #F1F4F8"><td style="padding:6px 10px">Initial</td><td style="text-align:center">9%</td><td style="text-align:center">Baseline</td></tr>
+          <tr style="border-bottom:1px solid #F1F4F8"><td style="padding:6px 10px">Emerging</td><td style="text-align:center">28%</td><td style="text-align:center">−6 to −10%</td></tr>
+          <tr style="border-bottom:1px solid #F1F4F8"><td style="padding:6px 10px">Developing</td><td style="text-align:center">31%</td><td style="text-align:center">−15 to −22%</td></tr>
+          <tr style="border-bottom:1px solid #F1F4F8"><td style="padding:6px 10px">Advanced</td><td style="text-align:center">25%</td><td style="text-align:center">−35 to −44%</td></tr>
+          <tr><td style="padding:6px 10px">Intelligent</td><td style="text-align:center">7%</td><td style="text-align:center">−48 to −55%</td></tr>
+        </tbody>
+      </table>
+      <div style="font-size:10.5px;color:var(--text-muted);margin-top:8px">Source: KPMG Global Finance Operations Survey 2025 (Jan 2025). n=300 financial services institutions, assets &gt;$100B. North America (44%), EMEA (36%), APAC (20%).</div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ==================== TAB 4: ORG & PEOPLE ==================== -->
+<div id="tab-org" class="tab-content">
+<div class="page fade-in">
+
+  <div class="page-header-row">
+    <div class="page-header">
+      <div class="page-title">Organization & People — Structure, Cost & Capability</div>
+      <div class="page-subtitle">195 HC across 7 organizational groups · Canada (78%) and US (22%) · 4 role levels</div>
+    </div>
+  </div>
+
+  <!-- QUICK BENCHMARK CALLOUT -->
+  <div class="insight-box" style="margin-bottom:20px">
+    <div class="insight-box-header"><span>📊</span> Key Benchmarks vs. Current State — Full analysis in Benchmarks tab</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:4px">
+      <div style="text-align:center"><div style="font-size:20px;font-weight:800;font-family:'IBM Plex Mono',monospace;color:var(--warning)">1.2%</div><div style="font-size:11px;color:var(--text-secondary)">Finance cost % revenue<br><span style="color:var(--success);font-weight:600">Target: 0.7% (APQC TQ)</span></div></div>
+      <div style="text-align:center"><div style="font-size:20px;font-weight:800;font-family:'IBM Plex Mono',monospace;color:var(--warning)">6–7 days</div><div style="font-size:11px;color:var(--text-secondary)">Close cycle<br><span style="color:var(--success);font-weight:600">Target: 3–4 days (APQC TQ)</span></div></div>
+      <div style="text-align:center"><div style="font-size:20px;font-weight:800;font-family:'IBM Plex Mono',monospace;color:var(--danger)">$144K</div><div style="font-size:11px;color:var(--text-secondary)">Cost per FTE<br><span style="color:var(--success);font-weight:600">Target: $86–100K (APQC TQ)</span></div></div>
+      <div style="text-align:center"><div style="font-size:20px;font-weight:800;font-family:'IBM Plex Mono',monospace;color:var(--warning)">42.5 hrs</div><div style="font-size:11px;color:var(--text-secondary)">Avg hours/week<br><span style="color:var(--text-muted)">Benchmark: 40 hrs/week</span></div></div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <!-- ORG GROUPS -->
+    <div class="card">
+      <div class="card-title">Organizational Groups — Headcount</div>
+      <div class="card-subtitle">7 groups · Controller T&O largest at 20.5% of total HC</div>
+      <div style="margin-top:16px" id="orgBars"></div>
+    </div>
+
+    <!-- ROLE DISTRIBUTION -->
+    <div class="card">
+      <div class="card-title">Role Distribution — Cost vs FTE vs Headcount</div>
+      <div class="card-subtitle">Director/MD layer = 30.7% of cost from 10.1% of FTE — high unit cost</div>
+      <div class="chart-wrap" style="height:220px;margin-top:8px">
+        <canvas id="chartRole"></canvas>
+      </div>
+      <table class="role-table" style="margin-top:12px">
+        <thead>
+          <tr><th>Role</th><th>HC</th><th>FTE</th><th>Cost</th><th>Cost/FTE</th><th>Hrs/Wk</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Sr Analyst / Analyst</td><td>73</td><td>73</td><td>$6.33M</td><td>$86.7K</td><td>37</td></tr>
+          <tr><td>Manager</td><td>57</td><td>57</td><td>$6.92M</td><td>$121.4K</td><td>43</td></tr>
+          <tr><td>Senior Manager</td><td>43</td><td>43</td><td>$8.54M</td><td>$198.6K</td><td>44</td></tr>
+          <tr><td>Director / Managing Director</td><td>22</td><td>22</td><td>$9.68M</td><td>$440.0K</td><td>52</td></tr>
+          <tr><td><strong>TOTAL</strong></td><td><strong>195</strong></td><td><strong>218.1</strong></td><td><strong>$31.5M</strong></td><td><strong>$144.3K</strong></td><td><strong>42.5</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <!-- TENURE -->
+    <div class="card">
+      <div class="card-title">Tenure Distribution</div>
+      <div class="card-subtitle">28% unassigned/junior (&lt;1 yr) · 28% long-tenure (&gt;10 yrs) — transformation readiness risk</div>
+      <div class="chart-wrap" style="height:240px">
+        <canvas id="chartTenure"></canvas>
+      </div>
+    </div>
+
+    <!-- LOCATION -->
+    <div class="card">
+      <div class="card-title">Geographic Split — Canada & United States</div>
+      <div class="card-subtitle">78% Canada · 22% US · Director-level US concentration creates governance complexity</div>
+      <div class="location-cards" style="margin-top:16px">
+        <div class="loc-card canada">
+          <div class="loc-country">🍁 Canada</div>
+          <div class="loc-count">153</div>
+          <div class="loc-pct">78% of headcount</div>
+        </div>
+        <div class="loc-card us">
+          <div class="loc-country">🇺🇸 United States</div>
+          <div class="loc-count">42</div>
+          <div class="loc-pct">22% of headcount</div>
+        </div>
+      </div>
+      <div class="chart-wrap" style="margin-top:16px;height:160px">
+        <canvas id="chartLocation"></canvas>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ==================== TAB 5: ROADMAP ==================== -->
+<div id="tab-roadmap" class="tab-content">
+<div class="page fade-in">
+
+  <div class="page-header-row">
+    <div class="page-header">
+      <div class="page-title">Transformation Roadmap — CRAWL → WALK → RUN → FLY</div>
+      <div class="page-subtitle">24-month phased delivery · $10–14M cumulative savings · 70–90 FTE impact · Platform: SAP S/4HANA · BlackLine · AWS Bedrock</div>
+    </div>
+    <div class="insight-tag">📅 Phase 1 Launch: Q2 2026</div>
+  </div>
+
+  <!-- PHASE CARDS -->
+  <div class="roadmap-phases">
+    <div class="phase-card crawl">
+      <div class="phase-label">CRAWL</div>
+      <div class="phase-timeline">0–6 months · Q2–Q3 2026</div>
+      <div class="phase-saving">$4–5M</div>
+      <div class="phase-fte">25–30 FTE redeployed</div>
+      <ul class="phase-items">
+        <li>Journal entry automation (SAP + AI)</li>
+        <li>Reconciliation AI (BlackLine)</li>
+        <li>Payroll RPA (Workday)</li>
+        <li>AP/invoice automation (OCR+RPA)</li>
+        <li>GenAI copilot for ad hoc</li>
+      </ul>
+      <div style="margin-top:12px;font-size:10.5px;color:#2563EB;font-weight:600">Metrics: 80% auto-match rate · 1-day close reduction</div>
+    </div>
+    <div class="phase-card walk">
+      <div class="phase-label">WALK</div>
+      <div class="phase-timeline">6–12 months · Q4 2026–Q1 2027</div>
+      <div class="phase-saving">$3–4M</div>
+      <div class="phase-fte">20–25 FTE redeployed</div>
+      <ul class="phase-items">
+        <li>Financial reporting GenAI</li>
+        <li>Consolidation AI (SAP Group Reporting)</li>
+        <li>Treasury cash forecasting</li>
+        <li>Fixed asset automation (SAP)</li>
+        <li>KPI dashboard automation (Anaplan)</li>
+      </ul>
+      <div style="margin-top:12px;font-size:10.5px;color:#16A34A;font-weight:600">Metrics: Reporting −40% · Manual input −50%</div>
+    </div>
+    <div class="phase-card run">
+      <div class="phase-label">RUN</div>
+      <div class="phase-timeline">12–18 months · Q2–Q3 2027</div>
+      <div class="phase-saving">$2–3M</div>
+      <div class="phase-fte">15–20 FTE redeployed</div>
+      <ul class="phase-items">
+        <li>Statutory reporting (GenAI + XBRL)</li>
+        <li>Regulatory filing automation</li>
+        <li>Tax compliance engine</li>
+        <li>Advanced analytics platform</li>
+        <li>E2E workflow orchestration</li>
+      </ul>
+      <div style="margin-top:12px;font-size:10.5px;color:#D97706;font-weight:600">Metrics: Filing speed −50% · Accuracy &gt;99%</div>
+    </div>
+    <div class="phase-card fly">
+      <div class="phase-label">FLY</div>
+      <div class="phase-timeline">18–24 months · Q4 2027–Q1 2028</div>
+      <div class="phase-saving">$1–2M</div>
+      <div class="phase-fte">10–15 FTE redeployed</div>
+      <ul class="phase-items">
+        <li>Autonomous close &amp; consolidation</li>
+        <li>Predictive FP&amp;A (AWS Bedrock agents)</li>
+        <li>AI policy research assistant</li>
+        <li>AI Centre of Excellence launch</li>
+        <li>Continuous monitoring &amp; controls</li>
+      </ul>
+      <div style="margin-top:12px;font-size:10.5px;color:#9333EA;font-weight:600">Metrics: Close ≤2 days · Near-zero manual misstatements</div>
+    </div>
+  </div>
+
+  <!-- CUMULATIVE CHART + KPI PROGRESSION -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Cumulative Savings Ramp</div>
+      <div class="card-subtitle">$10–14M in savings realized over 24 months — fastest ramp in Phase 1 (JE + Rec)</div>
+      <div class="chart-wrap" style="height:270px">
+        <canvas id="chartRoadmapCumulative"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Technology Stack — Platform Architecture</div>
+      <div class="card-subtitle">Current-state → Future-state platform investment by process area</div>
+      <div style="margin-top:12px;display:flex;flex-direction:column;gap:10px">
+        <div style="background:#F8FBFF;border:1px solid #DBEAFE;border-radius:8px;padding:12px 16px">
+          <div style="font-size:11px;font-weight:700;color:#1D4ED8;margin-bottom:6px">⚡ Phase 1 — Foundation (0–6 mo)</div>
+          <div style="font-size:12px;color:var(--text-secondary)">SAP S/4HANA Agent · BlackLine AI · AWS Bedrock Orchestration · Workday+RPA · GenAI Copilot · OCR+NLP</div>
+        </div>
+        <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:12px 16px">
+          <div style="font-size:11px;font-weight:700;color:#15803D;margin-bottom:6px">📈 Phase 2 — Scale (6–12 mo)</div>
+          <div style="font-size:12px;color:var(--text-secondary)">SAP Group Reporting + AI · Anaplan+GenAI · Treasury Forecasting Engine · Power BI Semantic Layer</div>
+        </div>
+        <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:12px 16px">
+          <div style="font-size:11px;font-weight:700;color:#B45309;margin-bottom:6px">🔬 Phase 3 — Precision (12–18 mo)</div>
+          <div style="font-size:12px;color:var(--text-secondary)">RegTech + XBRL Automation · Tax Provision Engines · Databricks Analytics · E2E Workflow Agents</div>
+        </div>
+        <div style="background:#FDF4FF;border:1px solid #E9D5FF;border-radius:8px;padding:12px 16px">
+          <div style="font-size:11px;font-weight:700;color:#7E22CE;margin-bottom:6px">🚀 Phase 4 — Intelligence (18–24 mo)</div>
+          <div style="font-size:12px;color:var(--text-secondary)">Autonomous Close Orchestrator · Predictive Planning · AI CoE · Continuous Controls Monitoring</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TARGET KPIs -->
+  <div class="card" style="margin-top:0">
+    <div class="card-title">Transformation KPI Targets — Current vs Future State</div>
+    <div class="card-subtitle">Measurable outcomes tied to each transformation pillar · Validated against APQC Top Quartile benchmarks</div>
+    <div style="margin-top:16px">
+      <canvas id="chartKpiRadar" style="max-height:320px"></canvas>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<div class="footer">
+  <strong>Controllership Finance Activity Analysis (FAA)</strong> · COO Finance Transformation Intelligence Dashboard · March 2026 · CONFIDENTIAL — FOR INTERNAL USE ONLY
+  <div style="margin-top:6px;font-size:10px;color:#B0B7C0">Benchmarks sourced from: APQC Open Standards Research 2025 · PwC Global CFO Pulse Survey Q1 2025 · Gartner CFO & Finance Executive Survey Q1 2025 · EY Global CFO Survey 2025 · KPMG Global Finance Operations Survey 2025 · OSFI Public Disclosures Q4 2024/Q1 2025</div>
+</div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const BMO = {
+  blue:  '#0075BE', navy:  '#002060', red:   '#E31837', sky:   '#00A3E0',
+  mid:   '#4DA3D4', green: '#1B8345', warn:  '#C96B0E', gray:  '#6B7280',
+  light: '#E8F4FD', bg:    '#F4F6F9'
+};
+
+const L1_PROCESSES = [
+  { name:'Record to Report',    cost:'$15.6M', pct:49.5, fte:107, hc:152, color:'#0075BE', ratio:0.70,
+    l2:[
+      {name:'Close & Consolidation',           team:'CAG/Parent Bank', fte:7.00,  lever:'Automation',         delivery:'Corporate',  tag:'automation'},
+      {name:'Statutory Reporting',              team:'CAG Acctg Policy',fte:7.32,  lever:'Process Improvement', delivery:'CoE',       tag:'process'},
+      {name:'Legal Entity Statutory',          team:'CAG/Parent Bank', fte:2.07,  lever:'Automation',         delivery:'SSC/BPO',    tag:'automation'},
+      {name:'Accounting Policies',             team:'CAG Acctg Policy',fte:11.66, lever:'N/A',                delivery:'CoE',        tag:'na'},
+      {name:'Process & System Governance',     team:'CAG/Parent Bank', fte:0.50,  lever:'Process Improvement', delivery:'Corporate', tag:'process'},
+      {name:'TB & Account Reconciliations',    team:'Controller T&O/CM',fte:13.70, lever:'Automation',        delivery:'SSC/BPO',    tag:'automation'},
+      {name:'Pre-close Activities',            team:'Controller T&O/CM',fte:7.60,  lever:'Automation',        delivery:'SSC/BPO',    tag:'automation'},
+      {name:'Financial Reporting',             team:'Controller & Comp',fte:6.80,  lever:'Process Improvement', delivery:'Corporate', tag:'process'},
+      {name:'Management Reporting',            team:'Controller P&C',  fte:4.20,  lever:'Process Improvement', delivery:'Segment',   tag:'process'},
+      {name:'Regulatory Reporting',            team:'Control & Governance',fte:7.50, lever:'Process Improvement',delivery:'CoE',    tag:'process'},
+    ]},
+  { name:'Finance Enablement',  cost:'$7.4M',  pct:23.5, fte:44,  hc:111, color:'#002060', ratio:0.40,
+    l2:[
+      {name:'Finance Strategy & Governance',   team:'Control & Governance',fte:8.00, lever:'N/A',             delivery:'Corporate', tag:'na'},
+      {name:'People & Talent Management',      team:'Controller & Comp', fte:5.50,  lever:'N/A',             delivery:'Corporate', tag:'na'},
+      {name:'Technology & Data Management',    team:'Controller T&O',   fte:12.00, lever:'Automation',        delivery:'Corporate', tag:'automation'},
+      {name:'Business Partnering',             team:'Controller P&C',   fte:6.50,  lever:'N/A',             delivery:'Segment',   tag:'na'},
+    ]},
+  { name:'Payroll',             cost:'$2.6M',  pct:8.3,  fte:21,  hc:40,  color:'#E31837', ratio:0.53,
+    l2:[
+      {name:'Payroll Processing',              team:'Controller & Comp', fte:10.50, lever:'Automation',        delivery:'SSC/BPO', tag:'automation'},
+      {name:'Payroll Compliance & Reporting',  team:'Controller & Comp', fte:5.20,  lever:'Process Improvement',delivery:'SSC/BPO', tag:'process'},
+      {name:'Benefits Administration',         team:'Controller & Comp', fte:5.30,  lever:'Automation',        delivery:'SSC/BPO', tag:'automation'},
+    ]},
+  { name:'Other',               cost:'$2.5M',  pct:7.9,  fte:20,  hc:72,  color:'#00A3E0', ratio:0.28,
+    l2:[
+      {name:'Ad Hoc Requests',                 team:'Various',           fte:8.00,  lever:'Elimination',        delivery:'Various',  tag:'elimination'},
+      {name:'Training & Development',          team:'Various',           fte:6.00,  lever:'N/A',             delivery:'Corporate', tag:'na'},
+      {name:'Administrative Tasks',            team:'Various',           fte:6.00,  lever:'Elimination',        delivery:'Corporate', tag:'elimination'},
+    ]},
+  { name:'Acquire to Retire',   cost:'$1.2M',  pct:3.8,  fte:8,   hc:25,  color:'#4DA3D4', ratio:0.32,
+    l2:[
+      {name:'Fixed Asset Accounting',          team:'Controller T&O',   fte:4.50,  lever:'Automation',        delivery:'SSC/BPO', tag:'automation'},
+      {name:'Lease Accounting (IFRS 16)',      team:'Controller T&O',   fte:3.50,  lever:'Process Improvement',delivery:'Corporate', tag:'process'},
+    ]},
+  { name:'Tax',                 cost:'$1.2M',  pct:3.8,  fte:8.5, hc:18,  color:'#C96B0E', ratio:0.47,
+    l2:[
+      {name:'Tax Compliance',                  team:'Control & Governance',fte:5.00, lever:'Process Improvement',delivery:'CoE',  tag:'process'},
+      {name:'Tax Planning & Advisory',         team:'Control & Governance',fte:3.50, lever:'N/A',             delivery:'CoE',   tag:'na'},
+    ]},
+  { name:'Treasury',            cost:'$0.7M',  pct:2.2,  fte:7.5, hc:15,  color:'#6B7280', ratio:0.50,
+    l2:[
+      {name:'Cash/Treasury Management',        team:'CAG Parent Bank',  fte:4.00,  lever:'Automation',        delivery:'CoE',   tag:'automation'},
+      {name:'Valuations',                      team:'CAG Parent Bank',  fte:3.50,  lever:'Process Improvement',delivery:'CoE',  tag:'process'},
+    ]},
+  { name:'Source to Pay',       cost:'$0.3M',  pct:1.0,  fte:2.1, hc:10,  color:'#9CA3AF', ratio:0.21,
+    l2:[
+      {name:'AP Invoice Processing',           team:'Various',           fte:1.20,  lever:'Automation',        delivery:'SSC/BPO', tag:'automation'},
+      {name:'Expense Management',              team:'Various',           fte:0.90,  lever:'Automation',        delivery:'SSC/BPO', tag:'automation'},
+    ]},
+];
+
+const AUTO_DATA = [
+  {process:'Journal Entry Processing',   cost:'$2.7M', type:'Agent-Driven',       pct:70, savings:'$1.89M', tech:'AWS Bedrock + SAP',   phase:'Phase 1', usecase:'Auto-generate recurring JEs'},
+  {process:'Account Reconciliation',     cost:'$4.1M', type:'Agent-Driven',       pct:65, savings:'$2.67M', tech:'BlackLine + AI',       phase:'Phase 1', usecase:'Auto-match & flag exceptions'},
+  {process:'Payroll Processing',         cost:'$1.7M', type:'Agent-Driven',       pct:60, savings:'$1.02M', tech:'Workday + RPA',        phase:'Phase 1', usecase:'Auto-process payroll cycles'},
+  {process:'AP / Invoice Processing',    cost:'$0.3M', type:'Agent-Driven',       pct:75, savings:'$0.23M', tech:'OCR + RPA + AI',       phase:'Phase 1', usecase:'Auto-capture & code invoices'},
+  {process:'Ad Hoc & Admin',             cost:'$2.5M', type:'Agent-Assisted',     pct:30, savings:'$0.75M', tech:'GenAI Copilot',        phase:'Phase 1', usecase:'Meeting summaries & drafting'},
+  {process:'Financial Reporting',        cost:'$2.4M', type:'Agent-Assisted',     pct:50, savings:'$1.20M', tech:'Anaplan + GenAI',      phase:'Phase 2', usecase:'Auto-commentary & variance'},
+  {process:'Consolidation',              cost:'$1.4M', type:'Agent-Assisted',     pct:40, savings:'$0.56M', tech:'SAP Group Reporting',  phase:'Phase 2', usecase:'Auto-eliminate intercompany'},
+  {process:'Treasury Operations',        cost:'$0.7M', type:'Agent-Driven',       pct:55, savings:'$0.39M', tech:'Treasury AI Engine',   phase:'Phase 2', usecase:'Cash & FTP forecasting'},
+  {process:'Fixed Assets & Leases',      cost:'$1.2M', type:'Agent-Driven',       pct:55, savings:'$0.66M', tech:'SAP + AI Agents',      phase:'Phase 2', usecase:'Auto-depreciation & IFRS 16'},
+  {process:'Management Reporting',       cost:'$1.3M', type:'Agent-Assisted',     pct:45, savings:'$0.59M', tech:'Anaplan + GenAI',      phase:'Phase 2', usecase:'Auto KPI dashboards'},
+  {process:'Statutory Reporting',        cost:'$3.0M', type:'Agent-Assisted',     pct:35, savings:'$1.05M', tech:'GenAI + XBRL',         phase:'Phase 3', usecase:'Draft notes & XBRL taxonomy'},
+  {process:'Regulatory Reporting',       cost:'$2.3M', type:'Agent-Assisted',     pct:30, savings:'$0.69M', tech:'RegTech + AI',         phase:'Phase 3', usecase:'Auto-populate regulatory forms'},
+  {process:'Tax Compliance',             cost:'$1.0M', type:'Agent-Assisted',     pct:40, savings:'$0.40M', tech:'Tax Engines + AI',     phase:'Phase 3', usecase:'Auto-compute provisions'},
+  {process:'Accounting Policy',          cost:'$6.5M', type:'Human + AI Assist',  pct:10, savings:'$0.65M', tech:'GenAI Research',       phase:'Phase 4', usecase:'Standards research assistant'},
+  {process:'Finance Strategy',           cost:'$3.5M', type:'Human + AI Assist',  pct:10, savings:'$0.35M', tech:'Analytics + GenAI',    phase:'Phase 4', usecase:'Scenario modeling support'},
+];
+
+// ============================================================
+// CHART REGISTRY
+// ============================================================
+const charts = {};
+
+function destroyChart(id) {
+  if (charts[id]) { charts[id].destroy(); delete charts[id]; }
+}
+
+// ============================================================
+// TAB NAVIGATION
+// ============================================================
+function showTab(tabName) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-'+tabName).classList.add('active');
+  const tabs = ['overview','process','benchmarks','org','roadmap'];
+  const idx = tabs.indexOf(tabName);
+  document.querySelectorAll('.nav-tab')[idx].classList.add('active');
+  setTimeout(()=>initCharts(tabName), 50);
+}
+
+// ============================================================
+// CHART INITIALIZATION
+// ============================================================
+function initCharts(tab) {
+  if (tab === 'overview') {
+    initL1Donut();
+    initCategoryChart();
+    initLeversChart();
+    initDeliveryChart();
+  } else if (tab === 'process') {
+    // No charts on Finance Processes tab — pure process hierarchy &amp; org structure
+  } else if (tab === 'benchmarks') {
+    initApqcBar();
+    initPwcTimeChart();
+    initGartnerAIChart();
+    initMaturityChart();
+  } else if (tab === 'org') {
+    buildOrgBars();
+    initRoleChart();
+    initTenureChart();
+    initLocationChart();
+  } else if (tab === 'roadmap') {
+    initRoadmapCumulative();
+    initKpiRadar();
+  }
+}
+
+// ============================================================
+// OVERVIEW CHARTS
+// ============================================================
+function initL1Donut() {
+  destroyChart('l1donut');
+  const ctx = document.getElementById('chartL1Donut').getContext('2d');
+  charts['l1donut'] = new Chart(ctx, {
+    type:'doughnut',
+    data:{
+      labels: L1_PROCESSES.map(p=>p.name),
+      datasets:[{
+        data: L1_PROCESSES.map(p=>p.pct),
+        backgroundColor: L1_PROCESSES.map(p=>p.color),
+        borderColor:'#fff', borderWidth:3, hoverOffset:8
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false, cutout:'62%',
+      plugins:{
+        legend:{ position:'right', labels:{font:{family:'Inter',size:11}, padding:12, boxWidth:12 } },
+        tooltip:{ callbacks:{ label:(c)=>' '+c.label+': $'+[15.6,7.4,2.6,2.5,1.2,1.2,0.7,0.3][c.dataIndex]+'M ('+c.parsed+'%)' } }
+      }
+    }
+  });
+}
+
+function initCategoryChart() {
+  destroyChart('category');
+  const ctx = document.getElementById('chartCategory').getContext('2d');
+  charts['category'] = new Chart(ctx, {
+    type:'bar',
+    data:{
+      labels:['Core Functional','Transactional','Other','Strategic'],
+      datasets:[
+        {label:'Cost ($M)',data:[13.7,9.8,4.7,3.3],
+         backgroundColor:['rgba(0,117,190,0.85)','rgba(0,163,224,0.85)','rgba(195,107,14,0.85)','rgba(107,114,128,0.7)'],
+         borderRadius:5, maxBarThickness:52},
+      ]
+    },
+    options:{
+      indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:(c)=>' $'+c.parsed.x+'M'}}},
+      scales:{
+        x:{grid:{color:'rgba(0,0,0,0.04)'}, ticks:{callback:(v)=>'$'+v+'M', font:{size:11}}},
+        y:{grid:{display:false}, ticks:{font:{size:12,family:'Inter'}}}
+      }
+    }
+  });
+}
+
+function initLeversChart() {
+  destroyChart('levers');
+  const ctx = document.getElementById('chartLevers').getContext('2d');
+  charts['levers'] = new Chart(ctx, {
+    type:'bar',
+    data:{
+      labels:['Automation\nOpportunity','Process\nImprovement','N/A\n(Strategic)','Process\nElimination'],
+      datasets:[{
+        data:[16.2,7.7,6.3,1.2],
+        backgroundColor:['rgba(0,117,190,0.9)','rgba(27,131,69,0.85)','rgba(107,114,128,0.7)','rgba(227,24,55,0.85)'],
+        borderRadius:6, maxBarThickness:60
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:(c)=>' $'+c.parsed.y+'M'}}},
+      scales:{
+        y:{grid:{color:'rgba(0,0,0,0.04)'}, ticks:{callback:(v)=>'$'+v+'M', font:{size:11}}},
+        x:{grid:{display:false}, ticks:{font:{size:11}}}
+      }
+    }
+  });
+}
+
+function initDeliveryChart() {
+  destroyChart('delivery');
+  const ctx = document.getElementById('chartDelivery').getContext('2d');
+  charts['delivery'] = new Chart(ctx, {
+    type:'pie',
+    data:{
+      labels:['Corporate','SSC/BPO','Centers of Excellence','Segment/BU'],
+      datasets:[{
+        data:[13.3,10.2,4.5,3.5],
+        backgroundColor:['#002060','#0075BE','#00A3E0','#4DA3D4'],
+        borderColor:'#fff', borderWidth:3, hoverOffset:6
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{position:'bottom', labels:{font:{size:11}, padding:10, boxWidth:12}},
+        tooltip:{callbacks:{label:(c)=>' $'+[13.3,10.2,4.5,3.5][c.dataIndex]+'M ('+[42.25,32.31,14.17,11.26][c.dataIndex]+'%)'}}
+      }
+    }
+  });
+}
+
+// ============================================================
+// PROCESS DEEP-DIVE
+// ============================================================
+// === Stale functions removed: Cost Deep-Dive tab replaced with Finance Processes ===
+// Removed: initL1Bar(), initFteHcChart(), buildProcessList(), buildDrilldown(), closeDrill()
+
+// ============================================================
+// ORG & PEOPLE
+// ============================================================
+function buildOrgBars() {
+  const orgData = [
+    {name:'Controller, T&O & Corp Functions', hc:34, pct:'20.48%', color:'#002060'},
+    {name:'Controller Capital Markets',        hc:31, pct:'18.67%', color:'#0075BE'},
+    {name:'Controller & Compensation',         hc:29, pct:'17.47%', color:'#00A3E0'},
+    {name:'Control & Governance',              hc:26, pct:'15.66%', color:'#4DA3D4'},
+    {name:'CAG — Accounting Policy/Statutory', hc:16, pct:'9.64%',  color:'#E31837'},
+    {name:'Controller P&C Finance',            hc:12, pct:'7.23%',  color:'#C96B0E'},
+    {name:'CAG Parent Bank',                   hc:10, pct:'6.02%',  color:'#9CA3AF'},
+  ];
+  const wrap = document.getElementById('orgBars');
+  wrap.innerHTML = orgData.map(o=>`
+    <div class="org-bar">
+      <div class="org-name">${o.name}</div>
+      <div class="org-track">
+        <div class="org-fill" style="width:${o.hc/34*100}%;background:${o.color}">
+          <span class="org-fill-label">${o.hc}</span>
+        </div>
+      </div>
+      <div class="org-hc">${o.hc}</div>
+      <div class="org-pct">${o.pct}</div>
+    </div>
+  `).join('');
+}
+
+function initRoleChart() {
+  destroyChart('role');
+  const ctx = document.getElementById('chartRole').getContext('2d');
+  charts['role'] = new Chart(ctx, {
+    type:'bar',
+    data:{
+      labels:['Sr Analyst','Manager','Sr Manager','Director/MD'],
+      datasets:[
+        {label:'% of Cost', data:[20.1,22.0,27.1,30.7], backgroundColor:'rgba(0,117,190,0.85)', borderRadius:4, maxBarThickness:36},
+        {label:'% of FTE',  data:[33.5,26.1,19.7,10.1], backgroundColor:'rgba(0,32,96,0.25)',   borderRadius:4, maxBarThickness:36},
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{position:'top', labels:{font:{size:11}}}},
+      scales:{
+        x:{grid:{display:false}, ticks:{font:{size:11}}},
+        y:{grid:{color:'rgba(0,0,0,0.04)'}, ticks:{callback:(v)=>v+'%', font:{size:11}}}
+      }
+    }
+  });
+}
+
+function initTenureChart() {
+  destroyChart('tenure');
+  const ctx = document.getElementById('chartTenure').getContext('2d');
+  charts['tenure'] = new Chart(ctx, {
+    type:'bar',
+    data:{
+      labels:['>10 years','5–10 years','1–5 years','0–1 year','Unassigned'],
+      datasets:[
+        {label:'Dir/MD',     data:[15,7,3,0,0],  backgroundColor:'#002060', borderRadius:3, maxBarThickness:16},
+        {label:'Sr Mgr',     data:[19,4,20,10,0], backgroundColor:'#0075BE', borderRadius:3, maxBarThickness:16},
+        {label:'Manager',    data:[12,18,12,11,4], backgroundColor:'#00A3E0', borderRadius:3, maxBarThickness:16},
+        {label:'Sr Analyst', data:[9,3,15,7,26],  backgroundColor:'#4DA3D4', borderRadius:3, maxBarThickness:16},
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{position:'top', labels:{font:{size:10}, boxWidth:10}}},
+      scales:{
+        x:{stacked:true, grid:{display:false}, ticks:{font:{size:10.5}}},
+        y:{stacked:true, grid:{color:'rgba(0,0,0,0.04)'}, ticks:{font:{size:11}}}
+      }
+    }
+  });
+}
+
+function initLocationChart() {
+  destroyChart('location');
+  const ctx = document.getElementById('chartLocation').getContext('2d');
+  charts['location'] = new Chart(ctx, {
+    type:'bar',
+    data:{
+      labels:['Director/MD','Senior Manager','Manager','Sr Analyst'],
+      datasets:[
+        {label:'Canada', data:[17,40,30,66], backgroundColor:'rgba(0,117,190,0.85)', borderRadius:4, maxBarThickness:36},
+        {label:'US',     data:[13,17,12,0],  backgroundColor:'rgba(227,24,55,0.75)', borderRadius:4, maxBarThickness:36},
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{position:'top', labels:{font:{size:11}}}},
+      scales:{
+        x:{grid:{display:false}, ticks:{font:{size:11}}},
+        y:{grid:{color:'rgba(0,0,0,0.04)'}, ticks:{font:{size:11}}}
+      }
+    }
+  });
+}
+
+// ============================================================
+// ROADMAP CHARTS
+// ============================================================
+function initRoadmapCumulative() {
+  destroyChart('roadmapcum');
+  const ctx = document.getElementById('chartRoadmapCumulative').getContext('2d');
+  charts['roadmapcum'] = new Chart(ctx, {
+    type:'line',
+    data:{
+      labels:['Q2 2026','Q3 2026','Q4 2026','Q1 2027','Q2 2027','Q3 2027','Q4 2027','Q1 2028'],
+      datasets:[
+        {
+          label:'Cumulative Savings ($M)',
+          data:[0.5,2.5,4.5,6.5,8.5,10.0,11.5,13.1],
+          borderColor:BMO.blue, backgroundColor:'rgba(0,117,190,0.12)',
+          borderWidth:2.5, pointRadius:5, pointBackgroundColor:BMO.blue, tension:0.3, fill:true
+        },
+        {
+          label:'FTE Impact (Cumulative)',
+          data:[3,10,25,35,47,57,67,80],
+          borderColor:BMO.green, backgroundColor:'rgba(27,131,69,0.08)',
+          borderWidth:2, pointRadius:4, pointBackgroundColor:BMO.green, tension:0.3, fill:true, yAxisID:'y2'
+        }
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{position:'top', labels:{font:{size:11}}}},
+      scales:{
+        x:{grid:{display:false}, ticks:{font:{size:11}}},
+        y:{grid:{color:'rgba(0,0,0,0.04)'}, ticks:{callback:(v)=>'$'+v+'M', font:{size:11}}, position:'left'},
+        y2:{grid:{display:false}, ticks:{callback:(v)=>v+' FTE', font:{size:11}}, position:'right'}
+      }
+    }
+  });
+}
+
+function initKpiRadar() {
+  destroyChart('kpiradar');
+  const ctx = document.getElementById('chartKpiRadar').getContext('2d');
+  charts['kpiradar'] = new Chart(ctx, {
+    type:'radar',
+    data:{
+      labels:['Close Speed','Forecast Accuracy','Finance Cost Ratio','Data Quality','Control Strength','Business Partnering','Automation Rate'],
+      datasets:[
+        {label:'Current State',  data:[45,55,40,50,65,40,15], backgroundColor:'rgba(0,117,190,0.15)', borderColor:BMO.blue, borderWidth:2, pointRadius:4},
+        {label:'Future State',   data:[85,80,80,90,85,75,75], backgroundColor:'rgba(27,131,69,0.12)',  borderColor:BMO.green, borderWidth:2, pointRadius:4, borderDash:[5,3]},
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{position:'top', labels:{font:{size:11}}}},
+      scales:{r:{min:0,max:100, ticks:{font:{size:10}, stepSize:25, backdropColor:'transparent'}, pointLabels:{font:{size:11.5}}}}
+    }
+  });
+}
+
+// ============================================================
+// BENCHMARKS TAB CHARTS
+// ============================================================
+function initApqcBar() {
+  destroyChart('apqcbar');
+  const ctx = document.getElementById('chartApqcBar').getContext('2d');
+  const metrics = ['Finance Cost\n% Revenue','Close Cycle\nDays','FTE per\n$1B Revenue','Cost per\nFTE','Invoice\nCost','Planning\nCycle'];
+  // Score = 0-100 where 100 = top quartile achieved, 50 = median, 0 = bottom quartile
+  const current  = [45, 60, 65, 30, 40, 50]; // BMO estimated position
+  const target   = [90, 85, 85, 80, 85, 80]; // Post-transformation target
+  charts['apqcbar'] = new Chart(ctx, {
+    type:'bar',
+    data:{
+      labels: metrics,
+      datasets:[
+        {label:'BMO Current', data:current, backgroundColor:'rgba(227,24,55,0.75)', borderColor:'#E31837', borderWidth:1.5, borderRadius:4, maxBarThickness:32},
+        {label:'Target (Post-Transform)', data:target, backgroundColor:'rgba(27,131,69,0.75)', borderColor:'#1B8345', borderWidth:1.5, borderRadius:4, maxBarThickness:32},
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{position:'top', labels:{font:{size:11}}},
+        tooltip:{callbacks:{label:(c)=>' '+c.dataset.label+': '+c.parsed.y+'/100'}}
+      },
+      scales:{
+        x:{grid:{display:false}, ticks:{font:{size:10.5}}},
+        y:{min:0,max:100, grid:{color:'rgba(0,0,0,0.04)'}, ticks:{callback:(v)=>v, font:{size:11}},
+           title:{display:true, text:'Score (100 = Top Quartile)', font:{size:10.5}, color:'#6B7280'}}
+      }
+    }
+  });
+}
+
+function initPwcTimeChart() {
+  destroyChart('pwctime');
+  const ctx = document.getElementById('chartPwcTime').getContext('2d');
+  charts['pwctime'] = new Chart(ctx, {
+    type:'bar',
+    data:{
+      labels:['Transactional\n& Compliance','Control &\nReporting','Business\nPartnering','Strategic\nAnalysis'],
+      datasets:[
+        {label:'Median Finance Function', data:[38,30,22,10], backgroundColor:'rgba(0,117,190,0.75)', borderRadius:4, maxBarThickness:40},
+        {label:'Top Quartile (Leading Practice)', data:[18,22,35,25], backgroundColor:'rgba(27,131,69,0.75)', borderRadius:4, maxBarThickness:40},
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{position:'top', labels:{font:{size:11}}},
+        tooltip:{callbacks:{label:(c)=>' '+c.parsed.y+'% of finance time'}}
+      },
+      scales:{
+        x:{grid:{display:false}, ticks:{font:{size:10.5}}},
+        y:{grid:{color:'rgba(0,0,0,0.04)'}, ticks:{callback:(v)=>v+'%', font:{size:11}}, max:50}
+      }
+    }
+  });
+}
+
+function initGartnerAIChart() {
+  destroyChart('gartnerai');
+  const ctx = document.getElementById('chartGartnerAI').getContext('2d');
+  charts['gartnerai'] = new Chart(ctx, {
+    type:'doughnut',
+    data:{
+      labels:['Fully Deployed','Piloting / POC','Exploring / Planning','Not Started'],
+      datasets:[{
+        data:[18,46,28,8],
+        backgroundColor:['#1B8345','#0075BE','#C96B0E','#9CA3AF'],
+        borderColor:'#fff', borderWidth:3, hoverOffset:6
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false, cutout:'55%',
+      plugins:{
+        legend:{position:'bottom', labels:{font:{size:10.5}, padding:10, boxWidth:12}},
+        tooltip:{callbacks:{label:(c)=>' '+c.label+': '+c.parsed+'%'}}
+      }
+    }
+  });
+}
+
+function initMaturityChart() {
+  destroyChart('maturity');
+  const ctx = document.getElementById('chartMaturity').getContext('2d');
+  charts['maturity'] = new Chart(ctx, {
+    type:'bar',
+    data:{
+      labels:['Initial','Emerging','Developing','Advanced','Intelligent'],
+      datasets:[
+        {label:'% of Organisations (PwC 2024)', data:[12,31,28,22,7], backgroundColor:['#9CA3AF','#4DA3D4','#0075BE','#1B8345','#002060'], borderRadius:5, maxBarThickness:48},
+        {label:'Finance Cost Reduction vs. Initial', data:[0,8,18,38,52], backgroundColor:'rgba(227,24,55,0.15)', borderColor:'#E31837', borderWidth:1.5, borderRadius:5, maxBarThickness:48, type:'bar', yAxisID:'y2'},
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{position:'top', labels:{font:{size:10.5}}}},
+      scales:{
+        x:{grid:{display:false}, ticks:{font:{size:10.5}}},
+        y:{grid:{color:'rgba(0,0,0,0.04)'}, ticks:{callback:(v)=>v+'%', font:{size:10.5}}, title:{display:true,text:'% of Orgs',font:{size:10}}},
+        y2:{position:'right', grid:{display:false}, ticks:{callback:(v)=>v+'%', font:{size:10.5}}, title:{display:true,text:'Cost Reduction',font:{size:10}}, max:60}
+      }
+    }
+  });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', ()=>{
+  initCharts('overview');
+});
+</script>
+</body>
+</html>
