@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <title>Finance Agentic AI – Orchestrator (Demo)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://unpkg.com/jszip@3.10.1/dist/jszip.min.js"
+          integrity="sha384-+mbV2IY1Zk/X1p/nWllGySJSUN8uMs+gUAN10Or95UBH0fpj6GfKgPmgC5EXieXG"
+          crossorigin="anonymous"></script>
   <style>
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -244,6 +247,55 @@
       gap: 4px;
       align-items: baseline;
     }
+    .download-section {
+      margin-top: 28px;
+    }
+    .download-section .card {
+      padding: 20px 24px;
+    }
+    .download-section .card-title {
+      margin-bottom: 12px;
+    }
+    .file-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .file-chip {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid #1f2937;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .file-chip-icon {
+      font-size: 14px;
+    }
+    #download-progress {
+      font-size: 12px;
+      opacity: 0.75;
+      margin-top: 8px;
+      min-height: 18px;
+    }
+    #download-progress-bar-wrap {
+      background: #1f2937;
+      border-radius: 999px;
+      height: 6px;
+      margin-top: 6px;
+      overflow: hidden;
+      display: none;
+    }
+    #download-progress-bar {
+      height: 6px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #3b82f6, #22c1c3);
+      width: 0%;
+      transition: width 0.3s;
+    }
   </style>
 </head>
 <body>
@@ -338,6 +390,40 @@
           Use this panel to say: “This is the orchestration layer – every background call to SAP, FIS, BlackLine, Anaplan or Bedrock would be traceable here.”
         </div>
       </section>
+    </div>
+
+    <!-- BOTTOM: Download all files as ZIP -->
+    <div class="download-section">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">📦 Repository Files</div>
+            <div class="tiny-label">Download all Finance Automation assets as a single ZIP archive</div>
+          </div>
+          <div class="controls">
+            <button id="zip-download-btn">
+              ⬇ Download All (ZIP)
+            </button>
+          </div>
+        </div>
+        <div class="file-list" id="file-list">
+          <div class="file-chip"><span class="file-chip-icon">📊</span>BMO_Bank_Reconciliation_Functions_Complete.xlsx</div>
+          <div class="file-chip"><span class="file-chip-icon">📊</span>BMO_Controllership_FAA_Complete.xlsx</div>
+          <div class="file-chip"><span class="file-chip-icon">📊</span>EPM_WFP_Requirements_v1_2.xlsx</div>
+          <div class="file-chip"><span class="file-chip-icon">📊</span>Oracle_EPM_WFP_Integrated_v5.xlsx</div>
+          <div class="file-chip"><span class="file-chip-icon">📊</span>Oracle_EPM_WFP_Project_Plan_v3.xlsx</div>
+          <div class="file-chip"><span class="file-chip-icon">📊</span>PCC_Integrated_Diagnostic_JE_FAA_Rec_Correlation.xlsx</div>
+          <div class="file-chip"><span class="file-chip-icon">📄</span>FAA_Activity_Analysis (2).pdf</div>
+          <div class="file-chip"><span class="file-chip-icon">📄</span>PCC_JE Diagnostic.pdf</div>
+          <div class="file-chip"><span class="file-chip-icon">📄</span>PCC_Rec_Diagnostic.pdf</div>
+          <div class="file-chip"><span class="file-chip-icon">📄</span>rudra.pdf</div>
+          <div class="file-chip"><span class="file-chip-icon">📝</span>AssetMgt_ScenarioExample.md</div>
+        </div>
+        <div id="download-progress"></div>
+        <div id="download-progress-bar-wrap">
+          <div id="download-progress-bar"></div>
+        </div>
+      </div>
     </div>
   </main>
 
@@ -587,6 +673,87 @@
     // Initial load
     loadScenario("close_bmo");
     log("SYSTEM", "Demo ready. Choose a scenario and press 'Start Demo Run'.");
+
+    // ── ZIP & Download ──────────────────────────────────────────────────────────
+    const REPO_FILES = [
+      "BMO_Bank_Reconciliation_Functions_Complete.xlsx",
+      "BMO_Controllership_FAA_Complete.xlsx",
+      "EPM_WFP_Requirements_v1_2.xlsx",
+      "Oracle_EPM_WFP_Integrated_v5.xlsx",
+      "Oracle_EPM_WFP_Project_Plan_v3.xlsx",
+      "PCC_Integrated_Diagnostic_JE_FAA_Rec_Correlation.xlsx",
+      "FAA_Activity_Analysis (2).pdf",
+      "PCC_JE Diagnostic.pdf",
+      "PCC_Rec_Diagnostic.pdf",
+      "rudra.pdf",
+      "AssetMgt_ScenarioExample.md"
+    ];
+
+    const zipBtn = document.getElementById("zip-download-btn");
+    const dlProgress = document.getElementById("download-progress");
+    const dlBarWrap = document.getElementById("download-progress-bar-wrap");
+    const dlBar = document.getElementById("download-progress-bar");
+
+    // Duration (ms) to show a per-file fetch error before moving to the next file
+    const ERROR_DISPLAY_MS = 900;
+
+    // Encode a relative file path for use in a fetch URL while preserving path separators
+    function fileUrl(name) {
+      return name.split("/").map(encodeURIComponent).join("/");
+    }
+
+    function setProgress(msg, pct) {
+      dlProgress.textContent = msg;
+      if (pct !== undefined) {
+        dlBarWrap.style.display = "block";
+        dlBar.style.width = pct + "%";
+      }
+    }
+
+    zipBtn.addEventListener("click", async () => {
+      zipBtn.disabled = true;
+      setProgress("Initializing…", 0);
+
+      const zip = new JSZip();
+      const total = REPO_FILES.length;
+
+      for (let i = 0; i < total; i++) {
+        const filename = REPO_FILES[i];
+        setProgress(`Fetching ${i + 1}/${total}: ${filename}`, Math.round((i / total) * 80));
+        try {
+          const resp = await fetch(fileUrl(filename));
+          if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+          const blob = await resp.blob();
+          zip.file(filename, blob);
+        } catch (err) {
+          setProgress(`⚠ Could not fetch "${filename}" (${err.message}) – skipping.`);
+          await new Promise((r) => setTimeout(r, ERROR_DISPLAY_MS));
+        }
+      }
+
+      setProgress("Building ZIP archive…", 85);
+      const content = await zip.generateAsync({ type: "blob" }, (meta) => {
+        setProgress(`Compressing… ${Math.round(meta.percent)}%`, 85 + Math.round(meta.percent * 0.14));
+      });
+
+      setProgress("Starting download…", 99);
+      const url = URL.createObjectURL(content);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "Finance-Automation-Assets.zip";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      setProgress("✅ Download started!", 100);
+      zipBtn.disabled = false;
+      setTimeout(() => {
+        dlProgress.textContent = "";
+        dlBarWrap.style.display = "none";
+        dlBar.style.width = "0%";
+      }, 4000);
+    });
   </script>
 </body>
 </html>
