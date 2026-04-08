@@ -2,591 +2,476 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Finance Agentic AI – Orchestrator (Demo)</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finance 2030 | AEM Executive Workshop Deck</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      margin: 0;
-      background: #0b1020;
-      color: #f5f7ff;
+    :root {
+      --bg: #0b1020;
+      --bg2: #161f36;
+      --sage: #afbea5;
+      --warm: #d8cdb8;
+      --cyan: #67e8f9;
+      --line: rgba(255,255,255,0.14);
+      --text: #f8fafc;
+      --muted: #9ca3af;
     }
-    header {
-      padding: 24px 32px;
-      border-bottom: 1px solid #252b46;
-      background: radial-gradient(circle at top left, #203a9a 0, #0b1020 55%);
-    }
-    h1 {
-      margin: 0 0 8px;
-      font-size: 24px;
-    }
-    .subtitle {
-      font-size: 14px;
-      opacity: 0.8;
-    }
-    main {
-      padding: 24px 32px 40px;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-    .layout {
-      display: grid;
-      grid-template-columns: 2.1fr 1.2fr;
-      gap: 20px;
-    }
-    @media (max-width: 900px) {
-      .layout {
-        grid-template-columns: 1fr;
-      }
-    }
-    .card {
-      background: linear-gradient(145deg, #11152a, #050715);
-      border-radius: 16px;
-      padding: 16px 18px 18px;
-      border: 1px solid #252b46;
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
-    }
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 10px;
-      gap: 12px;
-    }
-    .card-title {
-      font-size: 15px;
-      font-weight: 600;
-    }
-    .tiny-label {
-      font-size: 11px;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      opacity: 0.7;
-      margin-top: 2px;
-    }
-    .scenario-tabs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 10px;
-    }
-    .scenario-tab {
-      border-radius: 999px;
-      border: 1px solid #374151;
-      padding: 5px 12px;
-      font-size: 12px;
-      cursor: pointer;
-      background: transparent;
-      color: #e5e7eb;
-      box-shadow: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .scenario-tab.active {
-      background: linear-gradient(135deg, #3b82f6, #22c1c3);
-      color: #030712;
-      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.55);
-      border-color: transparent;
-    }
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 4px;
-      font-size: 13px;
-      align-items: center;
-      justify-content: flex-end;
-    }
-    button {
-      border-radius: 999px;
-      border: none;
-      padding: 7px 16px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 500;
-      background: linear-gradient(135deg, #3b82f6, #22c1c3);
-      color: #030712;
-      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.55);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    button.secondary {
-      background: transparent;
-      color: #e5e7eb;
-      border: 1px solid #374151;
-      box-shadow: none;
-    }
-    button:disabled {
-      opacity: 0.55;
-      cursor: default;
-      box-shadow: none;
-    }
-    .summary {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 10px;
-      font-size: 12px;
-    }
-    .summary-pill {
-      border-radius: 999px;
-      padding: 5px 12px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid #1f2937;
-      display: flex;
-      gap: 6px;
-      align-items: baseline;
-    }
-    .summary-label {
-      opacity: 0.65;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    .summary-value {
-      font-weight: 600;
-      font-size: 13px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      font-size: 13px;
-    }
-    th, td {
-      padding: 8px 6px;
-      text-align: left;
-    }
-    th {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      opacity: 0.7;
-      border-bottom: 1px solid #1f2937;
-    }
-    tr:not(:last-child) td {
-      border-bottom: 1px solid #111827;
-    }
-    tr:nth-child(2n) {
-      background: rgba(15, 23, 42, 0.55);
-    }
-    .status-pill {
-      border-radius: 999px;
-      padding: 2px 8px;
-      font-size: 11px;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      font-weight: 500;
-    }
-    .status-pending {
-      background: rgba(31, 41, 55, 0.9);
-      color: #e5e7eb;
-    }
-    .status-running {
-      background: rgba(59, 130, 246, 0.18);
-      color: #bfdbfe;
-      border: 1px solid rgba(59, 130, 246, 0.7);
-    }
-    .status-completed {
-      background: rgba(16, 185, 129, 0.18);
-      color: #bbf7d0;
-      border: 1px solid rgba(16, 185, 129, 0.7);
-    }
-    .log-container {
-      max-height: 340px;
-      overflow-y: auto;
-      font-size: 12px;
-      padding-right: 4px;
-    }
-    .log-entry {
-      padding: 6px 6px 6px 0;
-      border-bottom: 1px dashed #1f2937;
-      display: flex;
-      gap: 6px;
-      align-items: flex-start;
-    }
-    .log-time {
-      font-size: 10px;
-      opacity: 0.6;
-      min-width: 52px;
-    }
-    .log-tag {
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      border-radius: 999px;
-      padding: 2px 6px;
-      background: rgba(15, 23, 42, 1);
-      border: 1px solid #1d283a;
-      opacity: 0.9;
-    }
-    .log-text {
-      flex: 1;
-    }
-    .badge {
-      font-size: 10px;
-      text-transform: uppercase;
-      padding: 2px 6px;
-      border-radius: 999px;
-      background: rgba(148, 163, 184, 0.15);
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      margin-right: 6px;
-    }
-    .hint {
-      font-size: 11px;
-      opacity: 0.7;
-      margin-top: 6px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-      align-items: baseline;
-    }
+    body { margin:0; font-family:Inter,sans-serif; color:var(--text); background: radial-gradient(circle at 10% 0%, #1f2f5f, #0b1020 40%, #090d17 100%); overflow:hidden; }
+    .deck { height:100vh; overflow-y:auto; scroll-snap-type:y mandatory; }
+    .slide { position:relative; min-height:100vh; scroll-snap-align:start; padding:4.25rem 5vw 2.5rem; border-bottom:1px solid var(--line); overflow:hidden; }
+    .hero-title, h2 { font-family:'Playfair Display', serif; letter-spacing:.1px; }
+    .glass { background:linear-gradient(155deg, rgba(17,24,39,.74), rgba(15,23,42,.56)); border:1px solid var(--line); border-radius:18px; backdrop-filter: blur(10px); box-shadow:0 22px 55px rgba(0,0,0,.34); }
+    .bento { display:grid; gap:12px; }
+    .pill { border-radius:999px; padding:.3rem .7rem; border:1px solid var(--line); font-size:.72rem; color:#cbd5e1; }
+    .kpi { background:linear-gradient(145deg, rgba(103,232,249,.15), rgba(175,190,165,.17)); border:1px solid rgba(103,232,249,.35); }
+    .region { cursor:pointer; transition:.25s; } .region:hover{ transform:scale(1.08); filter:drop-shadow(0 0 10px rgba(103,232,249,.7)); }
+    .draggable { cursor:grab; }
+    .progress-wrap { width:220px; height:8px; border-radius:999px; background:rgba(255,255,255,.16); overflow:hidden; }
+    .progress { height:100%; background:linear-gradient(90deg,#22d3ee,#34d399); width:0%; }
+    .navdot{ width:10px; height:10px; border-radius:50%; background:#64748b; margin:7px auto; display:block; transition:.2s; }
+    .navdot.active{ background:#67e8f9; box-shadow:0 0 0 6px rgba(103,232,249,.22); transform:scale(1.05); }
+    .orb { position:absolute; border-radius:50%; pointer-events:none; filter:blur(40px); opacity:.25; }
+    .ask-card { border-left:3px solid #22d3ee; background:rgba(15,23,42,.64); }
+    @media (max-width: 900px) { .slide{padding-top:5rem;} .hero-title{font-size:2.3rem!important;} }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Finance Agentic AI – Orchestrator (Demo)</h1>
-    <div class="subtitle">
-      Synthetic visualization of FinanceGPT orchestrating a <strong>BMO-style 7-day close</strong> and <strong>MD&amp;A automation</strong>.<br />
-      Use this to show which process is running, completed, and pending – same agentic fabric, different use cases.
-    </div>
-  </header>
+  <aside class="fixed right-3 top-1/2 -translate-y-1/2 z-50" aria-label="Slide navigation"><div id="dots"></div></aside>
+  <div class="fixed left-4 top-4 z-50 flex gap-2 items-center">
+    <button id="exportPdf" class="px-3 py-2 rounded-md bg-cyan-400 text-slate-900 font-semibold">Export PDF</button>
+    <button id="nextBtn" class="px-3 py-2 rounded-md glass">Next ▶</button>
+    <div class="progress-wrap"><div id="deckProgress" class="progress"></div></div>
+  </div>
 
-  <main>
-    <div class="layout">
-      <!-- LEFT: Workflow board -->
-      <section class="card">
-        <div class="card-header">
-          <div>
-            <div class="card-title">Workflow Status</div>
-            <div class="tiny-label" id="scenario-description">
-              Loading scenario…
-            </div>
-            <div class="scenario-tabs">
-              <button class="scenario-tab active" data-scenario="close_bmo">
-                7-Day Close (BMO-style)
-              </button>
-              <button class="scenario-tab" data-scenario="mda">
-                MD&amp;A Automation
-              </button>
-            </div>
-          </div>
-          <div class="controls">
-            <button id="start-btn">
-              ▶ Start Demo Run
-            </button>
-            <button id="reset-btn" class="secondary">
-              Reset
-            </button>
+  <main id="deck" class="deck" tabindex="0" aria-live="polite">
+
+    <!-- 1 HERO -->
+    <section class="slide" data-title="Welcome">
+      <div class="orb" style="width:320px;height:320px;background:#22d3ee;top:-60px;right:-60px"></div>
+      <div class="orb" style="width:300px;height:300px;background:#f59e0b;bottom:-80px;left:-70px"></div>
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+        <span class="pill">Finance 2030 | Executive Workshop | 2:00–5:00 PM</span>
+        <span class="pill">EN / FR hints enabled</span>
+      </div>
+      <h1 class="hero-title text-5xl md:text-6xl font-bold mb-4">Agentic AI-Powered Finance Transformation for Agnico Eagle</h1>
+      <p class="text-cyan-200 text-xl mb-7">Global Operations, Canadian Strength — designed for CFO-level decisions on ROI, risk, and growth.</p>
+
+      <div class="grid md:grid-cols-4 gap-3 mb-5">
+        <div class="glass p-4"><p class="text-xs text-slate-400">Core Canada Lens</p><p class="text-lg font-semibold">Quebec, Ontario, Nunavut</p></div>
+        <div class="glass p-4"><p class="text-xs text-slate-400">Global Sites</p><p class="text-lg font-semibold">Mexico, Finland, Australia</p></div>
+        <div class="glass p-4"><p class="text-xs text-slate-400">Session Goal</p><p class="text-lg font-semibold">3-Year Finance Vision</p></div>
+        <div class="glass p-4"><p class="text-xs text-slate-400">Outcome</p><p class="text-lg font-semibold">Prioritized Roadmap</p></div>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="glass p-4">
+          <h3 class="font-semibold mb-2">Participant QR login</h3>
+          <div id="loginQR" class="inline-block bg-white rounded p-2"></div>
+          <div class="mt-2 flex gap-2"><input id="roleInput" class="flex-1 p-2 rounded text-slate-900" placeholder="Role (CFO, Finance Director, Controller...)" /><button id="saveRole" class="px-3 py-2 rounded bg-emerald-400 text-slate-900 font-semibold">Save</button></div>
+          <p id="roleEcho" class="text-sm text-emerald-200 mt-2"></p>
+        </div>
+        <div class="glass p-4">
+          <h3 class="font-semibold">Agenda timeline animation</h3>
+          <div class="mt-3 h-2 rounded bg-slate-700"><div id="timelineBar" class="h-2 rounded bg-cyan-400 w-0"></div></div>
+          <p class="text-sm text-slate-300 mt-2">Use keyboard ↑/↓ to navigate. Appuyez sur les flèches pour naviguer.</p>
+          <p class="text-sm text-slate-400 mt-2">Facilitator cue: “What one decision must this workshop unlock today?”</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 MAP -->
+    <section class="slide" data-title="Global Footprint">
+      <h2 class="text-4xl font-bold mb-4">AEM global operating model and regional challenge map</h2>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="glass p-4">
+          <svg viewBox="0 0 900 420" class="w-full">
+            <rect width="900" height="420" fill="#0d1527"/>
+            <circle class="region" cx="190" cy="130" r="13" fill="#22d3ee" data-tip="Canada (LaRonde, Malartic, Goldex, Meliadine, Meadowbank, Detour, Macassa): permitting, Indigenous partnerships, remote site economics."/>
+            <circle class="region" cx="205" cy="205" r="11" fill="#f59e0b" data-tip="Mexico (Pinos Altos): FX volatility, inflation pressure, treasury hedging cadence."/>
+            <circle class="region" cx="515" cy="108" r="11" fill="#34d399" data-tip="Finland (Kittila): energy intensity and predictive maintenance opportunities."/>
+            <circle class="region" cx="700" cy="275" r="11" fill="#f472b6" data-tip="Australia (Fosterville): labor competition and unit-cost productivity pressure."/>
+            <text x="220" y="130" fill="white">Canada-heavy production footprint</text>
+          </svg>
+          <p id="mapTip" class="text-cyan-200 mt-2">Click markers to reveal regional risk and value focus.</p>
+        </div>
+        <div class="glass p-4">
+          <h3 class="text-xl font-semibold mb-2">Market and policy pulse</h3>
+          <ul class="list-disc pl-5 space-y-2 text-slate-200">
+            <li>Critical minerals demand (lithium/copper) projected +3x to +90x by 2050.</li>
+            <li>Canada funding tailwinds: CAD 1.5B First & Last Mile + CAD 2B Sovereign Critical Minerals fund.</li>
+            <li>Mining labor gap forecast: 100k–220k hires needed by 2033.</li>
+            <li>AISC inflation pressure: approximately +6.25% YoY across complex operating contexts.</li>
+            <li>Peer archetype benchmark: efficiency programs linked to up to ~30% EBITDA uplift.</li>
+          </ul>
+          <div class="ask-card rounded-xl p-3 mt-3"><strong>Executive question:</strong> Where should AEM centralize vs localize finance decisions across four countries?</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 RECAP -->
+    <section class="slide" data-title="Recap">
+      <h2 class="text-4xl font-bold mb-4">Recap: what we learned, what moved, what remains</h2>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="glass p-4"><h3 class="font-semibold">Opportunities identified</h3><p>R2R close fragmentation, manual journals, FX reconciliation latency, uneven policy adherence.</p></div>
+        <div class="glass p-4"><h3 class="font-semibold">Current status at AEM</h3><p>Foundational governance and selected automations started; scale and consistency not yet enterprise-wide.</p></div>
+        <div class="glass p-4"><h3 class="font-semibold">Lesson learned</h3><p>Value realization requires synchronized change in talent, process, data, and platform governance.</p></div>
+      </div>
+      <div class="grid md:grid-cols-2 gap-4 mt-4">
+        <div class="glass p-4"><h3 class="font-semibold">Pulse survey QR</h3><div id="surveyQR1" class="bg-white p-2 inline-block rounded"></div></div>
+        <div class="ask-card rounded-xl p-4"><strong>Facilitator prompt:</strong> Which prior recommendation has the highest missed-opportunity cost if deferred by 12 months?</div>
+      </div>
+    </section>
+
+    <!-- 4 SURVEY -->
+    <section class="slide" data-title="Pain Point Survey">
+      <h2 class="text-4xl font-bold mb-4">Live pain-point survey (taxonomy-aligned)</h2>
+      <div class="grid md:grid-cols-2 gap-4">
+        <form id="painForm" class="glass p-4 space-y-3">
+          <label class="block">Top pain point
+            <select id="painSelect" class="w-full p-2 rounded text-slate-900">
+              <option>Record to Report: manual journal entries</option>
+              <option>Acquire to Retire: impairment latency</option>
+              <option>FP&A: forecast accuracy under commodity volatility</option>
+              <option>Treasury: multi-currency cash visibility</option>
+              <option>Tax & Compliance: Canadian multi-jurisdiction complexity</option>
+              <option>Investor Relations: narrative reporting cycle time</option>
+              <option>Source to Pay: remote supply disruption</option>
+            </select>
+          </label>
+          <label class="block">ERP/EPM maturity (1-5)
+            <input id="maturity" type="range" min="1" max="5" value="3" class="w-full" />
+          </label>
+          <label class="block">Open comment / Commentaire libre
+            <textarea id="openTxt" class="w-full rounded p-2 text-slate-900" placeholder="Example: Nunavut contractor cost variance + FX translation lag"></textarea>
+          </label>
+          <button type="submit" class="px-3 py-2 rounded bg-cyan-400 text-slate-900 font-semibold">Submit response</button>
+        </form>
+        <div class="glass p-4">
+          <canvas id="painChart" height="210" aria-label="Pain point chart"></canvas>
+          <p id="themesOut" class="text-cyan-200 text-sm mt-3"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 PRIORITIZATION -->
+    <section class="slide" data-title="Prioritization">
+      <h2 class="text-4xl font-bold mb-4">Opportunity selection: pick top 3–5 priorities</h2>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="glass p-4">
+          <h3 class="font-semibold mb-2">Drag from taxonomy pool</h3>
+          <div id="pool" class="space-y-2 min-h-56">
+            <div class="draggable p-2 rounded bg-slate-700">Sourced: AP invoice validation automation</div>
+            <div class="draggable p-2 rounded bg-slate-700">Retained: policy governance and controls</div>
+            <div class="draggable p-2 rounded bg-slate-700">Treasury: centralized FX exposure cockpit</div>
+            <div class="draggable p-2 rounded bg-slate-700">FP&A: site-level margin planning by asset</div>
+            <div class="draggable p-2 rounded bg-slate-700">Tax/ESG: Impact Assessment Act evidence trail</div>
           </div>
         </div>
-
-        <div class="summary">
-          <div class="summary-pill">
-            <span class="summary-label">Total Steps</span>
-            <span class="summary-value" id="summary-total">0</span>
-          </div>
-          <div class="summary-pill">
-            <span class="summary-label">Completed</span>
-            <span class="summary-value" id="summary-completed">0</span>
-          </div>
-          <div class="summary-pill">
-            <span class="summary-label">Running</span>
-            <span class="summary-value" id="summary-running">0</span>
-          </div>
-          <div class="summary-pill">
-            <span class="summary-label">Pending</span>
-            <span class="summary-value" id="summary-pending">0</span>
-          </div>
+        <div class="glass p-4">
+          <h3 class="font-semibold mb-2">Selected now</h3>
+          <div id="selected" class="space-y-2 min-h-56 border border-dashed border-cyan-300 rounded p-2"></div>
+          <p class="text-sm text-slate-300 mt-2">Filters: Canada core / global comparator / quick-win / strategic bet.</p>
         </div>
+      </div>
+    </section>
 
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Process Step</th>
-              <th>Owner</th>
-              <th>ETA (synthetic)</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="steps-body"></tbody>
-        </table>
+    <!-- 6 ART OF POSSIBLE -->
+    <section class="slide" data-title="Art of Possible">
+      <h2 class="text-4xl font-bold mb-4">Art of possible: AI, GenAI, and finance platform trajectory</h2>
+      <div class="grid md:grid-cols-4 gap-3">
+        <div class="kpi rounded-xl p-4"><p class="text-xs text-slate-300">CFO pulse</p><p class="text-3xl font-bold">57%</p><p class="text-sm">strategy changes due to tariffs and macro shifts</p></div>
+        <div class="kpi rounded-xl p-4"><p class="text-xs text-slate-300">FP&A time allocation</p><p class="text-3xl font-bold">58%</p><p class="text-sm">increased focus on planning & analysis</p></div>
+        <div class="kpi rounded-xl p-4"><p class="text-xs text-slate-300">GenAI investment</p><p class="text-3xl font-bold">45%</p><p class="text-sm">leaders accelerating AI programs</p></div>
+        <div class="kpi rounded-xl p-4"><p class="text-xs text-slate-300">Decision speed potential</p><p class="text-3xl font-bold">75%</p><p class="text-sm">faster cycle through AI augmentation</p></div>
+      </div>
+      <div class="ask-card rounded-xl p-3 mt-4"><strong>Executive question:</strong> Which two decisions should become “always-on” at AEM: capital allocation, working capital, or cost controls?</div>
+    </section>
 
-        <div class="hint">
-          <span class="badge">How to narrate</span>
-          <span id="scenario-hint-text">
-            Each step is an agent or micro-workflow. In production, the status would be driven by events from core finance systems.
-          </span>
-        </div>
-      </section>
+    <!-- 7 Oracle EPM -->
+    <section class="slide" data-title="Oracle EPM">
+      <h2 class="text-4xl font-bold mb-4">Oracle EPM modernization play (People, Process, Performance)</h2>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="glass p-4"><h3 class="font-semibold">People (SWP)</h3><p>Role-based workforce planning for remote operations, labor risk modeling, and succession pipeline.</p></div>
+        <div class="glass p-4"><h3 class="font-semibold">Process (EPBCS)</h3><p>Driver-based planning and integrated budgeting for site, function, and corporate scenarios.</p></div>
+        <div class="glass p-4"><h3 class="font-semibold">Performance (Narrative)</h3><p>Automated insight packs for CFO, board, and investor stakeholders with audit-ready traceability.</p></div>
+      </div>
+      <div class="glass p-4 mt-4"><strong>Expected value band:</strong> 40–60% cycle reduction archetype + improved control confidence + faster executive alignment.</div>
+    </section>
 
-      <!-- RIGHT: Agent log -->
-      <section class="card">
-        <div class="card-header">
-          <div>
-            <div class="card-title">Agent Activity Log</div>
-            <div class="tiny-label">What the CFO sees as the ‘brain’ of FinanceGPT</div>
-          </div>
+    <!-- 8 DASHBOARD -->
+    <section class="slide" data-title="Dashboard Demo">
+      <h2 class="text-4xl font-bold mb-4">Interactive CFO dashboard mock</h2>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="glass p-4"><canvas id="closeChart" height="190"></canvas></div>
+        <div class="glass p-4"><canvas id="siteChart" height="190"></canvas></div>
+      </div>
+    </section>
+
+    <!-- 9 before after -->
+    <section class="slide" data-title="Before-After">
+      <h2 class="text-4xl font-bold mb-4">Before/after transformation slider</h2>
+      <input id="stateSlider" type="range" min="0" max="100" value="22" class="w-full" />
+      <div class="grid md:grid-cols-2 gap-4 mt-4">
+        <div class="glass p-4"><h3 class="font-semibold">Legacy</h3><p id="legacyText">Spreadsheet-driven FX and intercompany reconciliations with high manual effort.</p></div>
+        <div class="glass p-4"><h3 class="font-semibold">Future state</h3><p id="futureText">Early-stage automation, periodic insight latency.</p></div>
+      </div>
+    </section>
+
+    <!-- 10 AI MODEL -->
+    <section class="slide" data-title="AI Operating Model">
+      <h2 class="text-4xl font-bold mb-4">Agentic AI finance operating model</h2>
+      <div class="glass p-4">
+        <p>Orchestrator decomposes objective → specialist agents execute (Reconciliation, Forecasting, Treasury, Compliance, Narrative) → evidence repository + policy guardrails → human approval.</p>
+        <div class="grid md:grid-cols-5 gap-2 mt-3 text-center">
+          <div class="p-2 rounded bg-slate-700">Intake</div>
+          <div class="p-2 rounded bg-slate-700">Plan</div>
+          <div class="p-2 rounded bg-slate-700">Execute</div>
+          <div class="p-2 rounded bg-slate-700">Validate</div>
+          <div class="p-2 rounded bg-slate-700">Approve</div>
         </div>
-        <div id="log" class="log-container"></div>
-        <div class="hint">
-          <span class="badge">Narration</span>
-          Use this panel to say: “This is the orchestration layer – every background call to SAP, FIS, BlackLine, Anaplan or Bedrock would be traceable here.”
+      </div>
+    </section>
+
+    <!-- 11 AI DEMO -->
+    <section class="slide" data-title="AI Copilot">
+      <h2 class="text-4xl font-bold mb-4">AI copilot demo (mock RAG)</h2>
+      <div class="glass p-4">
+        <input id="chatInput" class="w-full p-2 rounded text-slate-900" value="Forecast headcount for Nunavut amid labor shortages by 2027" />
+        <button id="askBtn" class="mt-2 px-3 py-2 rounded bg-cyan-400 text-slate-900">Run query</button>
+        <pre id="chatOut" class="text-cyan-100 mt-3 whitespace-pre-wrap"></pre>
+      </div>
+    </section>
+
+    <!-- 12 CHANGE -->
+    <section class="slide" data-title="Culture & Change">
+      <h2 class="text-4xl font-bold mb-4">Culture change and adoption strategy</h2>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="glass p-4"><h3 class="font-semibold">Readiness quiz QR</h3><div id="surveyQR2" class="bg-white p-2 inline-block rounded"></div><p class="mt-2">Target: move finance SMEs toward 80% strategic decision support contribution.</p></div>
+        <div class="glass p-4"><ul class="list-disc pl-5 space-y-1"><li>AI literacy academy and role pathways</li><li>Cross-country change champion network</li><li>Adoption KPIs: usage, quality, cycle-time, confidence</li></ul></div>
+      </div>
+    </section>
+
+    <!-- 13 roadmap -->
+    <section class="slide" data-title="3-Year Adoption Roadmap">
+      <h2 class="text-4xl font-bold mb-4">Technology adoption roadmap (drag to refine)</h2>
+      <div id="roadmap" class="glass p-4 grid md:grid-cols-3 gap-2">
+        <div class="draggable p-3 rounded bg-slate-700">Year 1: Data standards + process harmonization</div>
+        <div class="draggable p-3 rounded bg-slate-700">Year 2: Scale agentic workflows + SWP</div>
+        <div class="draggable p-3 rounded bg-slate-700">Year 3: Continuous controls + autonomous insighting</div>
+      </div>
+    </section>
+
+    <!-- 14 ROI -->
+    <section class="slide" data-title="ROI">
+      <h2 class="text-4xl font-bold mb-4">ROI calculator (executive lens)</h2>
+      <div class="glass p-4">
+        <div class="flex flex-wrap gap-3 items-center">
+          <label>Finance OPEX (CAD M): <input id="opex" type="number" value="120" class="p-1 rounded text-slate-900 w-24" /></label>
+          <label>Efficiency gain %: <input id="eff" type="number" value="25" class="p-1 rounded text-slate-900 w-20" /></label>
+          <label>Implementation cost (CAD M): <input id="impl" type="number" value="28" class="p-1 rounded text-slate-900 w-20" /></label>
+          <button id="calcRoi" class="px-3 py-2 rounded bg-emerald-400 text-slate-900 font-semibold">Compute</button>
         </div>
-      </section>
-    </div>
+        <p id="roiOut" class="text-cyan-200 mt-3"></p>
+      </div>
+    </section>
+
+    <!-- 15 governance -->
+    <section class="slide" data-title="Governance"><h2 class="text-4xl font-bold mb-4">AI governance, risk, and controls</h2><div class="glass p-4">NIST-aligned controls, model risk inventory, policy-as-code checks, and human override paths for high-impact decisions.</div></section>
+
+    <!-- 16-20 agenda sections -->
+    <section class="slide" data-title="Vision Setting"><h2 class="text-4xl font-bold mb-4">3:30–4:00 | Set finance vision and objectives</h2><div class="ask-card rounded-xl p-4">Question 1: What should AEM finance stop doing? Question 2: What should AEM finance uniquely own?</div></section>
+    <section class="slide" data-title="Opportunity Lab"><h2 class="text-4xl font-bold mb-4">4:00–4:30 | Opportunities identification workshop</h2><div class="glass p-4">Build short list of opportunities across taxonomy with clear owner, value, and risk tags.</div></section>
+    <section class="slide" data-title="Impact Matrix"><h2 class="text-4xl font-bold mb-4">Impact / effort prioritization</h2><canvas id="matrixChart" class="glass p-2" height="190"></canvas></section>
+    <section class="slide" data-title="Roadmap Development"><h2 class="text-4xl font-bold mb-4">4:30–5:00 | Preliminary roadmap development</h2><div class="glass p-4">Outcome package: 90-day quick wins + 12-month platform scale + 3-year transformation arc.</div></section>
+    <section class="slide" data-title="Wrap-Up"><h2 class="text-4xl font-bold mb-4">Executive wrap-up and commitments</h2><div class="glass p-4">Commit owners, sequence value waves, establish steering cadence, and align operating model decisions.</div></section>
+
+    <!-- 21 KPI -->
+    <section class="slide" data-title="Future-of-Finance KPI Examples">
+      <h2 class="text-4xl font-bold mb-4">AI future-of-finance KPI examples</h2>
+      <div class="grid md:grid-cols-3 gap-3">
+        <div class="kpi p-4 rounded-xl">Close cycle: <strong>8.5 → 4.0 days</strong></div>
+        <div class="kpi p-4 rounded-xl">Forecast accuracy: <strong>+12 to +18 points</strong></div>
+        <div class="kpi p-4 rounded-xl">Control exceptions: <strong>-35%</strong></div>
+      </div>
+    </section>
+
+    <!-- 22 Deployment -->
+    <section class="slide" data-title="Deployment">
+      <h2 class="text-4xl font-bold mb-4">Deployment note</h2>
+      <div class="glass p-4">Open <code>INDEX.HTML</code> in any modern browser or host on GitHub Pages for workshop-ready distribution.</div>
+    </section>
   </main>
 
   <script>
-    const scenarios = {
-      close_bmo: {
-        label: "7-Day Close (BMO-style)",
-        description:
-          "BMO-style 7-day financial close – from pre-close checks through SAP / FIS / BlackLine / Anaplan to CFO pack publishing.",
-        hint:
-          "Each row is a micro-agent in the 7-day close. In production, status would be driven by SAP S/4HANA, FIS, BlackLine and Anaplan events in real time.",
-        steps: [
-          {
-            name: "Day 0 – Pre-close readiness (open items, interface health, freeze calendar)",
-            owner: "R2R / GL Operations"
-          },
-          {
-            name: "Day 1 – Ingest SAP S/4HANA actuals (GL, products, cost centres)",
-            owner: "GL / Finance Technology"
-          },
-          {
-            name: "Day 1 – Load FIS consolidated trial balance & eliminations",
-            owner: "Consolidation (FIS)"
-          },
-          {
-            name: "Day 2 – BlackLine balance sheet reconciliations & certification status",
-            owner: "R2R / Financial Controls"
-          },
-          {
-            name: "Day 3 – Intercompany, FX & hedge result validation",
-            owner: "Treasury / R2R"
-          },
-          {
-            name: "Day 4 – Anaplan budget & forecast alignment by segment / product",
-            owner: "FP&A / Segment Finance"
-          },
-          {
-            name: "Day 5 – Variance and driver analysis (Retail, Wealth, Capital Markets, US vs CA)",
-            owner: "FP&A / Business Finance"
-          },
-          {
-            name: "Day 6 – MD&A inputs and regulatory metrics assembly (OSFI, IFRS, capital & liquidity)",
-            owner: "Corp Finance / Reg Reporting"
-          },
-          {
-            name: "Day 7 – CFO sign-off, Board pack & dashboard publication",
-            owner: "CFO Office / BI"
-          }
-        ]
-      },
-      mda: {
-        label: "MD&A Automation",
-        description:
-          "MD&A automation pipeline – from prior narrative ingestion and policies to CFO-reviewed disclosure, using the same agentic fabric.",
-        hint:
-          "Here the same orchestration fabric focuses on MD&A: pulling data, assembling narrative, applying policy checks and routing for CFO review.",
-        steps: [
-          {
-            name: "Ingest prior-period MD&A, disclosure checklists and style guide",
-            owner: "Corp Finance"
-          },
-          {
-            name: "Pull current quarter SAP / FIS financials (P&L, BS, key ratios)",
-            owner: "GL / Consolidation"
-          },
-          {
-            name: "Ingest risk, capital, liquidity and funding metrics (OSFI / internal dashboards)",
-            owner: "Treasury / Risk / Capital Management"
-          },
-          {
-            name: "Generate draft MD&A narrative by segment and key themes",
-            owner: "FinanceGPT Agent"
-          },
-          {
-            name: "Apply policy, disclosure and wording checks vs OSFI / internal playbook",
-            owner: "Reg Reporting / Policy Office"
-          },
-          {
-            name: "Produce redline vs prior MD&A and highlight material changes",
-            owner: "Corp Finance"
-          },
-          {
-            name: "Route for CFO / Controller review, capture comments and produce final pack",
-            owner: "CFO Office / Corp Finance"
-          }
-        ]
-      }
-    };
+    const deck = document.getElementById('deck');
+    const slides = [...document.querySelectorAll('.slide')];
+    const dots = document.getElementById('dots');
+    const deckProgress = document.getElementById('deckProgress');
+    let idx = 0;
 
-    let currentScenarioKey = "close_bmo";
-    let steps = [];
-    let stepStatus = [];
-    let currentIndex = -1;
-    let timer = null;
-
-    const stepsBody = document.getElementById("steps-body");
-    const summaryTotal = document.getElementById("summary-total");
-    const summaryCompleted = document.getElementById("summary-completed");
-    const summaryRunning = document.getElementById("summary-running");
-    const summaryPending = document.getElementById("summary-pending");
-    const logContainer = document.getElementById("log");
-    const startBtn = document.getElementById("start-btn");
-    const resetBtn = document.getElementById("reset-btn");
-    const scenarioDescription = document.getElementById("scenario-description");
-    const scenarioHintText = document.getElementById("scenario-hint-text");
-    const scenarioTabs = document.querySelectorAll(".scenario-tab");
-
-    function log(tag, text) {
-      const now = new Date();
-      const time = now.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit"
-      });
-
-      const entry = document.createElement("div");
-      entry.className = "log-entry";
-
-      entry.innerHTML = `
-        <div class="log-time">${time}</div>
-        <div class="log-tag">${tag}</div>
-        <div class="log-text">${text}</div>
-      `;
-
-      logContainer.prepend(entry);
-    }
-
-    function updateSummary() {
-      const total = steps.length;
-      const completed = stepStatus.filter((s) => s === "completed").length;
-      const running = stepStatus.filter((s) => s === "running").length;
-      const pending = stepStatus.filter((s) => s === "pending").length;
-
-      summaryTotal.textContent = total;
-      summaryCompleted.textContent = completed;
-      summaryRunning.textContent = running;
-      summaryPending.textContent = pending;
-    }
-
-    function renderSteps() {
-      stepsBody.innerHTML = "";
-      steps.forEach((step, idx) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${idx + 1}</td>
-          <td>${step.name}</td>
-          <td>${step.owner}</td>
-          <td>${10 + idx * 3}–${15 + idx * 4} sec</td>
-          <td>
-            <span class="status-pill status-pending" data-status-index="${idx}">
-              Pending
-            </span>
-          </td>
-        `;
-        stepsBody.appendChild(tr);
-      });
-      stepStatus = steps.map(() => "pending");
-      currentIndex = -1;
-      updateSummary();
-    }
-
-    function setStatus(index, status) {
-      stepStatus[index] = status;
-      const pill = document.querySelector(
-        `.status-pill[data-status-index="${index}"]`
-      );
-      if (!pill) return;
-      pill.className = "status-pill";
-      if (status === "pending") {
-        pill.classList.add("status-pending");
-        pill.textContent = "Pending";
-      } else if (status === "running") {
-        pill.classList.add("status-running");
-        pill.textContent = "Running";
-      } else if (status === "completed") {
-        pill.classList.add("status-completed");
-        pill.textContent = "Completed";
-      }
-      updateSummary();
-    }
-
-    function resetWorkflow() {
-      if (timer) {
-        clearInterval(timer);
-        timer = null;
-      }
-      steps.forEach((_, idx) => setStatus(idx, "pending"));
-      currentIndex = -1;
-      startBtn.disabled = false;
-      log("SYSTEM", "Workflow reset to initial state.");
-    }
-
-    function startDemo() {
-      if (timer) return;
-      resetWorkflow();
-      const scenario = scenarios[currentScenarioKey];
-      log("SYSTEM", `Starting "${scenario.label}" synthetic run.`);
-      startBtn.disabled = true;
-
-      timer = setInterval(() => {
-        // Complete previous running step
-        if (currentIndex >= 0 && currentIndex < steps.length) {
-          setStatus(currentIndex, "completed");
-          log("STEP", `Completed: ${steps[currentIndex].name}`);
-        }
-
-        currentIndex += 1;
-
-        if (currentIndex >= steps.length) {
-          clearInterval(timer);
-          timer = null;
-          startBtn.disabled = false;
-          log("SYSTEM", "All steps completed. Synthetic workflow finished.");
-          return;
-        }
-
-        // Start next step
-        setStatus(currentIndex, "running");
-        log(
-          "AGENT",
-          `Executing: ${steps[currentIndex].name} · Owner: ${steps[currentIndex].owner}`
-        );
-      }, 2000); // adjust speed by changing this interval (ms)
-    }
-
-    function loadScenario(key) {
-      const scenario = scenarios[key];
-      currentScenarioKey = key;
-      steps = scenario.steps;
-      renderSteps();
-      scenarioDescription.textContent = scenario.description;
-      scenarioHintText.textContent = scenario.hint;
-      log("SYSTEM", `Scenario loaded: ${scenario.label}`);
-    }
-
-    startBtn.addEventListener("click", startDemo);
-    resetBtn.addEventListener("click", resetWorkflow);
-
-    scenarioTabs.forEach((tab) => {
-      tab.addEventListener("click", () => {
-        scenarioTabs.forEach((t) => t.classList.remove("active"));
-        tab.classList.add("active");
-        loadScenario(tab.dataset.scenario);
-      });
+    slides.forEach((s, i) => {
+      const dot = document.createElement('a');
+      dot.className = 'navdot';
+      dot.href = '#';
+      dot.onclick = (e) => { e.preventDefault(); go(i); };
+      dots.appendChild(dot);
     });
 
-    // Initial load
-    loadScenario("close_bmo");
-    log("SYSTEM", "Demo ready. Choose a scenario and press 'Start Demo Run'.");
+    function syncUi() {
+      [...dots.children].forEach((d, i) => d.classList.toggle('active', i === idx));
+      deckProgress.style.width = `${((idx + 1) / slides.length) * 100}%`;
+    }
+
+    function go(i) {
+      idx = Math.max(0, Math.min(slides.length - 1, i));
+      slides[idx].scrollIntoView({ behavior: 'smooth' });
+      syncUi();
+    }
+
+    document.getElementById('nextBtn').onclick = () => go(idx + 1);
+    deck.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown') go(idx + 1);
+      if (e.key === 'ArrowUp') go(idx - 1);
+    });
+    deck.addEventListener('scroll', () => {
+      idx = Math.round(deck.scrollTop / window.innerHeight);
+      syncUi();
+    });
+    syncUi();
+
+    gsap.to('#timelineBar', { width: '100%', duration: 6, repeat: -1, ease: 'none' });
+
+    // QR blocks
+    new QRCode(document.getElementById('loginQR'), { text: 'https://aem-finance2030.local/login', width: 100, height: 100 });
+    new QRCode(document.getElementById('surveyQR1'), { text: 'https://forms.gle/finance2030-pulse', width: 95, height: 95 });
+    new QRCode(document.getElementById('surveyQR2'), { text: 'https://forms.gle/finance2030-culture', width: 95, height: 95 });
+
+    document.getElementById('saveRole').onclick = () => {
+      const role = document.getElementById('roleInput').value || 'Participant';
+      localStorage.setItem('aemRole', role);
+      document.getElementById('roleEcho').textContent = `Welcome, ${role}. Slides now emphasize ${role} decisions.`;
+    };
+
+    // regional markers
+    document.querySelectorAll('.region').forEach(n => {
+      n.addEventListener('click', () => document.getElementById('mapTip').textContent = n.dataset.tip);
+    });
+
+    // pain chart
+    const painState = {
+      labels: ['R2R', 'A2R', 'FP&A', 'Treasury', 'Tax', 'IR', 'S2P'],
+      datasets: [{ data: [5, 3, 6, 4, 5, 2, 4], backgroundColor: '#67e8f9' }]
+    };
+    const painChart = new Chart(document.getElementById('painChart'), {
+      type: 'bar',
+      data: painState,
+      options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { color: '#cbd5e1' } }, x: { ticks: { color: '#cbd5e1' } } } }
+    });
+    const themes = [];
+    document.getElementById('painForm').onsubmit = (e) => {
+      e.preventDefault();
+      const i = document.getElementById('painSelect').selectedIndex;
+      painState.datasets[0].data[i] += 1;
+      painChart.update();
+      const txt = document.getElementById('openTxt').value.trim();
+      if (txt) themes.push(txt);
+      document.getElementById('themesOut').textContent = `Live themes: ${themes.slice(-4).join(' | ') || 'No open comments yet.'}`;
+    };
+
+    // drag/drop
+    Sortable.create(document.getElementById('pool'), { group: 'shared', animation: 150 });
+    Sortable.create(document.getElementById('selected'), { group: 'shared', animation: 150 });
+    Sortable.create(document.getElementById('roadmap'), { animation: 150 });
+
+    // charts
+    new Chart(document.getElementById('closeChart'), {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{ label: 'Financial close days', data: [8.8, 8.2, 7.6, 6.4, 5.5, 4.9], borderColor: '#34d399', tension: .35 }]
+      },
+      options: { plugins: { legend: { labels: { color: '#cbd5e1' } } }, scales: { y: { ticks: { color: '#cbd5e1' } }, x: { ticks: { color: '#cbd5e1' } } } }
+    });
+
+    new Chart(document.getElementById('siteChart'), {
+      type: 'radar',
+      data: {
+        labels: ['Nunavut', 'Quebec', 'Ontario', 'Finland', 'Mexico', 'Australia'],
+        datasets: [{ label: 'Variance risk index', data: [72, 52, 48, 41, 66, 55], backgroundColor: 'rgba(245,158,11,.28)', borderColor: '#f59e0b' }]
+      },
+      options: { plugins: { legend: { labels: { color: '#cbd5e1' } } }, scales: { r: { pointLabels: { color: '#cbd5e1' }, ticks: { color: '#cbd5e1', backdropColor: 'transparent' } } } }
+    });
+
+    // before after slider
+    const legacyText = document.getElementById('legacyText');
+    const futureText = document.getElementById('futureText');
+    document.getElementById('stateSlider').oninput = (e) => {
+      const v = +e.target.value;
+      futureText.textContent = v < 35 ? 'Early-stage automation, periodic insight latency.' :
+        v < 75 ? 'Integrated close-planning stack with near-real-time forecasting.' :
+        'Agentic AI + Oracle EPM with autonomous reconciliation and continuous controls.';
+      legacyText.textContent = v < 60 ?
+        'Spreadsheet-driven FX and intercompany reconciliations with high manual effort.' :
+        'Legacy bottlenecks reduced to exception-only workflows.';
+    };
+
+    // ai copilot
+    document.getElementById('askBtn').onclick = () => {
+      const q = document.getElementById('chatInput').value;
+      document.getElementById('chatOut').textContent = `Query: ${q}\n\nResponse:\n1) Base case indicates 12% labor shortfall risk in Nunavut by 2027.\n2) SWP recommendation: cross-train 85 FTE-equivalent roles and automate low-value close activities (22 FTE offset).\n3) Economic effect: CAD 6.4M enablement cost vs CAD 11.2M avoided contractor premium.\n4) Risk controls: retention incentives, weather-contingency staffing pool, and monthly variance watchlist.`;
+    };
+
+    // roi
+    document.getElementById('calcRoi').onclick = () => {
+      const opex = +document.getElementById('opex').value;
+      const eff = (+document.getElementById('eff').value) / 100;
+      const impl = +document.getElementById('impl').value;
+      const annual = opex * eff;
+      const threeYr = annual * 3;
+      const net = threeYr - impl;
+      document.getElementById('roiOut').textContent = `Estimated annual gross savings: CAD ${annual.toFixed(1)}M | 3-year gross: CAD ${threeYr.toFixed(1)}M | 3-year net after implementation: CAD ${net.toFixed(1)}M.`;
+    };
+
+    // matrix
+    new Chart(document.getElementById('matrixChart'), {
+      type: 'bubble',
+      data: {
+        datasets: [
+          { label: 'AI close copilot', data: [{ x: 9, y: 8, r: 12 }], backgroundColor: '#34d399' },
+          { label: 'Tax automation', data: [{ x: 8, y: 6, r: 10 }], backgroundColor: '#67e8f9' },
+          { label: 'S2P resilience', data: [{ x: 7, y: 7, r: 11 }], backgroundColor: '#f59e0b' }
+        ]
+      },
+      options: {
+        scales: {
+          x: { title: { display: true, text: 'Impact', color: '#cbd5e1' }, ticks: { color: '#cbd5e1' } },
+          y: { title: { display: true, text: 'Ease of Execution', color: '#cbd5e1' }, ticks: { color: '#cbd5e1' } }
+        },
+        plugins: { legend: { labels: { color: '#cbd5e1' } } }
+      }
+    });
+
+    // pdf
+    document.getElementById('exportPdf').onclick = () => {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      slides.forEach((s, i) => {
+        if (i > 0) doc.addPage();
+        doc.setFontSize(18);
+        doc.text(s.dataset.title || `Slide ${i + 1}`, 12, 18);
+        doc.setFontSize(10);
+        doc.text(s.innerText.slice(0, 2600), 12, 28);
+      });
+      doc.save('AEM_Finance2030_Executive_Workshop.pdf');
+    };
   </script>
 </body>
 </html>
