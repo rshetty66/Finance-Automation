@@ -45,6 +45,22 @@ class MemoryConfig:
 
 
 @dataclass(frozen=True)
+class SkillsConfig:
+    """Claude Superpower Skills settings."""
+
+    # Extended Thinking: default token budget for reasoning blocks
+    thinking_budget_tokens: int = 10_000
+    # Prompt Caching: cache type (only "ephemeral" is currently supported)
+    cache_type: str = "ephemeral"
+    # Vision: maximum documents per multimodal call
+    vision_max_documents: int = 5
+    # Structured Output: default tool name used to capture JSON payloads
+    structured_output_tool_name: str = "emit_result"
+    # Master toggle – set to False to disable all skill API features
+    enabled: bool = True
+
+
+@dataclass(frozen=True)
 class RudraConfig:
     """Root configuration object."""
 
@@ -52,6 +68,7 @@ class RudraConfig:
     models: ModelConfig = field(default_factory=ModelConfig)
     embeddings: EmbeddingConfig = field(default_factory=EmbeddingConfig)
     memory: MemoryConfig = field(default_factory=MemoryConfig)
+    skills: SkillsConfig = field(default_factory=SkillsConfig)
     anthropic_api_key: Optional[str] = field(default_factory=lambda: os.environ.get("ANTHROPIC_API_KEY"))
     log_level: str = field(default_factory=lambda: os.environ.get("RUDRA_LOG_LEVEL", "INFO"))
 

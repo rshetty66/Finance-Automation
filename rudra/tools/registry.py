@@ -177,7 +177,200 @@ class ToolRegistry:
             },
         ))
 
+        # ------------------------------------------------------------------
+        # Claude Superpower Skill tools
+        # ------------------------------------------------------------------
+
+        registry.register(ToolDefinition(
+            name="invoke_extended_thinking",
+            description=(
+                "Invoke Claude's extended thinking skill for deep multi-step "
+                "financial reasoning. Returns both the chain-of-thought and "
+                "the final answer. Use for complex IFRS/US GAAP analysis, "
+                "M&A accounting, ECL modelling, or multi-entity consolidation."
+            ),
+            parameters={
+                "query": {"type": "string", "description": "The analytical question or scenario"},
+                "agent_id": {"type": "string", "description": "Agent to invoke (defaults to extended-thinking-analyst)"},
+                "budget_tokens": {"type": "integer", "description": "Thinking token budget (1000-32000, default 10000)"},
+            },
+            function=_invoke_extended_thinking_tool,
+            is_async=True,
+        ))
+
+        registry.register(ToolDefinition(
+            name="analyze_financial_document",
+            description=(
+                "Analyze a financial document or image using Claude's vision "
+                "skill. Accepts a local file path (PNG, JPEG, PDF) and a "
+                "text query. Returns extracted data, key figures, and insights."
+            ),
+            parameters={
+                "file_path": {"type": "string", "description": "Path to image or PDF file"},
+                "query": {"type": "string", "description": "What to extract or analyze"},
+                "agent_id": {"type": "string", "description": "Agent to use (defaults to document-vision-agent)"},
+            },
+            function=_analyze_financial_document_tool,
+            is_async=True,
+        ))
+
+        registry.register(ToolDefinition(
+            name="extract_structured_financials",
+            description=(
+                "Extract structured financial data from free-form text using "
+                "Claude's structured output skill. Returns a typed JSON "
+                "payload guaranteed to match the requested schema: "
+                "journal_entry | risk_assessment | financial_metrics."
+            ),
+            parameters={
+                "text": {"type": "string", "description": "Source text to extract from"},
+                "schema_type": {
+                    "type": "string",
+                    "description": "journal_entry | risk_assessment | financial_metrics",
+                },
+                "agent_id": {"type": "string", "description": "Agent to use (defaults to accounting-policy-engine)"},
+            },
+            function=_extract_structured_financials_tool,
+            is_async=True,
+        ))
+
         return registry
+
+
+# ---------------------------------------------------------------------------
+# Superpower Skill tool implementations
+# ---------------------------------------------------------------------------
+
+async def _invoke_extended_thinking_tool(
+    query: str,
+    agent_id: str = "extended-thinking-analyst",
+    budget_tokens: int = 10_000,
+) -> dict:
+    """Tool implementation: invoke the extended thinking skill."""
+    from rudra.agents.invoker import AgentInvoker
+    from rudra.agents.registry import AgentRegistry
+
+    registry = AgentRegistry.from_default_dir()
+    agent = registry.get(agent_id)
+    if agent is None:
+        # Fall back to first available agent if the specialist isn't loaded
+        agents = registry.list_agents()
+        if not agents:
+            return {"error": f"Agent '{agent_id}' not found and no agents available"}
+        agent = agents[0]
+
+    invoker = AgentInvoker()
+    from rudra.models import AgentRequest
+    request = AgentRequest(agent_id=agent.spec.id, query=query)
+    messages = [{"role": "user", "content": query}]
+
+    result = await invoker.call_llm_with_skill(
+        agent_spec=agent.spec,
+        messages=messages,
+        request=request,
+        skill_type="extended_thinking",
+        skill_params={"budget_tokens": budget_tokens},
+    )
+    return {
+        "answer": result.response,
+        "thinking_summary": result.structured_output.get("thinking", "")[:500],
+        "tokens_used": result.tokens_used,
+        "model": result.model_used,
+    }
+
+
+async def _analyze_financial_document_tool(
+    file_path: str,
+    query: str,
+    agent_id: str = "document-vision-agent",
+) -> dict:
+    """Tool implementation: analyze a financial document with vision."""
+    from rudra.skills.vision import VisionSkill
+    from rudra.agents.invoker import AgentInvoker
+    from rudra.agents.registry import AgentRegistry
+    from rudra.models import AgentRequest
+
+    registry = AgentRegistry.from_default_dir()
+    agent = registry.get(agent_id)
+    if agent is None:
+        agents = registry.list_agents()
+        if not agents:
+            return {"error": f"Agent '{agent_id}' not found"}
+        agent = agents[0]
+
+    try:
+        source = VisionSkill.load_file(file_path)
+    except (ValueError, FileNotFoundError) as exc:
+        return {"error": str(exc)}
+
+    skill = VisionSkill()
+    content = skill.build_content(text_query=query, documents=[source])
+    messages = [{"role": "user", "content": content}]
+
+    invoker = AgentInvoker()
+    request = AgentRequest(agent_id=agent.spec.id, query=query)
+
+    result = await invoker.call_llm_with_skill(
+        agent_spec=agent.spec,
+        messages=messages,
+        request=request,
+        skill_type="vision",
+    )
+    return {
+        "analysis": result.response,
+        "tokens_used": result.tokens_used,
+        "model": result.model_used,
+    }
+
+
+async def _extract_structured_financials_tool(
+    text: str,
+    schema_type: str,
+    agent_id: str = "accounting-policy-engine",
+) -> dict:
+    """Tool implementation: extract structured financial data."""
+    from rudra.skills.structured_output import StructuredOutputSkill
+    from rudra.agents.invoker import AgentInvoker
+    from rudra.agents.registry import AgentRegistry
+    from rudra.models import AgentRequest
+
+    schema_map = {
+        "journal_entry": StructuredOutputSkill.journal_entry_schema,
+        "risk_assessment": StructuredOutputSkill.risk_assessment_schema,
+        "financial_metrics": StructuredOutputSkill.financial_metrics_schema,
+    }
+    factory = schema_map.get(schema_type)
+    if factory is None:
+        return {
+            "error": f"Unknown schema_type '{schema_type}'. "
+                     f"Valid values: {list(schema_map.keys())}"
+        }
+
+    skill = factory()
+
+    registry = AgentRegistry.from_default_dir()
+    agent = registry.get(agent_id)
+    if agent is None:
+        agents = registry.list_agents()
+        if not agents:
+            return {"error": f"Agent '{agent_id}' not found"}
+        agent = agents[0]
+
+    invoker = AgentInvoker()
+    request = AgentRequest(agent_id=agent.spec.id, query=text)
+    messages = [{"role": "user", "content": text}]
+
+    result = await invoker.call_llm_with_skill(
+        agent_spec=agent.spec,
+        messages=messages,
+        request=request,
+        skill_type="structured_output",
+        skill_params={
+            "output_schema": skill.output_schema,
+            "description": f"Extract {schema_type} data from the provided text.",
+        },
+    )
+    return result.structured_output
 
 
 def _read_file(path: str) -> str:

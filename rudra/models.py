@@ -72,6 +72,14 @@ class InvocationStatus(str, Enum):
     NEEDS_HUMAN_REVIEW = "needs_human_review"
 
 
+class SkillType(str, Enum):
+    """Claude Superpower Skill identifiers."""
+    EXTENDED_THINKING = "extended_thinking"
+    PROMPT_CACHING = "prompt_caching"
+    VISION = "vision"
+    STRUCTURED_OUTPUT = "structured_output"
+
+
 # ---------------------------------------------------------------------------
 # Agent specification
 # ---------------------------------------------------------------------------
@@ -189,3 +197,20 @@ class RudraState(BaseModel):
 
     session_id: str = ""
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+# ---------------------------------------------------------------------------
+# Superpower Skill invocation
+# ---------------------------------------------------------------------------
+
+class SkillInvocation(BaseModel):
+    """Records a single superpower skill invocation within an agent run."""
+
+    skill_type: SkillType
+    agent_id: str
+    params: dict[str, Any] = Field(default_factory=dict)
+    result_summary: str = ""
+    tokens_used: int = 0
+    duration_ms: int = 0
+    succeeded: bool = True
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
