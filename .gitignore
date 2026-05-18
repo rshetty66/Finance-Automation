@@ -1,4 +1,6 @@
 **/__pycache__
 *.pyc
 .env
-output/
+output/*
+!output/*.pptx
+!output/*.pdf
