@@ -1,0 +1,1889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>RAK FIT FAMILY AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0a0e17" />
+<style>
+/* ============================================================
+   RAK FIT FAMILY AI — Design System
+   One family. Multiple profiles. One intelligent fitness system.
+   Self-contained prototype. No build step. Works on mobile / tablet / desktop.
+   ============================================================ */
+:root{
+  --bg:#0a0e17; --bg-2:#0e1420; --surface:#131a28; --surface-2:#18202f;
+  --line:#232c3d; --line-soft:#1c2433;
+  --text:#eef2fb; --muted:#98a4bb; --faint:#69748c;
+  --accent:#7cf6b0; --accent-2:#4fd1c5; --accent-ink:#04160e;
+  --coral:#ff7a6b; --amber:#ffcf6b; --violet:#a99bff; --sky:#6cc6ff;
+  --danger:#ff6b6b; --warn:#ffb454; --ok:#54e39a;
+  --radius:20px; --radius-sm:14px; --radius-lg:28px;
+  --shadow:0 18px 50px -22px rgba(0,0,0,.85);
+  --shadow-soft:0 8px 24px -14px rgba(0,0,0,.7);
+  --ff:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --maxw:1240px;
+  --pad:20px;
+  --font-scale:1;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:var(--ff);
+  background:var(--bg);
+  color:var(--text);
+  font-size:calc(15px * var(--font-scale));
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+body.senior{--font-scale:1.22;--radius:22px}
+body.hi-contrast{--bg:#000;--surface:#0c0c0c;--surface-2:#161616;--line:#3a3a3a;--text:#fff;--muted:#d5d5d5}
+body.reduce-motion *{animation:none!important;transition:none!important}
+button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:none}
+img{max-width:100%;display:block}
+a{color:var(--accent-2);text-decoration:none}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:#26314a;border-radius:20px}
+::selection{background:var(--accent);color:var(--accent-ink)}
+
+/* ---------- layout shell ---------- */
+.app{min-height:100vh;min-height:100dvh}
+.shell{display:flex;min-height:100dvh}
+.sidebar{display:none}
+.main{flex:1;min-width:0;padding-bottom:96px}
+.container{max-width:var(--maxw);margin:0 auto;padding:0 var(--pad)}
+.section{padding:18px 0}
+.pagehead{padding:calc(env(safe-area-inset-top) + 14px) 0 6px}
+
+/* top app bar */
+.appbar{
+  position:sticky;top:0;z-index:40;
+  backdrop-filter:blur(18px);
+  background:linear-gradient(180deg,rgba(10,14,23,.92),rgba(10,14,23,.72));
+  border-bottom:1px solid var(--line-soft);
+}
+.appbar-in{max-width:var(--maxw);margin:0 auto;padding:calc(env(safe-area-inset-top) + 10px) var(--pad) 10px;display:flex;align-items:center;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.2px}
+.brand .logo{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;color:var(--accent-ink);font-weight:900;font-size:15px;box-shadow:0 6px 18px -6px var(--accent-2)}
+.brand small{display:block;font-size:9px;letter-spacing:2px;color:var(--muted);font-weight:700}
+.spacer{flex:1}
+.avatar-btn{display:flex;align-items:center;gap:9px;background:var(--surface);border:1px solid var(--line);padding:5px 12px 5px 6px;border-radius:100px;transition:.15s}
+.avatar-btn:hover{border-color:var(--accent-2)}
+.avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:14px;color:#fff;flex:none;overflow:hidden}
+.avatar-btn .who{font-size:11px;color:var(--muted);line-height:1.1;text-align:left}
+.avatar-btn .who b{display:block;color:var(--text);font-size:13px}
+
+/* bottom tab bar (mobile) */
+.tabbar{
+  position:fixed;left:0;right:0;bottom:0;z-index:50;
+  display:flex;justify-content:space-around;
+  padding:8px 6px calc(env(safe-area-inset-bottom) + 8px);
+  background:linear-gradient(180deg,rgba(14,20,32,.6),rgba(10,14,23,.97));
+  backdrop-filter:blur(20px);
+  border-top:1px solid var(--line-soft);
+}
+.tab{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;color:var(--muted);padding:4px 10px;border-radius:14px;flex:1;font-weight:600;transition:.15s}
+.tab .ic{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.9}
+.tab.on{color:var(--accent)}
+.tab.on .ic{filter:drop-shadow(0 0 6px var(--accent))}
+
+/* ---------- typography ---------- */
+h1,h2,h3{margin:0;font-weight:800;letter-spacing:-.4px}
+.display{font-size:clamp(26px,6vw,40px);font-weight:850;letter-spacing:-1.2px;line-height:1.05}
+.eyebrow{font-size:11px;letter-spacing:2.4px;text-transform:uppercase;color:var(--muted);font-weight:800}
+.subtle{color:var(--muted)}
+.tiny{font-size:11px}
+
+/* ---------- cards ---------- */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow-soft)}
+.card.glass{background:linear-gradient(160deg,rgba(24,32,47,.9),rgba(19,26,40,.9))}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+.row{display:flex;gap:12px;align-items:center}
+.wrap{flex-wrap:wrap}
+.between{justify-content:space-between}
+.stack{display:flex;flex-direction:column;gap:12px}
+
+/* pills / chips / badges */
+.pill{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:100px;background:var(--surface-2);border:1px solid var(--line);font-size:12px;font-weight:600;color:var(--muted)}
+.pill.on{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:8px 13px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line);font-size:13px;font-weight:600;transition:.14s;user-select:none}
+.chip:hover{border-color:var(--accent-2)}
+.chip.on{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:var(--accent-ink);border-color:transparent;box-shadow:0 8px 20px -10px var(--accent-2)}
+.tag{font-size:10px;padding:3px 8px;border-radius:7px;background:rgba(124,246,176,.12);color:var(--accent);font-weight:700;letter-spacing:.3px}
+.tag.gray{background:rgba(154,166,189,.12);color:var(--muted)}
+.tag.warn{background:rgba(255,180,84,.14);color:var(--warn)}
+.tag.danger{background:rgba(255,107,107,.14);color:var(--danger)}
+.tag.violet{background:rgba(169,155,255,.14);color:var(--violet)}
+.tag.sky{background:rgba(108,198,255,.14);color:var(--sky)}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:14px;font-weight:750;font-size:14px;background:var(--surface-2);border:1px solid var(--line);transition:.15s}
+.btn:hover{border-color:var(--accent-2);transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:var(--accent-ink);border-color:transparent;box-shadow:0 12px 28px -12px var(--accent-2)}
+.btn.ghost{background:transparent}
+.btn.danger{color:var(--danger);border-color:rgba(255,107,107,.4)}
+.btn.block{width:100%}
+.btn.lg{padding:16px 22px;font-size:16px;border-radius:16px}
+.btn.sm{padding:8px 12px;font-size:12px;border-radius:11px}
+.iconbtn{width:40px;height:40px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line);display:grid;place-items:center}
+.iconbtn:hover{border-color:var(--accent-2)}
+
+/* progress ring */
+.ring{transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-linecap:round}
+
+/* meters */
+.meter{height:8px;border-radius:100px;background:var(--surface-2);overflow:hidden}
+.meter>i{display:block;height:100%;border-radius:100px;background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+
+/* stat tile */
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px}
+.stat .k{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.4px;text-transform:uppercase}
+.stat .v{font-size:24px;font-weight:850;letter-spacing:-.6px;margin-top:2px}
+.stat .d{font-size:11px;font-weight:700}
+.up{color:var(--ok)} .down{color:var(--coral)}
+
+/* profile select landing */
+.landing{min-height:100dvh;display:flex;flex-direction:column;justify-content:center;padding:40px var(--pad);max-width:1000px;margin:0 auto;position:relative}
+.landing .aura{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.landing .aura::before{content:"";position:absolute;top:-20%;left:-10%;width:60%;height:60%;background:radial-gradient(circle,rgba(124,246,176,.16),transparent 70%);filter:blur(10px)}
+.landing .aura::after{content:"";position:absolute;bottom:-10%;right:-10%;width:55%;height:55%;background:radial-gradient(circle,rgba(108,198,255,.14),transparent 70%)}
+.landing .inner{position:relative;z-index:1}
+.who-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-top:26px}
+.pcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 18px;text-align:center;transition:.2s;position:relative;overflow:hidden}
+.pcard:hover{transform:translateY(-4px);border-color:var(--accent-2);box-shadow:var(--shadow)}
+.pcard .av{width:78px;height:78px;border-radius:50%;margin:0 auto 12px;display:grid;place-items:center;font-size:30px;font-weight:800;color:#fff;box-shadow:0 10px 24px -10px rgba(0,0,0,.7)}
+.pcard .nm{font-weight:800;font-size:18px}
+.pcard .go{font-size:12px;color:var(--muted);margin-top:3px}
+.pcard.add{border-style:dashed;display:grid;place-items:center;min-height:180px;color:var(--muted)}
+.pcard.add:hover{color:var(--accent)}
+.pcard .badge-mode{position:absolute;top:10px;right:10px}
+
+/* exercise cards */
+.ex-card{display:flex;gap:14px;align-items:center;padding:14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);transition:.15s}
+.ex-card:hover{border-color:var(--accent-2)}
+.ex-thumb{width:64px;height:64px;border-radius:12px;flex:none;position:relative;overflow:hidden;display:grid;place-items:center;background:linear-gradient(135deg,#1c2740,#141c2c)}
+.ex-thumb .play{position:absolute;width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,.55);display:grid;place-items:center}
+.ex-thumb .play svg{width:12px;height:12px;fill:#fff;margin-left:1px}
+.ex-meta{flex:1;min-width:0}
+.ex-meta .nm{font-weight:750;font-size:15px}
+.ex-meta .sub{font-size:12px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* set logging table */
+.set-row{display:grid;grid-template-columns:34px 1fr 1fr 44px;gap:8px;align-items:center;padding:8px 0}
+.set-row .idx{width:30px;height:30px;border-radius:9px;background:var(--surface-2);display:grid;place-items:center;font-weight:800;font-size:13px}
+.set-row.done .idx{background:var(--accent);color:var(--accent-ink)}
+.field{background:var(--bg-2);border:1px solid var(--line);border-radius:11px;padding:10px 12px;color:var(--text);font-size:15px;width:100%;text-align:center;font-weight:700}
+.field:focus{outline:none;border-color:var(--accent-2)}
+.field.text{text-align:left;font-weight:500}
+.check{width:38px;height:38px;border-radius:11px;border:1px solid var(--line);background:var(--surface-2);display:grid;place-items:center;transition:.14s}
+.check.on{background:var(--accent);border-color:transparent}
+.check svg{width:18px;height:18px;stroke:var(--muted);fill:none;stroke-width:3}
+.check.on svg{stroke:var(--accent-ink)}
+
+/* modal / sheet */
+.scrim{position:fixed;inset:0;background:rgba(4,7,14,.72);backdrop-filter:blur(6px);z-index:100;display:flex;align-items:flex-end;justify-content:center;padding:0;animation:fade .2s}
+@media(min-width:720px){.scrim{align-items:center;padding:24px}}
+.sheet{background:var(--bg-2);border:1px solid var(--line);border-radius:26px 26px 0 0;width:100%;max-width:760px;max-height:92dvh;overflow:auto;animation:rise .28s cubic-bezier(.2,.8,.2,1)}
+@media(min-width:720px){.sheet{border-radius:26px}}
+.sheet-hd{position:sticky;top:0;background:var(--bg-2);padding:16px 20px;border-bottom:1px solid var(--line-soft);display:flex;align-items:center;gap:12px;z-index:2}
+.sheet-bd{padding:20px}
+.grab{width:40px;height:4px;border-radius:100px;background:var(--line);margin:8px auto -4px}
+@keyframes rise{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes pop{0%{transform:scale(.7);opacity:0}60%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+@keyframes ringspin{to{stroke-dashoffset:var(--to)}}
+
+/* default inline icon sizing (tab/nav rules override via higher specificity) */
+.ic{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2;vertical-align:middle}
+
+/* video placeholder */
+.video-frame{aspect-ratio:16/9;border-radius:16px;overflow:hidden;position:relative;background:radial-gradient(circle at 50% 40%,#243453,#0d1422);display:grid;place-items:center;text-align:center;border:1px solid var(--line)}
+.video-frame .big-play{width:66px;height:66px;border-radius:50%;background:rgba(255,255,255,.12);display:grid;place-items:center;border:1px solid rgba(255,255,255,.2);margin-bottom:10px}
+.video-frame .big-play svg{width:24px;height:24px;fill:#fff;margin-left:3px}
+.placeholder-note{position:absolute;top:12px;left:12px}
+.yt-list .yt-item{display:flex;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line-soft)}
+.yt-list .yt-item:last-child{border-bottom:none}
+.yt-thumb{width:72px;height:44px;border-radius:9px;background:linear-gradient(135deg,#2a1a1a,#3a0f0f);display:grid;place-items:center;flex:none;position:relative}
+.yt-thumb svg{width:22px;height:22px;fill:#ff5b5b}
+
+/* muscle map */
+.body-map{display:flex;gap:8px;justify-content:center}
+.body-map svg{height:220px}
+.mm-primary{fill:var(--coral)}
+.mm-secondary{fill:var(--amber)}
+.mm-stab{fill:var(--sky)}
+.mm-base{fill:#26304a;stroke:#39445f;stroke-width:.6}
+
+/* segmented */
+.seg{display:inline-flex;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:3px}
+.seg button{padding:7px 14px;border-radius:9px;font-weight:700;font-size:13px;color:var(--muted)}
+.seg button.on{background:var(--accent);color:var(--accent-ink)}
+
+/* readiness dial colors */
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%);z-index:200;background:var(--surface-2);border:1px solid var(--line);padding:12px 18px;border-radius:14px;box-shadow:var(--shadow);font-weight:700;font-size:14px;display:flex;align-items:center;gap:10px;animation:rise .25s}
+.toast .dot{width:10px;height:10px}
+
+/* wizard */
+.wiz-steps{display:flex;gap:6px;margin:14px 0 4px}
+.wiz-steps i{flex:1;height:5px;border-radius:100px;background:var(--line)}
+.wiz-steps i.on{background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+.opt{display:flex;align-items:center;gap:12px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--surface);transition:.14s;text-align:left;width:100%}
+.opt:hover{border-color:var(--accent-2)}
+.opt.on{border-color:var(--accent);background:linear-gradient(135deg,rgba(124,246,176,.1),rgba(79,209,197,.06))}
+.opt .oico{width:38px;height:38px;border-radius:11px;background:var(--surface-2);display:grid;place-items:center;font-size:18px;flex:none}
+.opt.on .oico{background:var(--accent);color:var(--accent-ink)}
+.opt .otx b{display:block}
+.opt .otx span{font-size:12px;color:var(--muted)}
+.opt .mark{margin-left:auto;width:22px;height:22px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;flex:none}
+.opt.on .mark{background:var(--accent);border-color:transparent}
+.opt.on .mark svg{stroke:var(--accent-ink)}
+.opt .mark svg{width:13px;height:13px;stroke:transparent;fill:none;stroke-width:3}
+
+label.lbl{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.3px;display:block;margin-bottom:6px}
+.inp{width:100%;background:var(--bg-2);border:1px solid var(--line);border-radius:12px;padding:13px 14px;color:var(--text);font-size:15px;font-family:inherit}
+.inp:focus{outline:none;border-color:var(--accent-2)}
+select.inp{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%239aa6bd' stroke-width='2'><path d='M4 6l4 4 4-4'/></svg>");background-repeat:no-repeat;background-position:right 12px center}
+
+/* range slider */
+input[type=range]{-webkit-appearance:none;width:100%;height:6px;border-radius:100px;background:var(--surface-2);outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:var(--accent);box-shadow:0 3px 10px rgba(0,0,0,.5);cursor:pointer;border:3px solid var(--bg)}
+input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--accent);border:3px solid var(--bg);cursor:pointer}
+
+/* safety banner */
+.safety{border:1px solid rgba(255,180,84,.4);background:linear-gradient(135deg,rgba(255,180,84,.1),rgba(255,107,107,.05));border-radius:16px;padding:14px 16px}
+.safety.red{border-color:rgba(255,107,107,.5);background:rgba(255,107,107,.08)}
+
+/* empty state */
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty .ico{font-size:40px;margin-bottom:8px;opacity:.7}
+
+/* desktop / tablet layouts */
+@media(min-width:900px){
+  :root{--pad:28px}
+  .tabbar{display:none}
+  .sidebar{
+    display:flex;flex-direction:column;gap:4px;width:250px;flex:none;
+    padding:22px 16px;border-right:1px solid var(--line-soft);
+    position:sticky;top:0;height:100dvh;background:var(--bg-2);
+  }
+  .main{padding-bottom:40px}
+  .nav-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;font-weight:700;color:var(--muted);transition:.14s}
+  .nav-item:hover{background:var(--surface);color:var(--text)}
+  .nav-item.on{background:linear-gradient(135deg,rgba(124,246,176,.14),rgba(79,209,197,.06));color:var(--accent)}
+  .nav-item .ic{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.9}
+  .g2{grid-template-columns:1fr 1fr}
+  .dash-2col{display:grid;grid-template-columns:1.6fr 1fr;gap:18px;align-items:start}
+  .ipad-split{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+}
+@media(max-width:640px){
+  .g3{grid-template-columns:1fr 1fr}
+  .g4{grid-template-columns:1fr 1fr}
+  .hide-sm{display:none}
+}
+.desk-only{display:none}
+@media(min-width:900px){.desk-only{display:block}.mob-only{display:none}}
+</style>
+</head>
+<body>
+<div id="app" class="app"></div>
+
+<script>
+/* ============================================================
+   DATA MODEL — deterministic seed data
+   ============================================================ */
+
+// ---- Exercise library (curated, with fully-detailed demo exercises) ----
+const EX = {
+  chest_press_machine:{
+    id:"chest_press_machine", name:"Life Fitness Chest Press", cat:"strength",
+    difficulty:"Beginner", equipment:"Selectorized machine", movement:"Horizontal push",
+    primary:["Pectoralis Major"], secondary:["Anterior Deltoid","Triceps Brachii"], stabilizers:["Serratus Anterior","Rotator Cuff"],
+    muscleMap:{front:["chest","shoulders","tricepsF"],back:[]},
+    setup:["Set seat to position 4 so handles align with mid-chest.","Sit tall, feet flat, back fully supported against the pad.","Grip handles with wrists neutral, shoulder blades gently retracted."],
+    execution:["Press handles forward smoothly until arms are nearly straight (don't lock elbows).","Pause briefly at full extension.","Lower under control back to a stretched — but comfortable — start position."],
+    breathing:"Exhale as you press, inhale as you return.",
+    tempo:"2s down · 1s pause · 2s press", rom:"Handles from mid-chest to near-full extension",
+    mistakes:["Flaring elbows above shoulder height (shoulder strain)","Locking elbows aggressively at the top","Letting the weight yank shoulders forward on the return","Lifting hips or arching off the pad"],
+    painWarnings:"Front-of-shoulder pinching means the seat is too low or elbows too high. Stop and readjust.",
+    feels:{should:"A working stretch and squeeze across the chest and triceps.",shouldNot:"Sharp shoulder-joint or wrist pain, or lower-back arching strain."},
+    backFriendly:true, backNote:"Fully back-supported — a good pressing choice while managing lower-back recovery.",
+    regression:"Reduce load; limit range to the pain-free zone; use a single arm at a time.",
+    progression:"Add load in small steps, add a 2-second pause, or progress toward a dumbbell/barbell press.",
+    machine:{name:"Life Fitness Signature Chest Press", points:[["Seat","Position 4 — handles at mid-chest"],["Handles","Aligned with nipple line"],["Feet","Flat on floor / footrest"],["Back","Fully supported, blades retracted"]]},
+    tags:["Strength","Machine","Gym","Back friendly","Beginner","Hypertrophy"],
+    alternatives:["db_bench","cable_fly","pushup","band_press"],
+    videos:[
+      {title:"Chest Press — Quick Demo",cat:"Technique Demo",channel:"To be curated",creator:"Certified strength coach",duration:"0:38",approved:false,url:null,youtubeId:null},
+      {title:"Machine Setup & Seat Height",cat:"Machine Setup Demo",channel:"To be curated",creator:"Equipment manufacturer",duration:"1:24",approved:false,url:null,youtubeId:null},
+      {title:"Shoulder-Friendly Pressing",cat:"Physical Therapy Demo",channel:"To be curated",creator:"Physical therapist",duration:"3:10",approved:false,url:null,youtubeId:null}
+    ]
+  },
+  bird_dog:{
+    id:"bird_dog", name:"Bird Dog", cat:"rehab",
+    difficulty:"Beginner", equipment:"Yoga mat", movement:"Anti-rotation core / stability",
+    primary:["Multifidus / Erector Spinae"], secondary:["Gluteus Maximus","Deltoids"], stabilizers:["Transverse Abdominis","Obliques"],
+    muscleMap:{front:[],back:["lowerback","glutes","shouldersB"]},
+    setup:["Start on all fours: hands under shoulders, knees under hips.","Set a long, neutral spine — imagine a broomstick from head to tailbone.","Gently brace the core, ribs down."],
+    execution:["Slowly extend your right arm forward and left leg back until level with the torso.","Keep hips square to the floor — don't let them tip.","Hold 2–3 seconds, return under control, then switch sides."],
+    breathing:"Exhale as you extend, breathe steadily through the hold.",
+    tempo:"Slow & controlled — no swinging", rom:"Limb to torso height only, no arching",
+    mistakes:["Arching or sagging the lower back","Rotating the hips as the leg lifts","Rushing / using momentum","Lifting the limbs above shoulder/hip line"],
+    painWarnings:"This should be pain-free. Any sharp or radiating back pain means stop and reduce range.",
+    feels:{should:"Core switching on and gentle work through the glute and mid-back.",shouldNot:"Any lower-back pinching, sharp pain, or leg tingling/numbness."},
+    backFriendly:true, backNote:"A cornerstone lower-back stabilization drill — teaches the spine to stay still while limbs move.",
+    regression:"Extend only the arm, or only the leg — not both together. Reduce hold time.",
+    progression:"Add a 5s hold, draw the elbow-to-knee under the body between reps, or add a light ankle band.",
+    machine:null,
+    tags:["Rehabilitation","Core","Back friendly","Stability","Warmup","Bodyweight","Home","Low impact"],
+    alternatives:["dead_bug","pallof_press","glute_bridge"],
+    videos:[
+      {title:"Bird Dog — Physio Technique",cat:"Physical Therapy Demo",channel:"To be curated",creator:"Physical therapist",duration:"2:05",approved:false,url:null,youtubeId:null},
+      {title:"Common Mistakes to Avoid",cat:"Common Mistakes",channel:"To be curated",creator:"Sports physiotherapist",duration:"1:40",approved:false,url:null,youtubeId:null},
+      {title:"Easier Regression Version",cat:"Regression Demo",channel:"To be curated",creator:"Physical therapist",duration:"1:12",approved:false,url:null,youtubeId:null}
+    ]
+  },
+  // supporting library (lighter detail, same schema shape)
+  dead_bug:mkEx("dead_bug","Dead Bug","rehab","Beginner","Yoga mat","Anti-extension core",["Transverse Abdominis"],["Rectus Abdominis"],["Obliques"],{front:["abs"],back:[]},true,"Core control without loading the spine — safe early lower-back work.",["Rehabilitation","Core","Back friendly","Bodyweight","Home"]),
+  glute_bridge:mkEx("glute_bridge","Glute Bridge","rehab","Beginner","Yoga mat","Hip extension",["Gluteus Maximus"],["Hamstrings"],["Erector Spinae"],{front:[],back:["glutes","hamstrings"]},true,"Builds glute strength to offload the lower back.",["Rehabilitation","Strength","Back friendly","Bodyweight","Home","Activation"]),
+  pallof_press:mkEx("pallof_press","Pallof Press","rehab","Beginner","Resistance bands","Anti-rotation",["Obliques"],["Transverse Abdominis"],["Glutes"],{front:["abs"],back:[]},true,"Anti-rotation core stability, gentle on the spine.",["Rehabilitation","Core","Back friendly","Band","Stability"]),
+  pelvic_tilt:mkEx("pelvic_tilt","Pelvic Tilt","rehab","Beginner","Yoga mat","Mobility",["Transverse Abdominis"],["Erector Spinae"],[],{front:["abs"],back:["lowerback"]},true,"Gentle mobility to ease morning stiffness.",["Mobility","Rehabilitation","Back friendly","Home"]),
+  db_bench:mkEx("db_bench","Dumbbell Bench Press","strength","Intermediate","Dumbbells + bench","Horizontal push",["Pectoralis Major"],["Anterior Deltoid","Triceps"],["Rotator Cuff"],{front:["chest","shoulders","tricepsF"],back:[]},false,"Free-weight pressing with a bigger stretch and stabilizer demand.",["Strength","Hypertrophy","Gym","Home"]),
+  cable_fly:mkEx("cable_fly","Cable Fly","strength","Intermediate","Cable machine","Horizontal adduction",["Pectoralis Major"],["Anterior Deltoid"],["Biceps"],{front:["chest","shoulders"],back:[]},true,"Isolation with constant tension across the chest.",["Strength","Hypertrophy","Gym","Machine"]),
+  pushup:mkEx("pushup","Push-Up","strength","Beginner","No equipment","Horizontal push",["Pectoralis Major"],["Triceps","Anterior Deltoid"],["Core"],{front:["chest","tricepsF","abs"],back:[]},false,"Bodyweight pressing you can do anywhere.",["Strength","Bodyweight","Home","Beginner"]),
+  band_press:mkEx("band_press","Band Chest Press","strength","Beginner","Resistance bands","Horizontal push",["Pectoralis Major"],["Triceps","Anterior Deltoid"],["Core"],{front:["chest","tricepsF"],back:[]},true,"Joint-friendly pressing with accommodating resistance.",["Strength","Band","Home","Low impact","Shoulder friendly"]),
+  seated_row:mkEx("seated_row","Seated Cable Row","strength","Beginner","Cable machine","Horizontal pull",["Latissimus Dorsi"],["Rhomboids","Biceps"],["Erector Spinae"],{front:[],back:["lats","upperback"]},true,"Back-supported pulling — good while managing lower-back load.",["Strength","Machine","Gym","Back friendly"]),
+  chest_supported_row:mkEx("chest_supported_row","Chest-Supported Row","strength","Beginner","Machine / bench","Horizontal pull",["Rhomboids"],["Latissimus Dorsi","Biceps"],["Rear Delts"],{front:[],back:["upperback","lats"]},true,"Row variation that removes lower-back strain entirely.",["Strength","Machine","Gym","Back friendly","Hypertrophy"]),
+  lat_raise:mkEx("lat_raise","Dumbbell Lateral Raise","strength","Beginner","Dumbbells","Shoulder abduction",["Lateral Deltoid"],["Anterior Deltoid"],["Traps"],{front:["shoulders"],back:["shouldersB"]},true,"Shoulder width without heavy spinal load.",["Strength","Hypertrophy","Gym","Home"]),
+  band_ext_rot:mkEx("band_ext_rot","Band External Rotation","rehab","Beginner","Resistance bands","Shoulder activation",["Infraspinatus / Rotator Cuff"],["Rear Deltoid"],[],{front:["shoulders"],back:["shouldersB"]},true,"Rotator-cuff activation to prep the shoulder before pressing.",["Rehabilitation","Activation","Band","Shoulder friendly","Warmup"]),
+  wall_slide:mkEx("wall_slide","Wall Slides","mobility","Beginner","No equipment","Shoulder mobility",["Lower Trapezius"],["Serratus Anterior"],["Rotator Cuff"],{front:["shoulders"],back:["shouldersB","upperback"]},true,"Improves overhead shoulder mobility and scapular control.",["Mobility","Warmup","Shoulder friendly","Home"]),
+  // senior-focused
+  chair_squat:mkEx("chair_squat","Chair Squat (Sit-to-Stand)","strength","Beginner","Chair","Squat pattern",["Quadriceps","Gluteus Maximus"],["Hamstrings"],["Core"],{front:["quads"],back:["glutes"]},true,"Foundational leg strength and independence — stand up without hands.",["Senior","Strength","Balance","Functional","Low impact","Home"]),
+  wall_pushup:mkEx("wall_pushup","Wall Push-Up","strength","Beginner","Wall","Horizontal push",["Pectoralis Major"],["Triceps","Anterior Deltoid"],["Core"],{front:["chest","tricepsF"],back:[]},true,"Gentle upper-body pressing at a joint-friendly angle.",["Senior","Strength","Low impact","Home","Beginner"]),
+  supported_calf:mkEx("supported_calf","Supported Calf Raise","strength","Beginner","Chair / counter","Ankle strength",["Gastrocnemius"],["Soleus"],["Ankle stabilizers"],{front:[],back:["calves"]},true,"Ankle strength for balance and confident walking.",["Senior","Balance","Strength","Low impact","Home"]),
+  balance_hold:mkEx("balance_hold","Single-Leg Balance Hold","stability","Beginner","Chair for support","Balance",["Glute Medius"],["Ankle stabilizers"],["Core"],{front:["quads"],back:["glutes"]},true,"Fall-prevention through balance and hip stability.",["Senior","Balance","Stability","Low impact","Home"]),
+  supported_march:mkEx("supported_march","Supported March","mobility","Beginner","Chair / counter","Gait / mobility",["Hip Flexors"],["Quadriceps"],["Core"],{front:["quads"],back:[]},true,"Hip mobility and walking rhythm with light support.",["Senior","Mobility","Balance","Warmup","Home"]),
+  band_row_senior:mkEx("band_row_senior","Seated Band Row","strength","Beginner","Resistance bands","Horizontal pull",["Rhomboids"],["Latissimus Dorsi","Biceps"],["Rear Delts"],{front:[],back:["upperback","lats"]},true,"Posture and pulling strength from a supported seated position.",["Senior","Strength","Band","Back friendly","Low impact"]),
+  // general
+  treadmill_walk:mkEx("treadmill_walk","Incline Treadmill Walk","cardio","Beginner","Treadmill","Cardio",["Cardiovascular"],["Quadriceps","Calves"],["Core"],{front:["quads"],back:["calves"]},true,"Low-impact conditioning you can steer by incline and pace.",["Cardio","Low impact","Gym"]),
+  goblet_squat:mkEx("goblet_squat","Goblet Squat","strength","Beginner","Dumbbell / kettlebell","Squat pattern",["Quadriceps","Glutes"],["Hamstrings"],["Core"],{front:["quads"],back:["glutes"]},false,"Well-braced squat pattern that teaches an upright torso.",["Strength","Hypertrophy","Gym","Home"]),
+  plank:mkEx("plank","Forearm Plank","core","Beginner","Yoga mat","Anti-extension core",["Transverse Abdominis"],["Rectus Abdominis"],["Glutes","Shoulders"],{front:["abs","shoulders"],back:[]},true,"Whole-body bracing and core endurance.",["Core","Bodyweight","Home","Warmup"])
+};
+
+function mkEx(id,name,cat,diff,equip,move,pri,sec,stab,mm,backFriendly,note,tags){
+  return {
+    id,name,cat,difficulty:diff,equipment:equip,movement:move,
+    primary:pri,secondary:sec,stabilizers:stab,muscleMap:mm,
+    setup:["Set up in a stable, comfortable starting position.","Brace lightly and keep joints in a neutral, pain-free range."],
+    execution:["Move through the range slowly and with control.","Keep the target muscle working; avoid momentum.","Return to start under control and repeat."],
+    breathing:"Exhale on effort, inhale on the return.",
+    tempo:"Controlled", rom:"Comfortable, pain-free range",
+    mistakes:["Using momentum instead of muscle","Rushing the reps","Pushing into painful range"],
+    painWarnings:"Stop if you feel sharp, radiating, or worsening pain.",
+    feels:{should:"The target muscle working through a comfortable range.",shouldNot:"Sharp joint pain, numbness, or tingling."},
+    backFriendly, backNote:note,
+    regression:"Reduce load / range / reps.", progression:"Add load, reps, or tempo gradually.",
+    machine:null, tags,
+    alternatives:[],
+    videos:[
+      {title:name+" — Technique Demo",cat:"Technique Demo",channel:"To be curated",creator:cat==="rehab"||cat==="mobility"?"Physical therapist":"Certified strength coach",duration:"1:30",approved:false,url:null,youtubeId:null}
+    ]
+  };
+}
+
+// ---- Family profiles ----
+const SEED = {
+  family:{name:"RAK FAMILY", challenges:[
+    {id:"c1",name:"2,000 Family Push-Ups",progress:1340,goal:2000,unit:"reps",members:["rak","priya"]},
+    {id:"c2",name:"30-Day Mobility Challenge",progress:18,goal:30,unit:"days",members:["rak","dad","priya"]},
+    {id:"c3",name:"20 Workouts This Month",progress:11,goal:20,unit:"workouts",members:["rak","priya"]}
+  ]},
+  profiles:[
+    {
+      id:"rak", name:"Rak", initials:"R", color:"#7cf6b0", mode:"standard", relationship:"Me",
+      dob:"1974", age:51, sex:"Male", heightCm:178, weightLb:136, targetLb:145,
+      goals:["Build muscle","Get stronger","Healthy aging"], experience:"Intermediate",
+      location:"LA Fitness (Commercial gym)", equipment:["Selectorized machines","Cable machine","Dumbbells","Barbells","Bench","Treadmill"],
+      daysPerWeek:4, duration:"60 min",
+      injuries:[{area:"Lower back",side:"Both",status:"Previous injury — resolved",onset:"~2023",type:"muscle strain",pain:2,symptoms:["stiffness","occasional aching"],aggravate:"Heavy bent-over rows, high-fatigue deadlifts",comfortable:"Machine & chest-supported work, hip hinging with light load",prohibited:"",recommended:"Bird Dog, Dead Bug, Pallof Press",recovery:"Occasional discomfort"}],
+      physioPriority:true, privacy:"Shared progress",
+      readiness:82, painToday:2, streak:14,
+      weightLog:[133,133.5,134,134,135,134.5,135,135.5,136,136,136.5,136],
+      volumeLog:[8200,9100,8800,9600,10200,9900,10800,11200,11000,11800,12100,12600],
+      today:{type:"workout"},
+      achievements:["First Workout","10 Workouts","First PR","Strength +10%","4-Week Streak"]
+    },
+    {
+      id:"dad", name:"Dad", initials:"D", color:"#6cc6ff", mode:"senior", relationship:"Parent",
+      dob:"1941", age:84, sex:"Male", heightCm:172, weightLb:159, targetLb:null,
+      goals:["Improve mobility","Improve balance","Healthy aging","Pain-free movement"], experience:"New to exercise",
+      location:"Home bodyweight", equipment:["Resistance bands","Yoga mat"],
+      daysPerWeek:3, duration:"20 min",
+      injuries:[{area:"Knee",side:"Right",status:"Chronic recurring issue",onset:"long-standing",type:"arthritis",pain:3,symptoms:["stiffness","reduced range of motion"],aggravate:"Deep squatting, stairs without support",comfortable:"Chair-supported movements, short-range work",prohibited:"Deep loaded squats",recommended:"Sit-to-stand, supported balance work",recovery:"Under physiotherapy care"}],
+      physioPriority:true, privacy:"Private profile",
+      readiness:74, painToday:3, streak:9,
+      weightLog:[161,160.5,160,160,159.5,159,159,159,159,158.5,159,159],
+      volumeLog:[0,0,0,0,0,0,0,0,0,0,0,0],
+      today:{type:"mobility"},
+      achievements:["First Workout","Mobility Goal","Consistency Award"],
+      accessibility:true
+    },
+    {
+      id:"priya", name:"Priya", initials:"P", color:"#a99bff", mode:"standard", relationship:"Partner",
+      dob:"1979", age:46, sex:"Female", heightCm:165, weightLb:141, targetLb:135,
+      goals:["Improve cardiovascular fitness","Lose body fat","General fitness"], experience:"Intermediate",
+      location:"Multiple locations", equipment:["Dumbbells","Treadmill","Bike","Yoga mat","Resistance bands"],
+      daysPerWeek:3, duration:"45 min",
+      injuries:[], physioPriority:false, privacy:"Shared achievements only",
+      readiness:88, painToday:0, streak:21,
+      weightLog:[145,144.5,144,143.5,143,142.5,142,142,141.5,141,141,141],
+      volumeLog:[5200,5400,5100,5600,5800,5500,6000,6100,5900,6300,6200,6400],
+      today:{type:"cardio"},
+      achievements:["First Workout","10 Workouts","4-Week Streak","Consistency Award","Family Challenge Completed"]
+    }
+  ]
+};
+
+// ---- Workout & rehab templates keyed by profile ----
+const PLANS = {
+  rak:{
+    workout:{
+      name:"Chest + Shoulders", day:"Day 1 · Push", est:"58 min",
+      prep:{name:"Lower Back Prep",mins:6,ex:["bird_dog","dead_bug","pallof_press"]},
+      blocks:[
+        {ex:"chest_press_machine", sets:[{w:120,r:10},{w:130,r:9},{w:130,r:8},{w:135,r:7}], rest:90, prev:"130 × 8"},
+        {ex:"db_bench", sets:[{w:50,r:10},{w:55,r:9},{w:55,r:8}], rest:90, prev:"55 × 8"},
+        {ex:"cable_fly", sets:[{w:25,r:12},{w:30,r:11},{w:30,r:10}], rest:60, prev:"30 × 10"},
+        {ex:"lat_raise", sets:[{w:15,r:14},{w:15,r:12},{w:20,r:10}], rest:60, prev:"20 × 10"}
+      ]
+    }
+  },
+  priya:{
+    workout:{
+      name:"Conditioning + Strength", day:"Full body · Cardio focus", est:"42 min",
+      prep:{name:"Dynamic Warm-Up",mins:5,ex:["wall_slide","plank"]},
+      blocks:[
+        {ex:"treadmill_walk", sets:[{w:0,r:15},{w:0,r:0}], rest:0, prev:"12 min", cardio:true, note:"15 min · incline intervals"},
+        {ex:"goblet_squat", sets:[{w:35,r:12},{w:35,r:12},{w:40,r:10}], rest:75, prev:"35 × 12"},
+        {ex:"seated_row", sets:[{w:70,r:12},{w:75,r:11},{w:75,r:10}], rest:60, prev:"75 × 10"},
+        {ex:"plank", sets:[{w:0,r:45},{w:0,r:45},{w:0,r:40}], rest:45, prev:"45s", note:"seconds hold"}
+      ]
+    }
+  },
+  dad:{
+    workout:{
+      name:"Mobility + Strength", day:"Senior session · Gentle", est:"20 min",
+      prep:{name:"Warm-Up",mins:4,ex:["supported_march"]},
+      blocks:[
+        {ex:"chair_squat", sets:[{w:0,r:8},{w:0,r:8}], rest:60, prev:"8 reps"},
+        {ex:"wall_pushup", sets:[{w:0,r:10},{w:0,r:10}], rest:60, prev:"10 reps"},
+        {ex:"band_row_senior", sets:[{w:0,r:12},{w:0,r:12}], rest:60, prev:"12 reps"},
+        {ex:"supported_calf", sets:[{w:0,r:12},{w:0,r:12}], rest:45, prev:"12 reps"},
+        {ex:"balance_hold", sets:[{w:0,r:20},{w:0,r:20}], rest:45, prev:"20s", note:"seconds each leg"}
+      ]
+    }
+  }
+};
+
+// ---- Rehab programs keyed by profile ----
+const REHAB = {
+  rak:[{
+    id:"lb", name:"Lower Back Recovery", area:"Lower back", stage:"Strength / Return to Training",
+    stageIdx:3, objective:"Rebuild pain-free spinal stability and safely return to full loading.",
+    painThreshold:"Keep working pain ≤ 3/10. Stop any movement that sharpens or radiates.",
+    weeks:6, weekNow:5,
+    session:{name:"Lower Back — Rebuild Session", mins:18, ex:["pelvic_tilt","dead_bug","bird_dog","glute_bridge","pallof_press"]},
+    milestones:[{t:"Pain-Free Walking",done:true},{t:"Full Range of Motion",done:true},{t:"20 Pain-Free Squats",done:true},{t:"Return to Gym",done:false},{t:"Full Deadlift Load",done:false}],
+    progress:[{wk:"W1",load:20},{wk:"W2",load:35},{wk:"W3",load:48},{wk:"W4",load:62},{wk:"W5",load:78}]
+  }],
+  dad:[{
+    id:"knee", name:"Knee Strengthening", area:"Knee (right)", stage:"Activation / Stability",
+    stageIdx:1, objective:"Build supporting strength and confident, pain-free daily movement.",
+    painThreshold:"Keep working pain ≤ 3/10. Use chair support whenever needed.",
+    weeks:8, weekNow:3,
+    session:{name:"Knee — Support Session", mins:15, ex:["chair_squat","supported_calf","balance_hold","supported_march"]},
+    milestones:[{t:"Pain-Free Standing",done:true},{t:"10 Sit-to-Stands",done:true},{t:"30-Second Balance",done:false},{t:"Stairs Without Support",done:false}],
+    progress:[{wk:"W1",load:10},{wk:"W2",load:22},{wk:"W3",load:34}]
+  }],
+  priya:[]
+};
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const S = {
+  activeProfile:null,      // id
+  route:"today",           // today | workout | rehab | progress | coach | family | exercise | video | wizard | active
+  exerciseId:null,
+  videoContext:null,       // {exId, videoIdx}
+  workoutState:null,       // live workout log
+  rehabState:null,
+  wizard:null,
+  profiles:JSON.parse(JSON.stringify(SEED.profiles)),
+  family:JSON.parse(JSON.stringify(SEED.family)),
+  toast:null
+};
+function P(){ return S.profiles.find(p=>p.id===S.activeProfile); }
+
+/* ============================================================
+   ICONS (inline SVG)
+   ============================================================ */
+const IC = {
+  home:'<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/>',
+  dumbbell:'<path d="M6 8v8M18 8v8M4 10v4M20 10v4M6 12h12"/>',
+  rehab:'<path d="M12 3v18M4 9h16M8 5l8 14M16 5L8 19" stroke-width="1.6"/>',
+  chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  coach:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',
+  family:'<circle cx="8" cy="9" r="3"/><circle cx="17" cy="10" r="2.5"/><path d="M2 20c0-3 3-5 6-5s6 2 6 5M14 20c0-2 2-3.5 4-3.5s4 1.5 4 3.5"/>',
+  play:'<path d="M8 5v14l11-7z"/>',
+  back:'<path d="M15 18l-6-6 6-6"/>',
+  check:'<path d="M5 12l5 5 9-11"/>',
+  close:'<path d="M6 6l12 12M18 6L6 18"/>',
+  muscle:'<path d="M12 2a3 3 0 0 1 3 3c0 2 2 3 2 6s-2 4-2 6a3 3 0 0 1-6 0c0-2-2-3-2-6s2-4 2-6a3 3 0 0 1 3-3z"/>',
+  swap:'<path d="M4 7h13l-3-3M20 17H7l3 3"/>',
+  timer:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/>',
+  info:'<circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/>',
+  spark:'<path d="M12 2l2 7 7 2-7 2-2 7-2-7-7-2 7-2z"/>',
+  flame:'<path d="M12 2c1 4 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 3 3 0-3-2-4 0-9z"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  photo:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 17l-5-5-8 8"/>'
+};
+function icon(name,cls){
+  const fillIcons=["play","spark","flame"];
+  const isFill=fillIcons.includes(name);
+  return `<svg viewBox="0 0 24 24" class="ic ${cls||''}"${isFill?' style="fill:currentColor;stroke:none"':''}>${IC[name]||''}</svg>`;
+}
+
+/* ============================================================
+   SVG CHART HELPERS
+   ============================================================ */
+function ring(pct,size,stroke,color){
+  size=size||96; stroke=stroke||10; color=color||"var(--accent)";
+  const r=(size-stroke)/2, c=2*Math.PI*r, off=c*(1-pct/100);
+  return `<svg width="${size}" height="${size}" class="ring" viewBox="0 0 ${size} ${size}">
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" stroke="var(--surface-2)" stroke-width="${stroke}"/>
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" stroke="${color}" stroke-width="${stroke}"
+      stroke-dasharray="${c}" stroke-dashoffset="${off}" style="--to:${off}"/>
+  </svg>`;
+}
+function lineChart(data,opts){
+  opts=opts||{}; const w=opts.w||320,h=opts.h||120,pad=8;
+  const min=Math.min(...data),max=Math.max(...data),span=(max-min)||1;
+  const step=(w-pad*2)/(data.length-1);
+  const pts=data.map((v,i)=>[pad+i*step, h-pad-((v-min)/span)*(h-pad*2)]);
+  const d=pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");
+  const area=d+` L ${pts[pts.length-1][0]} ${h} L ${pts[0][0]} ${h} Z`;
+  const col=opts.color||"var(--accent)";
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}" preserveAspectRatio="none">
+    <defs><linearGradient id="g${opts.id||'x'}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="${col}" stop-opacity=".35"/><stop offset="1" stop-color="${col}" stop-opacity="0"/>
+    </linearGradient></defs>
+    <path d="${area}" fill="url(#g${opts.id||'x'})"/>
+    <path d="${d}" fill="none" stroke="${col}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    ${pts.map(p=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="2.4" fill="${col}"/>`).join("")}
+  </svg>`;
+}
+function barChart(data,labels,opts){
+  opts=opts||{}; const w=opts.w||320,h=opts.h||120,pad=8,gap=6;
+  const max=Math.max(...data,1);
+  const bw=(w-pad*2-gap*(data.length-1))/data.length;
+  const col=opts.color||"var(--accent-2)";
+  return `<svg viewBox="0 0 ${w} ${h+18}" width="100%" height="${h+18}">
+    ${data.map((v,i)=>{const bh=(v/max)*(h-pad); const x=pad+i*(bw+gap); const y=h-bh;
+      return `<rect x="${x}" y="${y}" width="${bw}" height="${bh}" rx="4" fill="${col}" opacity="${.5+.5*(v/max)}"/>
+      <text x="${x+bw/2}" y="${h+13}" fill="var(--muted)" font-size="9" text-anchor="middle">${labels?labels[i]:''}</text>`;}).join("")}
+  </svg>`;
+}
+
+/* ============================================================
+   BODY / MUSCLE MAP (simplified anatomical silhouette)
+   ============================================================ */
+function bodyMap(mm){
+  const has=(g,side)=>{ const arr=side==='f'?mm.front:mm.back; return arr&&arr.includes(g); };
+  const cls=(g,side)=>{
+    // priority coloring: primary first two groups treated primary; else secondary
+    return has(g,side)?'mm-hit':'mm-base';
+  };
+  // We color by presence; primary vs secondary derived from order isn't tracked per-group here,
+  // so we render present groups in accent, absent in base. Legend explains categories separately.
+  function front(){
+    return `<svg viewBox="0 0 80 200"><g stroke-width=".6">
+      <ellipse cx="40" cy="14" rx="8" ry="9" class="mm-base"/>
+      <rect x="35" y="22" width="10" height="8" rx="3" class="mm-base"/>
+      <path d="M24 32 h32 a4 4 0 0 1 4 4 v10 a20 20 0 0 1-40 0 v-10 a4 4 0 0 1 4-4z" class="${cls('chest','f')}"/>
+      <rect x="18" y="30" width="8" height="16" rx="4" class="${cls('shoulders','f')}"/>
+      <rect x="54" y="30" width="8" height="16" rx="4" class="${cls('shoulders','f')}"/>
+      <rect x="17" y="46" width="7" height="26" rx="3.5" class="${cls('bicepsF','f')} ${has('tricepsF','f')?'mm-hit':''}"/>
+      <rect x="56" y="46" width="7" height="26" rx="3.5" class="${cls('bicepsF','f')} ${has('tricepsF','f')?'mm-hit':''}"/>
+      <rect x="28" y="54" width="24" height="26" rx="6" class="${cls('abs','f')}"/>
+      <path d="M28 80 h24 v6 a12 12 0 0 1-24 0z" class="mm-base"/>
+      <rect x="29" y="90" width="9" height="40" rx="4" class="${cls('quads','f')}"/>
+      <rect x="42" y="90" width="9" height="40" rx="4" class="${cls('quads','f')}"/>
+      <rect x="30" y="132" width="8" height="34" rx="3.5" class="mm-base"/>
+      <rect x="42" y="132" width="8" height="34" rx="3.5" class="mm-base"/>
+    </g></svg>`;
+  }
+  function back(){
+    return `<svg viewBox="0 0 80 200"><g stroke-width=".6">
+      <ellipse cx="40" cy="14" rx="8" ry="9" class="mm-base"/>
+      <rect x="30" y="24" width="20" height="10" rx="4" class="${cls('upperback','b')} ${has('shouldersB','b')?'mm-hit':''}"/>
+      <rect x="18" y="30" width="8" height="16" rx="4" class="${cls('shouldersB','b')}"/>
+      <rect x="54" y="30" width="8" height="16" rx="4" class="${cls('shouldersB','b')}"/>
+      <path d="M26 34 h28 v22 a14 8 0 0 1-28 0z" class="${cls('lats','b')} ${has('upperback','b')?'mm-hit':''}"/>
+      <rect x="17" y="46" width="7" height="26" rx="3.5" class="mm-base"/>
+      <rect x="56" y="46" width="7" height="26" rx="3.5" class="mm-base"/>
+      <rect x="31" y="56" width="18" height="20" rx="4" class="${cls('lowerback','b')}"/>
+      <path d="M28 78 h24 v10 a12 8 0 0 1-24 0z" class="${cls('glutes','b')}"/>
+      <rect x="29" y="92" width="9" height="38" rx="4" class="${cls('hamstrings','b')}"/>
+      <rect x="42" y="92" width="9" height="38" rx="4" class="${cls('hamstrings','b')}"/>
+      <rect x="30" y="132" width="8" height="34" rx="3.5" class="${cls('calves','b')}"/>
+      <rect x="42" y="132" width="8" height="34" rx="3.5" class="${cls('calves','b')}"/>
+    </g></svg>`;
+  }
+  return `<div class="body-map">${front()}${back()}</div>
+    <style>.mm-hit{fill:var(--coral);stroke:#4a2a2a}</style>`;
+}
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+const app=document.getElementById("app");
+function render(){
+  if(!S.activeProfile){ app.innerHTML=renderLanding(); bindLanding(); return; }
+  const p=P();
+  document.body.classList.toggle("senior", p.mode==="senior" && !!p.accessibility);
+  app.innerHTML = `
+    <div class="shell">
+      ${renderSidebar()}
+      <div class="main">
+        ${renderAppbar()}
+        <div id="view">${renderRoute()}</div>
+      </div>
+      ${renderTabbar()}
+    </div>`;
+  bindRoute();
+  if(S.toast) showToastEl();
+}
+
+/* ---- Landing / profile select ---- */
+function renderLanding(){
+  const cards=S.profiles.map(p=>`
+    <button class="pcard" data-pid="${p.id}">
+      ${p.mode!=="standard"?`<span class="badge-mode tag ${p.mode==='senior'?'sky':'violet'}">${p.mode}</span>`:''}
+      <div class="av" style="background:linear-gradient(135deg,${p.color},${shade(p.color,-30)})">${p.initials}</div>
+      <div class="nm">${p.name}</div>
+      <div class="go">${p.goals[0]}</div>
+      <div class="tiny subtle" style="margin-top:6px">Age ${p.age} · ${p.streak}-day streak</div>
+    </button>`).join("");
+  return `<div class="landing"><div class="aura"></div><div class="inner">
+    <div class="brand" style="font-size:20px">
+      <span class="logo">R</span>
+      <div>RAK FIT FAMILY AI<small>PERSONAL TRAINING FOR EVERY BODY</small></div>
+    </div>
+    <h1 class="display" style="margin-top:34px">Who's training?</h1>
+    <p class="subtle" style="max-width:440px">One family. Multiple profiles. Different goals, different injuries — one intelligent fitness system. Pick a profile to enter a fully personalized experience.</p>
+    <div class="who-grid">
+      ${cards}
+      <button class="pcard add" data-add="1">
+        <div style="font-size:34px">＋</div>
+        <div class="nm" style="font-size:15px;margin-top:6px">Add Profile</div>
+      </button>
+    </div>
+    <p class="tiny subtle" style="margin-top:28px">Demo build · realistic data · video infrastructure with clearly-marked placeholders (no fabricated links).</p>
+  </div></div>`;
+}
+function bindLanding(){
+  document.querySelectorAll("[data-pid]").forEach(b=>b.onclick=()=>{ S.activeProfile=b.dataset.pid; S.route="today"; render(); });
+  const add=document.querySelector("[data-add]"); if(add) add.onclick=()=>{ startWizard(); };
+}
+
+/* ---- App bar ---- */
+function renderAppbar(){
+  const p=P();
+  return `<div class="appbar"><div class="appbar-in">
+    <div class="brand mob-only"><span class="logo">R</span></div>
+    <div class="brand desk-only"><span class="logo">R</span><div style="font-size:15px">RAK FIT<small>FAMILY AI</small></div></div>
+    <div class="spacer"></div>
+    <button class="avatar-btn" id="switchBtn">
+      <span class="avatar" style="background:linear-gradient(135deg,${p.color},${shade(p.color,-30)})">${p.initials}</span>
+      <span class="who">Training<b>${p.name}</b></span>
+    </button>
+  </div></div>`;
+}
+
+/* ---- Navigation ---- */
+const NAV=[["today","Today","home"],["workout","Workout","dumbbell"],["rehab","Rehab","rehab"],["progress","Progress","chart"],["coach","Coach","coach"]];
+function renderTabbar(){
+  return `<div class="tabbar">${NAV.map(([r,l,i])=>`
+    <button class="tab ${S.route===r?'on':''}" data-nav="${r}">${icon(i,'ic')}<span>${l}</span></button>`).join("")}</div>`;
+}
+function renderSidebar(){
+  const p=P();
+  const items=[...NAV,["family","Family","family"]];
+  return `<aside class="sidebar">
+    <div class="brand" style="padding:6px 10px 18px"><span class="logo">R</span><div>RAK FIT<small>FAMILY AI</small></div></div>
+    ${items.map(([r,l,i])=>`<button class="nav-item ${S.route===r?'on':''}" data-nav="${r}">${icon(i,'ic')}${l}</button>`).join("")}
+    <div style="flex:1"></div>
+    <button class="nav-item" id="switchSide">${icon('swap','ic')}Switch profile</button>
+    <div class="card" style="margin-top:10px;padding:12px">
+      <div class="row"><span class="avatar" style="width:30px;height:30px;background:linear-gradient(135deg,${p.color},${shade(p.color,-30)})">${p.initials}</span>
+      <div><b style="font-size:13px">${p.name}</b><div class="tiny subtle">${p.mode} mode</div></div></div>
+    </div>
+  </aside>`;
+}
+
+/* ---- Router ---- */
+function renderRoute(){
+  switch(S.route){
+    case"today": return P().mode==="senior"?seniorToday():standardToday();
+    case"workout": return workoutScreen();
+    case"active": return activeWorkout();
+    case"rehab": return rehabScreen();
+    case"rehabSession": return rehabSession();
+    case"progress": return progressScreen();
+    case"coach": return coachScreen();
+    case"family": return familyScreen();
+    case"exercise": return exerciseDetail();
+    case"library": return libraryScreen();
+    default: return standardToday();
+  }
+}
+function bindRoute(){
+  document.querySelectorAll("[data-nav]").forEach(b=>b.onclick=()=>go(b.dataset.nav));
+  const sw=document.getElementById("switchBtn"); if(sw) sw.onclick=switchProfile;
+  const ss=document.getElementById("switchSide"); if(ss) ss.onclick=switchProfile;
+  if(S.route==="today") bindToday();
+  if(S.route==="workout") bindWorkout();
+  if(S.route==="active") bindActive();
+  if(S.route==="rehab") bindRehab();
+  if(S.route==="rehabSession") bindRehabSession();
+  if(S.route==="exercise") bindExercise();
+  if(S.route==="library") bindLibrary();
+  if(S.route==="coach") bindCoach();
+  if(S.route==="progress") bindProgress();
+}
+function go(r){ S.route=r; window.scrollTo(0,0); render(); }
+function switchProfile(){ S.activeProfile=null; render(); }
+
+/* ============================================================
+   TODAY — standard
+   ============================================================ */
+function greeting(){ const h=new Date().getHours(); return h<12?"Good morning":h<18?"Good afternoon":"Good evening"; }
+function standardToday(){
+  const p=P(); const plan=PLANS[p.id]?.workout;
+  const rehab=(REHAB[p.id]||[])[0];
+  const readyColor = p.readiness>=80?"var(--ok)":p.readiness>=60?"var(--warn)":"var(--coral)";
+  return `<div class="container section">
+    <div class="pagehead">
+      <div class="eyebrow">${todayStr()}</div>
+      <h1 class="display">${greeting()}, ${p.name}</h1>
+    </div>
+
+    <div class="dash-2col" style="margin-top:14px">
+      <div class="stack">
+        <!-- readiness + rings -->
+        <div class="card glass">
+          <div class="row between">
+            <div>
+              <div class="eyebrow">Readiness</div>
+              <div style="font-size:34px;font-weight:850;letter-spacing:-1px;color:${readyColor}">${p.readiness}<span style="font-size:16px;color:var(--muted)">/100</span></div>
+              <div class="tiny subtle">${p.readiness>=80?"Primed to train — push a little.":p.readiness>=60?"Ready — train as planned.":"Recover-focused — keep it light."}</div>
+            </div>
+            <div style="position:relative;display:grid;place-items:center">${ring(p.readiness,110,11,readyColor)}
+              <div style="position:absolute;text-align:center"><div style="font-size:22px">${icon('flame')}</div></div>
+            </div>
+          </div>
+          <div class="grid g3" style="margin-top:14px">
+            ${miniStat("Pain today",p.painToday+"/10",p.painToday<=2?"up":"down",p.painToday<=2?"Low":"Monitor")}
+            ${miniStat("Streak",p.streak+" d","up","Keep it up")}
+            ${miniStat("Weight",p.weightLog.at(-1)+" lb", p.targetLb?(p.weightLog.at(-1)<p.targetLb?"up":"down"):"", p.targetLb?("→ "+p.targetLb):"")}
+          </div>
+        </div>
+
+        <!-- today's workout -->
+        ${plan?`<div class="card">
+          <div class="row between"><div class="eyebrow">Today's workout</div><span class="tag">${plan.day}</span></div>
+          <h2 style="font-size:22px;margin-top:8px">${plan.name}</h2>
+          <div class="tiny subtle">${plan.blocks.length} exercises · ~${plan.est}</div>
+          ${plan.prep?`<div class="safety" style="margin-top:12px;border-color:rgba(108,198,255,.35);background:rgba(108,198,255,.06)">
+            <div class="row between"><b style="font-size:13px">${icon('rehab','ic')} ${plan.prep.name} · ${plan.prep.mins} min</b><span class="tag sky">Injury-aware</span></div>
+            <div class="tiny subtle" style="margin-top:4px">Runs before your workout: ${plan.prep.ex.map(id=>EX[id].name).join(" · ")}</div>
+          </div>`:''}
+          <div class="stack" style="margin-top:12px">
+            ${plan.blocks.map(b=>exRow(b.ex,`${b.sets.length} sets · prev ${b.prev}`)).join("")}
+          </div>
+          <button class="btn primary block lg" style="margin-top:14px" data-start-workout>Start workout ${icon('play','ic')}</button>
+        </div>`:''}
+      </div>
+
+      <div class="stack">
+        <!-- AI coach card -->
+        ${coachCard(p)}
+        <!-- rehab today -->
+        ${rehab?`<div class="card">
+          <div class="row between"><div class="eyebrow">Rehab · Active</div><span class="tag violet">Stage: ${rehab.stage.split(' / ')[0]}</span></div>
+          <h3 style="margin-top:6px">${rehab.name}</h3>
+          <div class="tiny subtle">${rehab.session.name} · ${rehab.session.mins} min</div>
+          <div class="meter" style="margin-top:12px"><i style="width:${Math.round(rehab.weekNow/rehab.weeks*100)}%"></i></div>
+          <div class="tiny subtle" style="margin-top:6px">Week ${rehab.weekNow} of ${rehab.weeks} · ${rehab.milestones.filter(m=>m.done).length}/${rehab.milestones.length} milestones</div>
+          <button class="btn block" style="margin-top:12px" data-nav="rehab">Open rehab</button>
+        </div>`:''}
+        <!-- quick actions -->
+        <div class="card">
+          <div class="eyebrow" style="margin-bottom:10px">Quick log</div>
+          <div class="grid g3">
+            ${quickAction("Weight","⚖️","weight")}
+            ${quickAction("Push-ups","💪","pushup")}
+            ${quickAction("Pain","🩹","pain")}
+            ${quickAction("Meal","🍽️","meal")}
+            ${quickAction("Water","💧","water")}
+            ${quickAction("Photo","📸","photo")}
+          </div>
+        </div>
+        <!-- daily habits -->
+        <div class="card">
+          <div class="eyebrow" style="margin-bottom:10px">Daily habits</div>
+          ${habit("Protein target","118 / 150 g",79)}
+          ${habit("Steps","6,240 / 9,000",69)}
+          ${habit("Mobility",p.id==='rak'?"Done ✓":"Pending",p.id==='rak'?100:0)}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+function bindToday(){
+  const sw=document.querySelector("[data-start-workout]"); if(sw) sw.onclick=()=>startLiveWorkout();
+  document.querySelectorAll("[data-nav]").forEach(b=>b.onclick=()=>go(b.dataset.nav));
+  document.querySelectorAll("[data-qa]").forEach(b=>b.onclick=()=>quickLog(b.dataset.qa));
+  document.querySelectorAll("[data-ex]").forEach(b=>b.onclick=()=>openExercise(b.dataset.ex));
+  const cc=document.querySelector("[data-coach-open]"); if(cc) cc.onclick=()=>go("coach");
+}
+
+/* ---- TODAY — senior ---- */
+function seniorToday(){
+  const p=P(); const plan=PLANS[p.id].workout; const rehab=(REHAB[p.id]||[])[0];
+  return `<div class="container section">
+    <div class="pagehead">
+      <div class="eyebrow">${todayStr()}</div>
+      <h1 class="display">${greeting()}, ${p.name}</h1>
+      <p class="subtle" style="font-size:16px;margin-top:4px">A gentle, joint-friendly session is ready for you.</p>
+    </div>
+    <div class="grid g2" style="margin-top:14px">
+      <div class="card" style="grid-column:1/-1">
+        <div class="row between"><div class="eyebrow">Today · ${plan.est}</div><span class="tag sky">Senior mode</span></div>
+        <h2 style="font-size:26px;margin-top:6px">${plan.name}</h2>
+        <p class="subtle" style="font-size:16px">Focus: mobility, balance, gentle strength. Use a chair for support whenever you like.</p>
+        <div class="stack" style="margin-top:12px">
+          ${plan.blocks.map(b=>exRowBig(b.ex, b.sets.length+" sets")).join("")}
+        </div>
+        <button class="btn primary block lg" style="margin-top:16px;font-size:19px;padding:20px" data-start-workout>Start today's session ${icon('play','ic')}</button>
+      </div>
+      ${rehab?`<div class="card" style="grid-column:1/-1">
+        <div class="eyebrow">Rehabilitation</div>
+        <h3 style="font-size:22px;margin-top:6px">${rehab.name}</h3>
+        <p class="subtle" style="font-size:16px">${rehab.objective}</p>
+        <div class="safety" style="margin-top:10px"><b>${icon('info','ic')} ${rehab.painThreshold}</b></div>
+        <button class="btn block lg" style="margin-top:12px;font-size:17px" data-nav="rehab">Open knee program</button>
+      </div>`:''}
+      <div class="card">
+        <div class="eyebrow">Balance check-in</div>
+        <p class="subtle" style="font-size:16px">How steady do you feel today?</p>
+        <div class="row wrap" style="margin-top:8px">
+          <button class="btn lg" data-qa="steady">Steady 👍</button>
+          <button class="btn lg" data-qa="unsteady">A little off ⚠️</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="eyebrow">Knee pain now</div>
+        <div style="font-size:34px;font-weight:850;color:var(--warn)">${p.painToday}/10</div>
+        <button class="btn block lg" style="margin-top:8px;font-size:17px" data-qa="pain">Update pain level</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* Small builders */
+function miniStat(k,v,dir,d){ return `<div><div class="tiny subtle" style="font-weight:700">${k}</div><div style="font-size:19px;font-weight:800">${v}</div><div class="tiny ${dir}">${d||''}</div></div>`; }
+function quickAction(label,emoji,key){ return `<button class="chip" style="flex-direction:column;padding:14px 6px;gap:6px" data-qa="${key}"><span style="font-size:22px">${emoji}</span><span class="tiny">${label}</span></button>`; }
+function habit(name,val,pct){ return `<div style="margin-bottom:12px"><div class="row between"><span class="tiny" style="font-weight:700">${name}</span><span class="tiny subtle">${val}</span></div><div class="meter" style="margin-top:5px"><i style="width:${pct}%"></i></div></div>`; }
+function exRow(id,sub){ const e=EX[id]; return `<button class="ex-card" data-ex="${id}"><div class="ex-thumb">${thumbGlyph(e)}<span class="play">${icon('play')}</span></div><div class="ex-meta"><div class="nm">${e.name}</div><div class="sub">${sub}</div></div>${icon('back','ic')}</button>`; }
+function exRowBig(id,sub){ const e=EX[id]; return `<button class="ex-card" style="padding:18px" data-ex="${id}"><div class="ex-thumb" style="width:76px;height:76px">${thumbGlyph(e)}<span class="play">${icon('play')}</span></div><div class="ex-meta"><div class="nm" style="font-size:18px">${e.name}</div><div class="sub">${sub} · ${e.equipment}</div></div>${icon('back','ic')}</button>`; }
+function thumbGlyph(e){ const g=e.cat==='rehab'?'🧘':e.cat==='cardio'?'🏃':e.cat==='mobility'?'🤸':e.cat==='core'?'🧱':'🏋️'; return `<span style="font-size:26px">${g}</span>`; }
+
+function coachCard(p){
+  const msg=coachMessage(p);
+  return `<div class="card glass" data-coach-open style="cursor:pointer;border-color:rgba(124,246,176,.25)">
+    <div class="row between"><div class="eyebrow" style="color:var(--accent)">${icon('spark','ic')} AI Coach</div><span class="tag">Personalized</span></div>
+    <p style="margin-top:10px;font-size:15px;line-height:1.55">${msg}</p>
+    <div class="row" style="margin-top:10px;color:var(--accent-2);font-weight:700;font-size:13px">Ask your coach ${icon('back','ic')}</div>
+  </div>`;
+}
+function coachMessage(p){
+  if(p.mode==="senior") return `Your knee pain is holding steady at ${p.painToday}/10 and you've kept a ${p.streak}-day streak — excellent. I've kept today's session chair-supported and balance-focused. We'll only progress the sit-to-stands once you're comfortably pain-free.`;
+  if(p.id==="priya") return `Readiness is high at ${p.readiness} and you're down to ${p.weightLog.at(-1)} lb — right on track for ${p.targetLb}. Today leans into conditioning; I nudged your row up 5 lb since last week's sets moved well.`;
+  const inj=p.injuries[0];
+  return `Readiness ${p.readiness} and your lower back is quiet at ${p.painToday}/10, so I've cleared you to add a little load on the chest press. Your 6-minute lower-back prep runs first to keep the spine happy${inj?.physio?'':''}. Because your physio restrictions take priority, I'm still routing heavy rows to chest-supported variations.`;
+}
+
+/* ============================================================
+   WORKOUT SCREEN (overview)
+   ============================================================ */
+function workoutScreen(){
+  const p=P(); const plan=PLANS[p.id].workout;
+  return `<div class="container section">
+    <div class="pagehead"><div class="eyebrow">Workout · ${plan.day}</div><h1 class="display">${plan.name}</h1>
+    <p class="subtle">${plan.blocks.length} exercises · ~${plan.est} · ${p.location}</p></div>
+
+    ${plan.prep?`<div class="card" style="border-color:rgba(108,198,255,.3)">
+      <div class="row between"><div class="eyebrow" style="color:var(--sky)">${icon('rehab','ic')} ${plan.prep.name}</div><span class="tag sky">Runs first · ${plan.prep.mins} min</span></div>
+      <div class="grid" style="margin-top:10px">${plan.prep.ex.map(id=>exRow(id,EX[id].movement)).join("")}</div>
+    </div>`:''}
+
+    <div class="card" style="margin-top:14px">
+      <div class="eyebrow" style="margin-bottom:10px">Main workout</div>
+      <div class="stack">${plan.blocks.map(b=>`
+        <div class="ex-card" style="cursor:default">
+          <button class="ex-thumb" data-ex="${b.ex}" style="border:none">${thumbGlyph(EX[b.ex])}<span class="play">${icon('play')}</span></button>
+          <div class="ex-meta"><div class="nm">${EX[b.ex].name}</div><div class="sub">${b.sets.length} sets · prev ${b.prev} · rest ${b.rest}s</div>
+          <div class="row" style="gap:6px;margin-top:6px">${EX[b.ex].tags.slice(0,3).map(t=>`<span class="tag gray">${t}</span>`).join("")}${EX[b.ex].backFriendly?'<span class="tag">Back friendly</span>':''}</div></div>
+          <button class="iconbtn" data-swap="${b.ex}" title="Alternatives">${icon('swap','ic')}</button>
+        </div>`).join("")}</div>
+      <button class="btn primary block lg" style="margin-top:16px" data-start-workout>Start workout ${icon('play','ic')}</button>
+    </div>
+
+    <button class="btn ghost block" style="margin-top:12px" data-nav="library">Browse full exercise library ${icon('back','ic')}</button>
+  </div>`;
+}
+function bindWorkout(){
+  document.querySelectorAll("[data-ex]").forEach(b=>b.onclick=()=>openExercise(b.dataset.ex));
+  document.querySelectorAll("[data-swap]").forEach(b=>b.onclick=()=>openAlternatives(b.dataset.swap));
+  const s=document.querySelector("[data-start-workout]"); if(s) s.onclick=()=>startLiveWorkout();
+  document.querySelectorAll("[data-nav]").forEach(b=>b.onclick=()=>go(b.dataset.nav));
+}
+
+/* ============================================================
+   ACTIVE WORKOUT (logging + rest timer) — iPad split layout
+   ============================================================ */
+function startLiveWorkout(){
+  const p=P(); const plan=PLANS[p.id].workout;
+  S.workoutState={
+    plan, idx:0,
+    log:plan.blocks.map(b=>b.sets.map(s=>({w:s.w,r:s.r,done:false}))),
+    startedAt:Date.now(), restEndsAt:null, restTotal:0
+  };
+  go("active");
+}
+function activeWorkout(){
+  const ws=S.workoutState; if(!ws) return workoutScreen();
+  const b=ws.plan.blocks[ws.idx]; const e=EX[b.ex];
+  const sets=ws.log[ws.idx];
+  const doneCount=ws.log.flat().filter(s=>s.done).length;
+  const total=ws.log.flat().length;
+  const v=e.videos[0];
+  return `<div class="container section">
+    <div class="row between pagehead">
+      <button class="btn sm ghost" data-abort>${icon('close','ic')} End</button>
+      <div style="text-align:center"><div class="eyebrow">${ws.plan.name}</div><div class="tiny subtle">Exercise ${ws.idx+1}/${ws.plan.blocks.length} · ${doneCount}/${total} sets</div></div>
+      <div style="width:60px"></div>
+    </div>
+    <div class="meter" style="margin-bottom:14px"><i style="width:${Math.round(doneCount/total*100)}%"></i></div>
+
+    <div class="ipad-split">
+      <!-- LEFT: logging -->
+      <div class="card">
+        <div class="row between"><h2 style="font-size:22px">${e.name}</h2><span class="tag ${e.backFriendly?'':'gray'}">${e.backFriendly?'Back friendly':e.difficulty}</span></div>
+        <div class="tiny subtle" style="margin-bottom:4px">Previous: ${b.prev} · Rest ${b.rest}s ${b.note?('· '+b.note):''}</div>
+
+        <div class="row" style="gap:8px;margin:12px 0 4px" >
+          <button class="btn sm" data-ex="${b.ex}">${icon('play','ic')} Watch demo</button>
+          <button class="btn sm" data-muscles="${b.ex}">${icon('muscle','ic')} Muscles</button>
+          <button class="btn sm" data-swap="${b.ex}">${icon('swap','ic')} Alt</button>
+          <button class="btn sm" data-help="${b.ex}">${icon('info','ic')} Not sure?</button>
+        </div>
+
+        <div class="set-row" style="color:var(--muted);font-size:11px;font-weight:700;border-bottom:1px solid var(--line-soft)">
+          <span>SET</span><span style="text-align:center">${b.cardio||b.note?.includes('seconds')?'MIN/SEC':'LB'}</span><span style="text-align:center">REPS</span><span></span></div>
+        ${sets.map((s,i)=>`<div class="set-row ${s.done?'done':''}">
+          <span class="idx">${i+1}</span>
+          <input class="field" type="number" value="${s.w}" data-set="${i}" data-k="w">
+          <input class="field" type="number" value="${s.r}" data-set="${i}" data-k="r">
+          <button class="check ${s.done?'on':''}" data-toggle="${i}">${icon('check')}</button>
+        </div>`).join("")}
+        <button class="btn ghost sm block" style="margin-top:8px" data-addset>+ Add set</button>
+
+        <div class="row" style="margin-top:16px;gap:10px">
+          ${ws.idx>0?`<button class="btn" data-prev>${icon('back','ic')} Prev</button>`:''}
+          ${ws.idx<ws.plan.blocks.length-1?`<button class="btn primary" style="flex:1" data-next>Next exercise ${icon('back','ic')}</button>`:`<button class="btn primary" style="flex:1" data-finish>Finish workout ${icon('check','ic')}</button>`}
+        </div>
+      </div>
+
+      <!-- RIGHT: coach / video / rest timer -->
+      <div class="stack">
+        <div id="restBox">${restTimerHtml()}</div>
+        <div class="card">
+          <div class="video-frame" data-ex="${b.ex}" style="cursor:pointer">
+            <span class="placeholder-note tag warn">Video to be curated</span>
+            <div style="text-align:center"><div class="big-play">${icon('play')}</div><div class="tiny subtle">Tap to open demo</div></div>
+          </div>
+          <div class="tiny subtle" style="margin-top:8px"><b>Setup:</b> ${e.setup[0]}</div>
+        </div>
+        <div class="card">
+          <div class="eyebrow" style="margin-bottom:8px">Coaching cues</div>
+          <ol style="margin:0;padding-left:18px;font-size:14px;line-height:1.7">${e.execution.slice(0,3).map(x=>`<li>${x}</li>`).join("")}</ol>
+          ${e.backFriendly&&P().injuries.length?`<div class="safety" style="margin-top:10px"><b class="tiny">${icon('info','ic')} ${e.backNote}</b></div>`:''}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+function restTimerHtml(){
+  const ws=S.workoutState;
+  const active=ws.restEndsAt && ws.restEndsAt>Date.now();
+  const rem=active?Math.ceil((ws.restEndsAt-Date.now())/1000):0;
+  const pct=active?rem/ws.restTotal*100:0;
+  return `<div class="card" style="text-align:center">
+    <div class="eyebrow">Rest timer</div>
+    <div style="position:relative;display:grid;place-items:center;margin:6px auto">
+      ${ring(active?pct:0,120,12,active?"var(--accent-2)":"var(--surface-2)")}
+      <div style="position:absolute;font-size:30px;font-weight:850">${active?fmtTime(rem):"—"}</div>
+    </div>
+    <div class="row" style="justify-content:center;gap:8px">
+      <button class="btn sm" data-rest="60">60s</button>
+      <button class="btn sm" data-rest="90">90s</button>
+      <button class="btn sm" data-rest="120">2m</button>
+      ${active?'<button class="btn sm danger" data-rest="0">Skip</button>':''}
+    </div>
+  </div>`;
+}
+function bindActive(){
+  const ws=S.workoutState;
+  document.querySelectorAll("[data-toggle]").forEach(b=>b.onclick=()=>{ const i=+b.dataset.toggle; const s=ws.log[ws.idx][i]; s.done=!s.done; if(s.done){ startRest(ws.plan.blocks[ws.idx].rest); haptic(); } patchActive(); });
+  document.querySelectorAll("[data-set]").forEach(inp=>inp.onchange=()=>{ ws.log[ws.idx][+inp.dataset.set][inp.dataset.k]=+inp.value; });
+  document.querySelectorAll("[data-rest]").forEach(b=>b.onclick=()=>{ const t=+b.dataset.rest; if(t===0){ ws.restEndsAt=null; } else startRest(t); patchActive(); });
+  const add=document.querySelector("[data-addset]"); if(add) add.onclick=()=>{ const last=ws.log[ws.idx].at(-1); ws.log[ws.idx].push({w:last?last.w:0,r:last?last.r:10,done:false}); patchActive(); };
+  const nx=document.querySelector("[data-next]"); if(nx) nx.onclick=()=>{ ws.idx++; ws.restEndsAt=null; go("active"); };
+  const pv=document.querySelector("[data-prev]"); if(pv) pv.onclick=()=>{ ws.idx--; ws.restEndsAt=null; go("active"); };
+  const fn=document.querySelector("[data-finish]"); if(fn) fn.onclick=finishWorkout;
+  const ab=document.querySelector("[data-abort]"); if(ab) ab.onclick=()=>{ if(confirm("End workout without saving?")){ S.workoutState=null; go("today"); } };
+  document.querySelectorAll("[data-ex]").forEach(b=>b.onclick=()=>openExercise(b.dataset.ex));
+  document.querySelectorAll("[data-swap]").forEach(b=>b.onclick=()=>openAlternatives(b.dataset.swap));
+  document.querySelectorAll("[data-muscles]").forEach(b=>b.onclick=()=>openMuscles(b.dataset.muscles));
+  document.querySelectorAll("[data-help]").forEach(b=>b.onclick=()=>openHelp(b.dataset.help));
+}
+function patchActive(){ // re-render only the view to preserve scroll where possible
+  const v=document.getElementById("view"); if(v){ v.innerHTML=activeWorkout(); bindActive(); }
+}
+let restTick=null;
+function startRest(sec){ const ws=S.workoutState; ws.restTotal=sec; ws.restEndsAt=Date.now()+sec*1000; clearInterval(restTick); restTick=setInterval(()=>{ const box=document.getElementById("restBox"); if(!box||!ws.restEndsAt){clearInterval(restTick);return;} if(ws.restEndsAt<=Date.now()){ ws.restEndsAt=null; clearInterval(restTick); haptic(); toast("Rest complete — next set","var(--accent)"); } box.innerHTML=restTimerHtml(); bindRestOnly(); },250); }
+function bindRestOnly(){ document.querySelectorAll("[data-rest]").forEach(b=>b.onclick=()=>{ const t=+b.dataset.rest; if(t===0){ S.workoutState.restEndsAt=null; } else startRest(t); const box=document.getElementById("restBox"); box.innerHTML=restTimerHtml(); bindRestOnly(); }); }
+function finishWorkout(){
+  const ws=S.workoutState; const p=P();
+  const vol=ws.log.reduce((a,sets)=>a+sets.filter(s=>s.done).reduce((x,s)=>x+(s.w||1)*s.r,0),0);
+  p.volumeLog.push(vol); if(p.volumeLog.length>12) p.volumeLog.shift();
+  p.streak++;
+  S.workoutState=null;
+  clearInterval(restTick);
+  go("today");
+  celebrate(`Workout complete! ${Math.round(vol).toLocaleString()} lb volume · streak ${p.streak} 🔥`);
+}
+
+/* ============================================================
+   REHAB SCREEN
+   ============================================================ */
+function rehabScreen(){
+  const p=P(); const progs=REHAB[p.id]||[];
+  if(!progs.length) return `<div class="container section"><div class="pagehead"><div class="eyebrow">Rehab</div><h1 class="display">Rehabilitation</h1></div>
+    <div class="empty card"><div class="ico">🧘</div><b>No active rehab programs</b><p class="subtle">${p.name} has no injuries or limitations on file. You can add one from the profile setup, or build a conservative rehab session below.</p>
+    <button class="btn primary" data-gen>Build a rehab session</button></div></div>`;
+  return `<div class="container section">
+    <div class="pagehead"><div class="eyebrow">Rehab · Injury-aware</div><h1 class="display">Rehabilitation</h1></div>
+    ${progs.map(r=>`<div class="card" style="margin-bottom:14px">
+      <div class="row between"><div><div class="eyebrow" style="color:var(--violet)">${r.area}</div><h2 style="font-size:22px;margin-top:4px">${r.name}</h2></div>
+        <div style="text-align:right"><span class="tag violet">${r.stage}</span><div class="tiny subtle" style="margin-top:4px">Week ${r.weekNow}/${r.weeks}</div></div></div>
+      <p class="subtle" style="margin-top:8px">${r.objective}</p>
+      <div class="safety" style="margin-top:10px"><b class="tiny">${icon('info','ic')} Pain guidance:</b> <span class="tiny">${r.painThreshold}</span></div>
+
+      <!-- stage tracker -->
+      <div class="row" style="margin-top:14px;gap:6px">
+        ${["Mobility","Activation","Stability","Strength","Return"].map((st,i)=>`
+          <div style="flex:1;text-align:center">
+            <div class="dot" style="width:100%;height:5px;border-radius:100px;background:${i<=r.stageIdx?'var(--violet)':'var(--surface-2)'}"></div>
+            <div class="tiny ${i<=r.stageIdx?'':'subtle'}" style="margin-top:4px;font-size:9px;font-weight:700">${st}</div>
+          </div>`).join("")}
+      </div>
+
+      <!-- progress chart -->
+      <div class="grid g2" style="margin-top:16px">
+        <div class="card" style="background:var(--bg-2)">
+          <div class="tiny subtle" style="font-weight:700;margin-bottom:6px">Load tolerance trend</div>
+          ${lineChart(r.progress.map(x=>x.load),{id:'rehab',color:'var(--violet)',h:90})}
+        </div>
+        <div class="card" style="background:var(--bg-2)">
+          <div class="tiny subtle" style="font-weight:700;margin-bottom:8px">Milestones</div>
+          ${r.milestones.map(m=>`<div class="row" style="gap:8px;margin-bottom:7px"><span class="check ${m.done?'on':''}" style="width:22px;height:22px">${icon('check')}</span><span class="tiny ${m.done?'':'subtle'}" style="font-weight:${m.done?700:500}">${m.t}</span></div>`).join("")}
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px;background:var(--bg-2)">
+        <div class="row between"><b>${r.session.name}</b><span class="tag">${r.session.mins} min</span></div>
+        <div class="stack" style="margin-top:10px">${r.session.ex.map(id=>exRow(id,EX[id].movement)).join("")}</div>
+        <button class="btn primary block lg" style="margin-top:12px" data-rehab-start="${r.id}">Start rehab session ${icon('play','ic')}</button>
+      </div>
+    </div>`).join("")}
+  </div>`;
+}
+function bindRehab(){
+  document.querySelectorAll("[data-ex]").forEach(b=>b.onclick=()=>openExercise(b.dataset.ex));
+  document.querySelectorAll("[data-rehab-start]").forEach(b=>b.onclick=()=>startRehabSession(b.dataset.rehabStart));
+  const g=document.querySelector("[data-gen]"); if(g) g.onclick=()=>rehabGenerator();
+}
+
+/* ---- Rehab session (pain-guided) ---- */
+function startRehabSession(rid){
+  const p=P(); const r=(REHAB[p.id]||[]).find(x=>x.id===rid);
+  S.rehabState={r, phase:"pre", idx:0, painPre:p.painToday, stiffPre:3, confidence:4, feedback:[]};
+  go("rehabSession");
+}
+function rehabSession(){
+  const rs=S.rehabState; if(!rs) return rehabScreen();
+  const r=rs.r;
+  if(rs.phase==="pre"){
+    return `<div class="container section">
+      <div class="pagehead"><button class="btn sm ghost" data-nav="rehab">${icon('back','ic')} Back</button><h1 class="display" style="margin-top:10px">Before we start</h1>
+      <p class="subtle">${r.name} · quick check-in so today adapts to how you feel.</p></div>
+      <div class="card">
+        ${slider("Pain right now","painPre",rs.painPre,0,10)}
+        ${slider("Stiffness","stiffPre",rs.stiffPre,0,10)}
+        ${slider("Confidence","confidence",rs.confidence,1,5)}
+        <div id="preSafety"></div>
+        <button class="btn primary block lg" style="margin-top:16px" data-begin>Begin session ${icon('play','ic')}</button>
+      </div>
+    </div>`;
+  }
+  if(rs.phase==="run"){
+    const id=r.session.ex[rs.idx]; const e=EX[id]; const v=e.videos[0];
+    return `<div class="container section">
+      <div class="row between pagehead"><button class="btn sm ghost" data-quit>${icon('close','ic')} End</button>
+        <div class="tiny subtle">Exercise ${rs.idx+1}/${r.session.ex.length}</div><div style="width:50px"></div></div>
+      <div class="meter" style="margin-bottom:14px"><i style="width:${Math.round((rs.idx)/r.session.ex.length*100)}%"></i></div>
+      <div class="ipad-split">
+        <div class="card">
+          <h2 style="font-size:23px">${e.name}</h2>
+          <div class="tiny subtle">${e.movement} · ${e.primary.join(", ")}</div>
+          <div class="video-frame" data-ex="${id}" style="margin-top:12px;cursor:pointer">
+            <span class="placeholder-note tag warn">Video to be curated</span>
+            <div style="text-align:center"><div class="big-play">${icon('play')}</div><div class="tiny subtle">Tap to watch physio demo</div></div>
+          </div>
+          <div class="grid g2" style="margin-top:12px">
+            <div class="safety" style="border-color:rgba(84,227,154,.3);background:rgba(84,227,154,.05)"><div class="tiny" style="font-weight:700;color:var(--ok)">Should feel</div><div class="tiny subtle">${e.feels.should}</div></div>
+            <div class="safety red"><div class="tiny" style="font-weight:700;color:var(--danger)">Should NOT feel</div><div class="tiny subtle">${e.feels.shouldNot}</div></div>
+          </div>
+        </div>
+        <div class="stack">
+          <div class="card">
+            <div class="eyebrow" style="margin-bottom:8px">Technique</div>
+            <ol style="margin:0;padding-left:18px;font-size:14px;line-height:1.7">${e.execution.map(x=>`<li>${x}</li>`).join("")}</ol>
+            <div class="tiny subtle" style="margin-top:8px"><b>Breathing:</b> ${e.breathing}</div>
+            <div class="row wrap" style="gap:8px;margin-top:10px"><button class="btn sm" data-reg="${id}">Easier version</button><button class="btn sm" data-prog="${id}">Harder version</button></div>
+          </div>
+          <div class="card">
+            <div class="eyebrow" style="margin-bottom:10px">How did that feel?</div>
+            <div class="row" style="gap:8px">
+              <button class="btn" style="flex:1;border-color:rgba(84,227,154,.4)" data-fb="Better">😀 Better</button>
+              <button class="btn" style="flex:1" data-fb="Same">😐 Same</button>
+              <button class="btn" style="flex:1;border-color:rgba(255,107,107,.4);color:var(--coral)" data-fb="Worse">😣 Worse</button>
+            </div>
+            <div class="tiny subtle" style="margin-top:8px">We track symptom trends and never push you through worsening pain.</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }
+  // done
+  const worse=rs.feedback.filter(f=>f==="Worse").length;
+  return `<div class="container section">
+    <div class="empty card" style="margin-top:30px">
+      <div class="ico" style="animation:pop .5s">${worse? '🩹':'✅'}</div>
+      <h2 style="font-size:24px">${worse?'Session logged — go gently':'Rehab session complete'}</h2>
+      <p class="subtle">${worse?`You flagged ${worse} movement(s) as worse. We'll ease those next time. If symptoms keep worsening, check in with your clinician.`:`Symptoms held steady or improved. Progress recorded toward your ${r.name.toLowerCase()} milestones.`}</p>
+      <div class="row" style="justify-content:center;gap:10px;margin-top:8px">
+        <button class="btn primary" data-nav="rehab">Back to rehab</button>
+        <button class="btn" data-nav="today">Home</button>
+      </div>
+    </div></div>`;
+}
+function bindRehabSession(){
+  const rs=S.rehabState;
+  document.querySelectorAll("[data-nav]").forEach(b=>b.onclick=()=>go(b.dataset.nav));
+  document.querySelectorAll("input[type=range][data-model]").forEach(inp=>inp.oninput=()=>{ rs[inp.dataset.model]=+inp.value; document.getElementById(inp.dataset.model+"_v").textContent=inp.value; checkPreSafety(); });
+  const bg=document.querySelector("[data-begin]"); if(bg) bg.onclick=()=>{ rs.phase="run"; go("rehabSession"); };
+  const q=document.querySelector("[data-quit]"); if(q) q.onclick=()=>{ if(confirm("End rehab session?")){ S.rehabState=null; go("rehab"); } };
+  document.querySelectorAll("[data-ex]").forEach(b=>b.onclick=()=>openExercise(b.dataset.ex));
+  document.querySelectorAll("[data-reg]").forEach(b=>b.onclick=()=>toast("Regression: "+EX[b.dataset.reg].regression,"var(--sky)"));
+  document.querySelectorAll("[data-prog]").forEach(b=>b.onclick=()=>toast("Progression: "+EX[b.dataset.prog].progression,"var(--accent)"));
+  document.querySelectorAll("[data-fb]").forEach(b=>b.onclick=()=>{ rs.feedback.push(b.dataset.fb);
+    if(b.dataset.fb==="Worse"){ toast("Noted — we'll swap or ease this movement","var(--coral)"); }
+    if(rs.idx<rs.r.session.ex.length-1){ rs.idx++; go("rehabSession"); } else { rs.phase="done"; go("rehabSession"); } });
+  if(rs.phase==="pre") checkPreSafety();
+}
+function slider(label,model,val,min,max){
+  return `<div style="margin-bottom:16px"><div class="row between"><label class="lbl" style="margin:0">${label}</label><b id="${model}_v" style="font-size:18px">${val}</b></div>
+    <input type="range" min="${min}" max="${max}" value="${val}" data-model="${model}"></div>`;
+}
+function checkPreSafety(){
+  const rs=S.rehabState; const box=document.getElementById("preSafety"); if(!box) return;
+  if(rs.painPre>=7){ box.innerHTML=`<div class="safety red"><b>${icon('info','ic')} Your pain is high (${rs.painPre}/10).</b> <div class="tiny subtle">Consider resting today or doing gentle mobility only. If pain is severe, new, or worsening, please consult your clinician before training.</div></div>`; }
+  else box.innerHTML="";
+}
+
+function rehabGenerator(){
+  openSheet("Rehab session generator",`
+    <p class="subtle">Conservative, injury-aware session builder. If you haven't been professionally assessed and symptoms are significant, we recommend evaluation before rehab.</p>
+    <label class="lbl" style="margin-top:12px">Body area</label>
+    <select class="inp" id="genArea"><option>Lower back</option><option>Shoulder</option><option>Knee</option><option>Hip</option><option>Neck</option><option>Ankle</option></select>
+    ${slider("Current pain","genPain",3,0,10)}
+    <label class="lbl">Time available</label>
+    <select class="inp" id="genTime"><option>10 min</option><option>15 min</option><option>20 min</option></select>
+    <div class="safety" style="margin:14px 0"><b class="tiny">${icon('info','ic')} Safety:</b> <span class="tiny">This generator won't produce aggressive loading. It respects any physio restrictions on your profile, which take priority.</span></div>
+    <button class="btn primary block lg" id="genGo">Generate conservative session</button>`);
+  setTimeout(()=>{ const s=document.querySelectorAll("#sheet input[type=range][data-model]"); s.forEach(inp=>inp.oninput=()=>document.getElementById(inp.dataset.model+"_v").textContent=inp.value);
+    document.getElementById("genGo").onclick=()=>{ closeSheet(); toast("Generated a gentle mobility + activation session","var(--violet)"); };
+  },50);
+}
+
+/* ============================================================
+   EXERCISE DETAIL (full quality demo page)
+   ============================================================ */
+function openExercise(id){ S.exerciseId=id; go("exercise"); }
+function exerciseDetail(){
+  const e=EX[S.exerciseId]; if(!e) return standardToday();
+  const v=e.videos;
+  return `<div class="container section">
+    <div class="row between pagehead"><button class="btn sm ghost" data-exback>${icon('back','ic')} Back</button>
+      <button class="iconbtn" data-fav title="Favourite">☆</button></div>
+
+    <div class="ipad-split">
+      <!-- LEFT column -->
+      <div class="stack">
+        <div class="card">
+          <div class="row wrap" style="gap:6px;margin-bottom:8px">
+            <span class="tag ${e.cat==='rehab'?'violet':''}">${e.cat}</span>
+            <span class="tag gray">${e.difficulty}</span>
+            ${e.backFriendly?'<span class="tag">Back friendly</span>':''}
+          </div>
+          <h1 class="display" style="font-size:28px">${e.name}</h1>
+          <div class="tiny subtle">${e.equipment} · ${e.movement}</div>
+
+          <!-- video hero -->
+          <div class="video-frame" data-video="0" style="margin-top:14px;cursor:pointer">
+            <span class="placeholder-note tag warn">Video to be curated</span>
+            <div style="text-align:center"><div class="big-play">${icon('play')}</div><div style="font-weight:700">Watch demo</div><div class="tiny subtle">${e.movement}</div></div>
+          </div>
+
+          <!-- start/finish position -->
+          <div class="grid g2" style="margin-top:14px">
+            ${posCard("Start position",e.setup[e.setup.length-1]||e.setup[0],"⬇️")}
+            ${posCard("Finish position",e.execution[0],"⬆️")}
+          </div>
+        </div>
+
+        <!-- YouTube list -->
+        <div class="card">
+          <div class="row between"><div class="eyebrow">Video library</div><span class="tag gray">${v.length} clips</span></div>
+          <div class="yt-list" style="margin-top:10px">${v.map((vid,i)=>`
+            <button class="yt-item" data-video="${i}" style="width:100%;text-align:left">
+              <span class="yt-thumb">${icon('play')}${!vid.approved?'<span class="tag warn" style="position:absolute;bottom:2px;right:2px;font-size:8px;padding:1px 4px">TBC</span>':''}</span>
+              <span style="flex:1"><b style="font-size:13px">${vid.title}</b><div class="tiny subtle">${vid.cat} · ${vid.creator} · ${vid.duration}</div></span>
+              ${icon('back','ic')}
+            </button>`).join("")}</div>
+          <div class="tiny subtle" style="margin-top:8px">${icon('info','ic')} Links are curated and expert-reviewed before publishing. Placeholders shown until verified — no fabricated URLs.</div>
+        </div>
+
+        <!-- alternatives -->
+        ${e.alternatives.length?`<div class="card">
+          <div class="eyebrow" style="margin-bottom:10px">Alternatives</div>
+          <div class="stack">${e.alternatives.filter(a=>EX[a]).map(a=>exRow(a,EX[a].equipment)).join("")}</div>
+        </div>`:''}
+      </div>
+
+      <!-- RIGHT column -->
+      <div class="stack">
+        <!-- muscle map -->
+        <div class="card">
+          <div class="eyebrow" style="margin-bottom:8px">${icon('muscle','ic')} Muscles worked</div>
+          ${bodyMap(e.muscleMap)}
+          <div class="row wrap" style="gap:8px;margin-top:10px;justify-content:center">
+            <span class="pill"><span class="dot" style="background:var(--coral)"></span>Primary</span>
+            <span class="pill"><span class="dot" style="background:var(--amber)"></span>Secondary</span>
+            <span class="pill"><span class="dot" style="background:var(--sky)"></span>Stabilizers</span>
+          </div>
+          <div class="grid" style="margin-top:12px;gap:8px">
+            ${muscleRow("Primary",e.primary,"var(--coral)")}
+            ${muscleRow("Secondary",e.secondary,"var(--amber)")}
+            ${muscleRow("Stabilizers",e.stabilizers,"var(--sky)")}
+          </div>
+        </div>
+
+        <!-- machine setup -->
+        ${e.machine?`<div class="card">
+          <div class="eyebrow" style="margin-bottom:8px">Machine setup · ${e.machine.name}</div>
+          ${e.machine.points.map(([k,v2],i)=>`<div class="row between" style="padding:8px 0;border-bottom:1px solid var(--line-soft)"><span class="tiny"><b>${i+1}. ${k}</b></span><span class="tiny subtle">${v2}</span></div>`).join("")}
+        </div>`:''}
+
+        <!-- instructions -->
+        <div class="card">
+          <div class="eyebrow" style="margin-bottom:8px">Setup</div>
+          <ol style="margin:0 0 10px;padding-left:18px;line-height:1.7;font-size:14px">${e.setup.map(x=>`<li>${x}</li>`).join("")}</ol>
+          <div class="eyebrow" style="margin-bottom:8px">Execution</div>
+          <ol style="margin:0;padding-left:18px;line-height:1.7;font-size:14px">${e.execution.map(x=>`<li>${x}</li>`).join("")}</ol>
+          <div class="grid g2" style="margin-top:12px">
+            <div class="stat"><div class="k">Breathing</div><div class="tiny" style="margin-top:2px">${e.breathing}</div></div>
+            <div class="stat"><div class="k">Tempo</div><div class="tiny" style="margin-top:2px">${e.tempo}</div></div>
+          </div>
+        </div>
+
+        <!-- common mistakes + pain -->
+        <div class="card">
+          <div class="eyebrow" style="margin-bottom:8px">Common mistakes</div>
+          <ul style="margin:0 0 12px;padding-left:18px;line-height:1.7;font-size:14px">${e.mistakes.map(x=>`<li>${x}</li>`).join("")}</ul>
+          <div class="safety"><b class="tiny">${icon('info','ic')} Pain warning:</b> <span class="tiny">${e.painWarnings}</span></div>
+        </div>
+
+        <!-- regression / progression -->
+        <div class="grid g2">
+          <div class="card"><div class="eyebrow" style="color:var(--sky)">Regression</div><p class="tiny" style="margin-top:6px">${e.regression}</p></div>
+          <div class="card"><div class="eyebrow" style="color:var(--accent)">Progression</div><p class="tiny" style="margin-top:6px">${e.progression}</p></div>
+        </div>
+
+        <button class="btn primary block lg" data-add-workout>+ Add to workout</button>
+      </div>
+    </div>
+  </div>`;
+}
+function posCard(label,txt,glyph){ return `<div class="card" style="background:var(--bg-2)"><div class="row" style="gap:8px"><span style="font-size:20px">${glyph}</span><b class="tiny">${label}</b></div><p class="tiny subtle" style="margin-top:6px">${txt}</p></div>`; }
+function muscleRow(label,arr,color){ if(!arr||!arr.length) return ''; return `<div class="row" style="gap:8px;align-items:flex-start"><span class="dot" style="background:${color};margin-top:6px"></span><div><div class="tiny" style="font-weight:700">${label}</div><div class="tiny subtle">${arr.join(", ")}</div></div></div>`; }
+function bindExercise(){
+  const bk=document.querySelector("[data-exback]"); if(bk) bk.onclick=()=>history.length?go("workout"):go("today");
+  document.querySelectorAll("[data-video]").forEach(b=>b.onclick=()=>openVideo(S.exerciseId,+b.dataset.video));
+  document.querySelectorAll("[data-ex]").forEach(b=>b.onclick=()=>openExercise(b.dataset.ex));
+  const fav=document.querySelector("[data-fav]"); if(fav) fav.onclick=()=>{ fav.textContent=fav.textContent==="☆"?"★":"☆"; fav.style.color=fav.textContent==="★"?"var(--amber)":""; toast("Saved to favourites","var(--amber)"); };
+  const aw=document.querySelector("[data-add-workout]"); if(aw) aw.onclick=()=>toast("Added to today's workout","var(--accent)");
+}
+
+/* ---- Video modal ---- */
+function openVideo(exId,idx){
+  const e=EX[exId]; const v=e.videos[idx]||e.videos[0];
+  openSheet(e.name,`
+    <div class="video-frame">
+      <span class="placeholder-note tag warn">Video to be curated</span>
+      <div style="text-align:center"><div class="big-play">${icon('play')}</div>
+      <div style="font-weight:700">${v.title}</div>
+      <div class="tiny subtle">${v.cat}</div></div>
+    </div>
+    <div class="card" style="margin-top:12px;background:var(--surface)">
+      <div class="row between"><b class="tiny">${v.creator}</b><span class="tag gray">${v.duration}</span></div>
+      <div class="tiny subtle" style="margin-top:4px">Channel: ${v.channel} · Category: ${v.cat}</div>
+      <div class="safety" style="margin-top:10px"><b class="tiny">${icon('info','ic')} Placeholder:</b> <span class="tiny">A verified YouTube link will appear here once curated by an admin from a trusted source (physiotherapist, certified coach, or equipment manufacturer). We never fabricate links.</span></div>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <div class="eyebrow" style="margin-bottom:6px">Key coaching cues</div>
+      <ol style="margin:0;padding-left:18px;font-size:14px;line-height:1.7">${e.execution.slice(0,3).map(x=>`<li>${x}</li>`).join("")}</ol>
+      <div class="eyebrow" style="margin:12px 0 6px">Common mistake</div>
+      <p class="tiny subtle">${e.mistakes[0]}</p>
+    </div>
+    <button class="btn primary block lg" style="margin-top:12px" onclick="closeSheet()">Back to workout</button>`);
+}
+function openMuscles(id){ const e=EX[id]; openSheet(e.name+" · Muscles",`${bodyMap(e.muscleMap)}
+  <div class="grid" style="margin-top:12px;gap:8px">${muscleRow("Primary",e.primary,"var(--coral)")}${muscleRow("Secondary",e.secondary,"var(--amber)")}${muscleRow("Stabilizers",e.stabilizers,"var(--sky)")}</div>`); }
+function openHelp(id){ const e=EX[id]; openSheet("Not sure how to do this?",`
+  <div class="safety" style="border-color:rgba(108,198,255,.3);background:rgba(108,198,255,.06)"><b>10-second summary</b><p class="tiny subtle" style="margin:6px 0 0">${e.movement} targeting ${e.primary.join(", ")}. ${e.setup[0]}</p></div>
+  <div class="eyebrow" style="margin:14px 0 6px">3 coaching cues</div>
+  <ol style="padding-left:18px;line-height:1.8">${e.execution.slice(0,3).map(x=>`<li>${x}</li>`).join("")}</ol>
+  <div class="eyebrow" style="margin:12px 0 6px">Most common mistake</div><p class="tiny subtle">${e.mistakes[0]}</p>
+  <button class="btn primary block lg" style="margin-top:14px" data-help-video="${id}">Watch demo</button>`);
+  setTimeout(()=>{ const b=document.querySelector("[data-help-video]"); if(b) b.onclick=()=>{ closeSheet(); openVideo(id,0); }; },40);
+}
+function openAlternatives(id){
+  const e=EX[id]; const alts=e.alternatives.filter(a=>EX[a]);
+  openSheet("Alternatives · "+e.name, alts.length?`
+    <p class="subtle tiny">Swap based on equipment, comfort, or injury. ${P().injuries.length?'Back-friendly options are highlighted for your profile.':''}</p>
+    <div class="stack" style="margin-top:12px">${alts.map(a=>`<button class="ex-card" data-alt="${a}" style="width:100%">
+      <div class="ex-thumb">${thumbGlyph(EX[a])}</div>
+      <div class="ex-meta"><div class="nm">${EX[a].name}</div><div class="sub">${EX[a].equipment}</div>
+      <div class="row" style="gap:6px;margin-top:4px">${EX[a].backFriendly?'<span class="tag">Back friendly</span>':''}<span class="tag gray">${EX[a].difficulty}</span></div></div>
+    </button>`).join("")}</div>`:'<div class="empty">No alternatives on file yet.</div>');
+  setTimeout(()=>document.querySelectorAll("[data-alt]").forEach(b=>b.onclick=()=>{ closeSheet(); toast(EX[b.dataset.alt].name+" swapped in","var(--accent)"); }),40);
+}
+
+/* ============================================================
+   LIBRARY
+   ============================================================ */
+function libraryScreen(){
+  const ids=Object.keys(EX);
+  return `<div class="container section">
+    <div class="row between pagehead"><div><div class="eyebrow">Library</div><h1 class="display">Exercises</h1></div><button class="btn sm ghost" data-nav="workout">${icon('back','ic')} Back</button></div>
+    <input class="inp" id="libSearch" placeholder="Search: 'back friendly row', 'knee rehab', 'shoulder mobility'…" style="margin-bottom:14px">
+    <div class="row wrap" style="gap:8px;margin-bottom:14px" id="libFilters">
+      ${["All","Strength","Rehabilitation","Mobility","Back friendly","Senior","Machine","Home"].map((t,i)=>`<button class="chip ${i===0?'on':''}" data-filter="${t}">${t}</button>`).join("")}
+    </div>
+    <div class="stack" id="libList">${ids.map(id=>exRow(id,EX[id].movement+" · "+EX[id].equipment)).join("")}</div>
+  </div>`;
+}
+function bindLibrary(){
+  document.querySelectorAll("[data-nav]").forEach(b=>b.onclick=()=>go(b.dataset.nav));
+  const search=document.getElementById("libSearch"); const list=document.getElementById("libList");
+  let filter="All";
+  function apply(){
+    const q=(search.value||"").toLowerCase();
+    const ids=Object.keys(EX).filter(id=>{ const e=EX[id];
+      const hay=(e.name+" "+e.movement+" "+e.equipment+" "+e.tags.join(" ")+" "+e.primary.join(" ")).toLowerCase();
+      const okQ=!q||hay.includes(q);
+      const okF=filter==="All"||e.tags.map(t=>t.toLowerCase()).includes(filter.toLowerCase());
+      return okQ&&okF; });
+    list.innerHTML=ids.length?ids.map(id=>exRow(id,EX[id].movement+" · "+EX[id].equipment)).join(""):'<div class="empty">No matches. Try another term.</div>';
+    list.querySelectorAll("[data-ex]").forEach(b=>b.onclick=()=>openExercise(b.dataset.ex));
+  }
+  search.oninput=apply;
+  document.querySelectorAll("[data-filter]").forEach(b=>b.onclick=()=>{ document.querySelectorAll("[data-filter]").forEach(x=>x.classList.remove("on")); b.classList.add("on"); filter=b.dataset.filter; apply(); });
+  document.querySelectorAll("#libList [data-ex]").forEach(b=>b.onclick=()=>openExercise(b.dataset.ex));
+}
+
+/* ============================================================
+   PROGRESS
+   ============================================================ */
+function progressScreen(){
+  const p=P();
+  const w=p.weightLog, vol=p.volumeLog;
+  const months=["Mar","Apr","May","Jun","Jul","Aug"];
+  return `<div class="container section">
+    <div class="pagehead"><div class="eyebrow">Progress</div><h1 class="display">${p.name}'s trends</h1></div>
+
+    <div class="grid g4" style="margin-bottom:14px">
+      ${statTile("Weight",w.at(-1)+" lb", p.targetLb?(w.at(-1)<w[0]?"down":"up"):"", p.targetLb?`target ${p.targetLb}`:"")}
+      ${statTile("Streak",p.streak+" d","up","personal best")}
+      ${statTile("Volume/wk",Math.round(vol.at(-1)).toLocaleString(),"up","+"+Math.round((vol.at(-1)/vol[0]-1)*100)+"%")}
+      ${statTile("Pain",p.painToday+"/10",p.painToday<=2?"up":"down",p.painToday<=2?"stable":"monitor")}
+    </div>
+
+    <div class="grid g2">
+      <div class="card">
+        <div class="row between"><div class="eyebrow">Body weight</div><span class="tag ${w.at(-1)<w[0]?'':'gray'}">${(w.at(-1)-w[0]>0?'+':'')}${(w.at(-1)-w[0]).toFixed(1)} lb</span></div>
+        ${lineChart(w,{id:'wt',color:'var(--accent)',h:130})}
+        <div class="tiny subtle">Last 12 weigh-ins${p.targetLb?` · target ${p.targetLb} lb`:''}</div>
+      </div>
+      <div class="card">
+        <div class="row between"><div class="eyebrow">Training volume</div><span class="tag">trending up</span></div>
+        ${p.mode==='senior'?`<div class="empty" style="padding:30px"><div class="ico">🧘</div><div class="tiny">Volume isn't tracked in senior mode — we track mobility, balance & consistency instead.</div></div>`:lineChart(vol,{id:'vol',color:'var(--accent-2)',h:130})}
+        ${p.mode!=='senior'?'<div class="tiny subtle">Weekly tonnage (lb lifted)</div>':''}
+      </div>
+    </div>
+
+    <div class="grid g2" style="margin-top:14px">
+      <div class="card">
+        <div class="eyebrow" style="margin-bottom:10px">Workout adherence</div>
+        ${barChart([3,4,4,3,4,4],months,{id:'adh',color:'var(--violet)',h:110})}
+        <div class="tiny subtle">Sessions per month vs ${p.daysPerWeek}/wk goal</div>
+      </div>
+      ${(REHAB[p.id]||[]).length?`<div class="card">
+        <div class="eyebrow" style="margin-bottom:10px">Rehab: load tolerance</div>
+        ${lineChart(REHAB[p.id][0].progress.map(x=>x.load),{id:'rp',color:'var(--sky)',h:110})}
+        <div class="tiny subtle">${REHAB[p.id][0].area} · rising tolerance, pain controlled</div>
+      </div>`:`<div class="card">
+        <div class="eyebrow" style="margin-bottom:10px">Muscle distribution</div>
+        ${barChart([32,24,18,14,12],["Push","Pull","Legs","Core","Cardio"],{id:'md',color:'var(--coral)',h:110})}
+        <div class="tiny subtle">Volume by movement pattern</div>
+      </div>`}
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <div class="eyebrow" style="margin-bottom:12px">Achievements</div>
+      <div class="row wrap" style="gap:10px">${p.achievements.map(a=>`<div class="pill on" style="padding:10px 14px">🏆 ${a}</div>`).join("")}
+      <div class="pill" style="opacity:.5">🔒 Next: ${p.mode==='senior'?'30-Second Balance':'Strength +20%'}</div></div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <div class="row between"><div class="eyebrow">Progress photos</div><button class="btn sm" data-photo>${icon('photo','ic')} Add</button></div>
+      <div class="grid g3" style="margin-top:10px">
+        ${["Front","Side","Back"].map(t=>`<div class="card" style="background:var(--bg-2);aspect-ratio:3/4;display:grid;place-items:center;text-align:center"><div><div style="font-size:26px;opacity:.5">📸</div><div class="tiny subtle">${t}</div></div></div>`).join("")}
+      </div>
+      <div class="tiny subtle" style="margin-top:8px">🔒 Private by default. Side-by-side comparison across dates.</div>
+    </div>
+  </div>`;
+}
+function bindProgress(){ const b=document.querySelector("[data-photo]"); if(b) b.onclick=()=>toast("Progress photo capture (demo)","var(--violet)"); }
+function statTile(k,v,dir,d){ return `<div class="stat"><div class="k">${k}</div><div class="v">${v}</div><div class="d ${dir}">${dir==='up'?'▲ ':dir==='down'?'▼ ':''}${d||''}</div></div>`; }
+
+/* ============================================================
+   AI COACH
+   ============================================================ */
+function coachScreen(){
+  const p=P();
+  return `<div class="container section">
+    <div class="pagehead"><div class="eyebrow" style="color:var(--accent)">${icon('spark','ic')} AI Coach · ${p.name}</div><h1 class="display">Your coach</h1>
+    <p class="subtle">Context-aware for ${p.name} only — age ${p.age}, ${p.goals[0].toLowerCase()}, ${p.injuries.length?p.injuries[0].area.toLowerCase()+' history':'no injuries'}. Recommendations never carry over between family members.</p></div>
+
+    <div class="card glass">
+      <div class="row"><span class="avatar" style="width:36px;height:36px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:var(--accent-ink)">AI</span>
+      <b>Coach</b></div>
+      <p style="margin-top:10px;line-height:1.6">${coachMessage(p)}</p>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <div class="eyebrow" style="margin-bottom:10px">What I'm using to advise you</div>
+      <div class="row wrap" style="gap:8px">
+        ${[`Age ${p.age}`,p.experience,...p.goals,...(p.injuries.map(i=>i.area+" — "+i.status)),p.physioPriority?"Physio restrictions prioritized":"","Readiness "+p.readiness,"Pain "+p.painToday+"/10"].filter(Boolean).map(x=>`<span class="chip" style="cursor:default">${x}</span>`).join("")}
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <div class="eyebrow" style="margin-bottom:10px">Ask your coach</div>
+      <div class="stack" id="coachQ">
+        ${["Why is my row a chest-supported variation?","Should I add weight today?","My back feels stiff — adjust my workout","Explain today's rehab prep"].map(q=>`<button class="opt" data-q="${q}"><span class="oico">💬</span><span class="otx"><b>${q}</b></span>${icon('back','ic')}</button>`).join("")}
+      </div>
+      <div id="coachAns"></div>
+    </div>
+
+    <div class="safety" style="margin-top:14px"><b class="tiny">${icon('info','ic')} Safety:</b> <span class="tiny">Your AI coach supports training decisions but never diagnoses or claims to heal injuries. For worsening or concerning symptoms, it will always point you to your clinician.</span></div>
+  </div>`;
+}
+function bindCoach(){
+  document.querySelectorAll("[data-q]").forEach(b=>b.onclick=()=>{
+    const ans=document.getElementById("coachAns");
+    ans.innerHTML=`<div class="card glass" style="margin-top:12px"><div class="row"><span class="avatar" style="width:30px;height:30px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:var(--accent-ink);font-size:12px">AI</span><b>Coach</b></div><p style="margin-top:8px;line-height:1.6">${coachAnswer(b.dataset.q)}</p></div>`;
+    ans.scrollIntoView({behavior:"smooth",block:"nearest"});
+  });
+}
+function coachAnswer(q){
+  const p=P();
+  if(/row/i.test(q)) return `Because your profile has a lower-back injury history and your physio restrictions take priority, I route heavy bent-over rowing to <b>chest-supported</b> or <b>seated cable</b> variations. You get the same back-building stimulus without loading a flexed spine. Once your rehab reaches the Return-to-Training milestone, we can reintroduce free rows gradually.`;
+  if(/weight|add/i.test(q)) return `Your readiness is ${p.readiness} and pain is ${p.painToday}/10 — both green. Last session's top set of the chest press (${'130 × 8'}) moved cleanly, so a small jump to 135 for 6–8 reps is reasonable today. Keep the last rep 1–2 reps shy of failure and stop if your back speaks up.`;
+  if(/stiff|back/i.test(q)) return `Noted. I'll extend your <b>lower-back prep</b> from 6 to 8 minutes, drop the heaviest press set, and keep everything back-supported today. This isn't medical advice — if stiffness turns into sharp or radiating pain, please pause and check with your physio.`;
+  if(/rehab|prep/i.test(q)) return `Today's prep is Bird Dog, Dead Bug and Pallof Press — anti-rotation and anti-extension drills that switch on the deep core so your spine stays stable under load. They may be appropriate for strengthening this area based on your entered rehab plan; they're not a cure, but they set you up to train safely.`;
+  return `Here's my take based on your current profile, goals and readiness. I keep everything specific to ${p.name} — nothing from other family members' plans influences this.`;
+}
+
+/* ============================================================
+   FAMILY DASHBOARD
+   ============================================================ */
+function familyScreen(){
+  const map={workout:["Strength workout","🏋️"],mobility:["Mobility + Rehab","🧘"],cardio:["Cardio session","🏃"],rest:["Rest day","🌙"]};
+  return `<div class="container section">
+    <div class="pagehead"><div class="eyebrow">${S.family.name} · Today</div><h1 class="display">Family today</h1>
+    <p class="subtle">Shared view respects each member's privacy. Health & injury details stay private by default.</p></div>
+
+    <div class="grid g4">${S.profiles.map(p=>{
+      const [t,g]=map[p.today.type]||map.rest;
+      const done=p.id==='rak';
+      const priv=p.privacy==="Private profile";
+      return `<button class="card" data-fam="${p.id}" style="text-align:left">
+        <div class="row"><span class="avatar" style="width:40px;height:40px;background:linear-gradient(135deg,${p.color},${shade(p.color,-30)})">${p.initials}</span>
+          <div><b>${p.name}</b><div class="tiny subtle">${p.mode} · age ${p.age}</div></div></div>
+        <div style="margin-top:12px;font-size:24px">${g}</div>
+        <div style="font-weight:700;font-size:14px">${priv?'Training today':t}</div>
+        <div class="tiny ${done?'up':'subtle'}" style="margin-top:2px">${done?'Completed ✓':p.today.type==='rest'?'Rest day':'Scheduled'}</div>
+        ${!priv?`<div class="row" style="gap:5px;margin-top:8px"><span class="tag gray">🔥 ${p.streak}d</span>${p.privacy!=='Private profile'?`<span class="tag">${p.privacy==='Shared achievements only'?p.achievements.length+' 🏆':'Sharing'}</span>`:''}</div>`:'<div class="tiny subtle" style="margin-top:8px">🔒 Private profile</div>'}
+      </button>`;}).join("")}
+      <button class="pcard add" data-add style="min-height:auto"><div style="font-size:28px">＋</div><div class="tiny" style="margin-top:6px">Add member</div></button>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <div class="row between"><div class="eyebrow">Family challenges</div><span class="tag">Voluntary</span></div>
+      <div class="grid g3" style="margin-top:12px">${S.family.challenges.map(c=>`
+        <div class="card" style="background:var(--bg-2)">
+          <b style="font-size:14px">${c.name}</b>
+          <div style="position:relative;display:grid;place-items:center;margin:10px auto">${ring(Math.round(c.progress/c.goal*100),90,10,'var(--accent-2)')}
+            <div style="position:absolute;text-align:center"><b>${Math.round(c.progress/c.goal*100)}%</b></div></div>
+          <div class="tiny subtle" style="text-align:center">${c.progress.toLocaleString()} / ${c.goal.toLocaleString()} ${c.unit}</div>
+          <div class="row" style="gap:4px;margin-top:8px;justify-content:center">${c.members.map(m=>{const mp=S.profiles.find(x=>x.id===m);return `<span class="avatar" style="width:24px;height:24px;font-size:10px;background:linear-gradient(135deg,${mp.color},${shade(mp.color,-30)})">${mp.initials}</span>`;}).join("")}</div>
+        </div>`).join("")}</div>
+      <div class="tiny subtle" style="margin-top:10px">${icon('info','ic')} Rehabilitation and medical metrics are never part of competitive challenges.</div>
+    </div>
+  </div>`;
+}
+// family binds handled in bindRoute via delegation below
+document.addEventListener("click",e=>{
+  const fam=e.target.closest?.("[data-fam]"); if(fam){ S.activeProfile=fam.dataset.fam; go("today"); }
+  const add=e.target.closest?.("[data-add]"); if(add && S.route==="family"){ startWizard(); }
+});
+
+/* ============================================================
+   ADD PROFILE WIZARD
+   ============================================================ */
+const GOALS=["Build muscle","Get stronger","Lose body fat","Gain weight","Improve cardiovascular fitness","Improve mobility","Improve balance","Rehabilitation","Return to exercise","Sports performance","Healthy aging","General fitness","Post-injury strengthening","Pain-free movement"];
+const EXPERIENCE=["New to exercise","Beginner","Intermediate","Experienced","Advanced","Returning after time away","Returning after injury"];
+const LOCATIONS=["Commercial gym","LA Fitness","Home gym","Home bodyweight","Physiotherapy clinic","Outdoor","Multiple locations"];
+const EQUIP=["Selectorized machines","Cable machine","Dumbbells","Barbells","Bench","Resistance bands","Kettlebells","Treadmill","Bike","Elliptical","TRX","Yoga mat","Foam roller","No equipment"];
+const BODY_AREAS=["Lower back","Upper back","Neck","Shoulder","Elbow","Wrist / hand","Hip","Groin","Knee","Ankle","Foot","Other"];
+const INJ_STATUS=["Previous injury — resolved","Currently recovering","Occasional discomfort","Chronic recurring issue","Under physiotherapy care","Doctor-cleared return to exercise","Not yet medically assessed"];
+const SYMPTOMS=["aching","stiffness","sharp pain","burning","tingling","numbness","weakness","radiating pain","swelling","reduced range of motion"];
+const RED_FLAGS=["weakness","numbness","radiating pain"];
+
+function startWizard(){
+  S.wizard={step:0, data:{name:"",relationship:"Family member",sex:"",heightCm:"",weightLb:"",targetLb:"",age:"",goals:[],experience:"",location:"",equipment:[],days:3,duration:"45 min",injuries:[],physioPriority:false,color:pick(["#ff7a6b","#a99bff","#6cc6ff","#ffcf6b","#54e39a"])}, injDraft:null };
+  openWizard();
+}
+const WIZ_STEPS=["Who","Goals","Experience","Location","Equipment","Schedule","Injuries","Review"];
+function openWizard(){
+  const w=S.wizard;
+  openSheet("Add profile", wizardBody(), true);
+  setTimeout(bindWizard,30);
+}
+function wizardBody(){
+  const w=S.wizard; const d=w.data;
+  const steps=`<div class="wiz-steps">${WIZ_STEPS.map((_,i)=>`<i class="${i<=w.step?'on':''}"></i>`).join("")}</div>
+    <div class="row between" style="margin-bottom:10px"><span class="eyebrow">Step ${w.step+1}/${WIZ_STEPS.length}</span><span class="tiny subtle">${WIZ_STEPS[w.step]}</span></div>`;
+  let body="";
+  switch(w.step){
+    case 0: body=`
+      <h2 style="font-size:22px;margin-bottom:4px">Who are we training?</h2>
+      <p class="subtle tiny" style="margin-bottom:14px">Let's set up their profile. This isn't a medical form — just the basics.</p>
+      <div class="row" style="gap:14px;align-items:center;margin-bottom:14px">
+        <div class="avatar" style="width:64px;height:64px;font-size:24px;background:linear-gradient(135deg,${d.color},${shade(d.color,-30)})">${(d.name[0]||'?').toUpperCase()}</div>
+        <div style="flex:1"><label class="lbl">Name</label><input class="inp" id="w_name" value="${d.name}" placeholder="e.g. Priya"></div>
+      </div>
+      <div class="grid g2">
+        <div><label class="lbl">Age</label><input class="inp" type="number" id="w_age" value="${d.age}" placeholder="46"></div>
+        <div><label class="lbl">Sex</label><select class="inp" id="w_sex"><option value="">Select</option><option ${d.sex==='Male'?'selected':''}>Male</option><option ${d.sex==='Female'?'selected':''}>Female</option><option ${d.sex==='Other'?'selected':''}>Other</option></select></div>
+        <div><label class="lbl">Height (cm)</label><input class="inp" type="number" id="w_h" value="${d.heightCm}" placeholder="165"></div>
+        <div><label class="lbl">Weight (lb)</label><input class="inp" type="number" id="w_w" value="${d.weightLb}" placeholder="141"></div>
+        <div><label class="lbl">Target weight (optional)</label><input class="inp" type="number" id="w_t" value="${d.targetLb}" placeholder="135"></div>
+        <div><label class="lbl">Relationship</label><select class="inp" id="w_rel">${["Me","Partner","Child","Parent","Other family member"].map(r=>`<option ${d.relationship===r?'selected':''}>${r}</option>`).join("")}</select></div>
+      </div>`;
+      break;
+    case 1: body=`<h2 style="font-size:22px;margin-bottom:4px">Primary goals</h2><p class="subtle tiny" style="margin-bottom:14px">Pick all that apply.</p>
+      <div class="row wrap" style="gap:8px">${GOALS.map(g=>`<button class="chip ${d.goals.includes(g)?'on':''}" data-goal="${g}">${g}</button>`).join("")}</div>`;
+      break;
+    case 2: body=`<h2 style="font-size:22px;margin-bottom:4px">Training experience</h2><p class="subtle tiny" style="margin-bottom:14px">This shapes starting loads and progression pace.</p>
+      <div class="stack">${EXPERIENCE.map(x=>optRow(x,d.experience===x,"exp",experienceIcon(x))).join("")}</div>`;
+      break;
+    case 3: body=`<h2 style="font-size:22px;margin-bottom:4px">Where will they train?</h2><div class="stack" style="margin-top:12px">${LOCATIONS.map(x=>optRow(x,d.location===x,"loc","📍")).join("")}</div>`;
+      break;
+    case 4: body=`<h2 style="font-size:22px;margin-bottom:4px">Available equipment</h2><p class="subtle tiny" style="margin-bottom:14px">Multi-select — we only program what they have.</p>
+      <div class="row wrap" style="gap:8px">${EQUIP.map(x=>`<button class="chip ${d.equipment.includes(x)?'on':''}" data-eq="${x}">${x}</button>`).join("")}</div>`;
+      break;
+    case 5: body=`<h2 style="font-size:22px;margin-bottom:4px">Schedule</h2>
+      <label class="lbl" style="margin-top:12px">Days per week: <b style="color:var(--text)">${d.days}</b></label>
+      <input type="range" min="1" max="7" value="${d.days}" id="w_days">
+      <label class="lbl" style="margin-top:16px">Preferred session length</label>
+      <div class="row wrap" style="gap:8px">${["15 min","20 min","30 min","45 min","60 min","90 min"].map(x=>`<button class="chip ${d.duration===x?'on':''}" data-dur="${x}">${x}</button>`).join("")}</div>`;
+      break;
+    case 6: body=injuryStep(); break;
+    case 7: body=reviewStep(); break;
+  }
+  return `${steps}<div id="wizBody">${body}</div>
+    <div class="row" style="gap:10px;margin-top:20px">
+      ${w.step>0?`<button class="btn" id="w_prev">${icon('back','ic')} Back</button>`:''}
+      <button class="btn primary" style="flex:1" id="w_next">${w.step===WIZ_STEPS.length-1?'Create profile ✓':'Continue'}</button>
+    </div>`;
+}
+function optRow(label,on,group,ic){ return `<button class="opt ${on?'on':''}" data-opt="${group}" data-val="${label}"><span class="oico">${ic}</span><span class="otx"><b>${label}</b></span><span class="mark">${icon('check')}</span></button>`; }
+function experienceIcon(x){ return /New/.test(x)?"🌱":/injury/i.test(x)?"🩹":/away/i.test(x)?"🔄":/Advanced|Experienced/.test(x)?"🔥":"💪"; }
+
+function injuryStep(){
+  const w=S.wizard; const d=w.data;
+  if(w.injDraft){ return injuryDetail(); }
+  return `<h2 style="font-size:22px;margin-bottom:4px">Injuries & movement limitations</h2>
+    <p class="subtle tiny" style="margin-bottom:14px">Any current or previous injuries? This lets us filter unsafe movements and prioritize any clinician restrictions. Select all areas that apply.</p>
+    <div class="row wrap" style="gap:8px;margin-bottom:14px">
+      <button class="chip ${d.injuries.length===0?'on':''}" data-noinj>None</button>
+      ${BODY_AREAS.map(a=>`<button class="chip ${d.injuries.find(i=>i.area===a)?'on':''}" data-area="${a}">${a}</button>`).join("")}
+    </div>
+    ${d.injuries.length?`<div class="stack">${d.injuries.map((inj,i)=>`
+      <div class="card" style="background:var(--bg-2)"><div class="row between">
+        <div><b>${inj.area}</b><div class="tiny subtle">${inj.status||'Tap to add detail'} ${inj.side?'· '+inj.side:''} ${inj.pain!=null?'· pain '+inj.pain+'/10':''}</div></div>
+        <div class="row" style="gap:6px"><button class="btn sm" data-editinj="${i}">Detail</button><button class="iconbtn" data-delinj="${i}" style="width:34px;height:34px">${icon('close','ic')}</button></div>
+      </div></div>`).join("")}</div>`:''}
+    ${d.injuries.length?`<div class="opt" style="margin-top:14px;cursor:default"><span class="oico">⚕️</span><span class="otx"><b>Physio instructions take priority</b><span>AI training will respect all entered restrictions</span></span>
+      <button class="mark ${d.physioPriority?'on':''}" data-physio style="width:44px;border-radius:12px">${d.physioPriority?icon('check'):''}</button></div>`:''}`;
+}
+function injuryDetail(){
+  const inj=S.wizard.injDraft;
+  return `<div class="row" style="gap:8px;margin-bottom:6px"><button class="btn sm ghost" data-injback>${icon('back','ic')}</button><h2 style="font-size:20px">${inj.area}</h2></div>
+    <p class="subtle tiny" style="margin-bottom:12px">Detail helps us keep training safe. Everything here is optional.</p>
+    <label class="lbl">Side</label><div class="row wrap" style="gap:8px;margin-bottom:12px">${["Left","Right","Both"].map(s=>`<button class="chip ${inj.side===s?'on':''}" data-side="${s}">${s}</button>`).join("")}</div>
+    <label class="lbl">Current status</label><select class="inp" id="inj_status" style="margin-bottom:12px"><option value="">Select</option>${INJ_STATUS.map(s=>`<option ${inj.status===s?'selected':''}>${s}</option>`).join("")}</select>
+    <label class="lbl">Type of injury (if known)</label>
+    <div class="row wrap" style="gap:8px;margin-bottom:12px">${["strain","sprain","disc issue","surgery","tendinopathy","fracture","arthritis","muscle spasm","unknown"].map(t=>`<button class="chip ${inj.type===t?'on':''}" data-type="${t}">${t}</button>`).join("")}</div>
+    ${slider("Pain currently","injpain",inj.pain||0,0,10)}
+    <label class="lbl">Symptoms</label><div class="row wrap" style="gap:8px;margin-bottom:12px">${SYMPTOMS.map(s=>`<button class="chip ${inj.symptoms.includes(s)?'on':''}" data-symp="${s}">${s}</button>`).join("")}</div>
+    <div id="injSafety"></div>
+    <label class="lbl">Movements that aggravate it</label><input class="inp" id="inj_agg" value="${inj.aggravate||''}" placeholder="e.g. heavy rows, twisting" style="margin-bottom:10px">
+    <label class="lbl">Movements that feel comfortable</label><input class="inp" id="inj_comf" value="${inj.comfortable||''}" placeholder="e.g. machine work" style="margin-bottom:10px">
+    <label class="lbl">Prohibited by doctor/physio</label><input class="inp" id="inj_prohib" value="${inj.prohibited||''}" placeholder="e.g. no deadlifts" style="margin-bottom:10px">
+    <label class="lbl">Recommended by physio</label><input class="inp" id="inj_rec" value="${inj.recommended||''}" placeholder="e.g. bird dog, dead bug" style="margin-bottom:14px">
+    <button class="btn primary block" data-injsave>Save injury detail</button>`;
+}
+function reviewStep(){
+  const d=S.wizard.data;
+  return `<h2 style="font-size:22px;margin-bottom:4px">Review ${d.name||'profile'}</h2>
+    <p class="subtle tiny" style="margin-bottom:14px">Here's what we'll set up. You can edit anything later.</p>
+    <div class="card" style="background:var(--bg-2)">
+      <div class="row"><span class="avatar" style="width:48px;height:48px;font-size:20px;background:linear-gradient(135deg,${d.color},${shade(d.color,-30)})">${(d.name[0]||'?').toUpperCase()}</span>
+      <div><b style="font-size:18px">${d.name||'Unnamed'}</b><div class="tiny subtle">${d.relationship} · age ${d.age||'—'} · ${d.experience||'—'}</div></div></div>
+      <div class="grid g2" style="margin-top:12px">
+        ${revItem("Goals",d.goals.join(", ")||"—")}
+        ${revItem("Location",d.location||"—")}
+        ${revItem("Equipment",d.equipment.length+" items")}
+        ${revItem("Schedule",d.days+" days/wk · "+d.duration)}
+        ${revItem("Injuries",d.injuries.length?d.injuries.map(i=>i.area).join(", "):"None")}
+        ${revItem("Physio priority",d.physioPriority?"On":"Off")}
+      </div>
+      ${d.age>=70?`<div class="safety" style="margin-top:12px;border-color:rgba(108,198,255,.4)"><b class="tiny">${icon('info','ic')} Senior mode will be enabled</b> <span class="tiny subtle">— larger text, balance & mobility focus, chair-supported options.</span></div>`:''}
+      ${d.age&&d.age<16?`<div class="safety" style="margin-top:12px"><b class="tiny">${icon('info','ic')} Youth mode</b> <span class="tiny subtle">— movement quality & bodyweight focus, parent-managed, no adult hypertrophy programming.</span></div>`:''}
+    </div>`;
+}
+function revItem(k,v){ return `<div class="stat"><div class="k">${k}</div><div class="tiny" style="margin-top:3px;font-weight:600">${v}</div></div>`; }
+
+function bindWizard(){
+  const w=S.wizard;
+  const rerender=()=>{ document.querySelector("#sheet .sheet-bd").innerHTML=wizardBody(); bindWizard(); };
+  // navigation
+  const nx=document.getElementById("w_next"); const pv=document.getElementById("w_prev");
+  if(pv) pv.onclick=()=>{ if(w.injDraft){ w.injDraft=null; rerender(); return;} w.step--; rerender(); };
+  if(nx) nx.onclick=()=>{ saveWizStep(); if(w.step<WIZ_STEPS.length-1){ w.step++; rerender(); } else finishWizard(); };
+  // step 0 fields captured on next; live avatar
+  const nm=document.getElementById("w_name"); if(nm) nm.oninput=()=>{ w.data.name=nm.value; const av=document.querySelector("#wizBody .avatar"); if(av) av.textContent=(nm.value[0]||'?').toUpperCase(); };
+  // chips
+  document.querySelectorAll("[data-goal]").forEach(b=>b.onclick=()=>{ toggle(w.data.goals,b.dataset.goal); rerender(); });
+  document.querySelectorAll("[data-eq]").forEach(b=>b.onclick=()=>{ toggle(w.data.equipment,b.dataset.eq); rerender(); });
+  document.querySelectorAll("[data-dur]").forEach(b=>b.onclick=()=>{ w.data.duration=b.dataset.dur; rerender(); });
+  document.querySelectorAll("[data-opt]").forEach(b=>b.onclick=()=>{ const g=b.dataset.opt; if(g==="exp") w.data.experience=b.dataset.val; if(g==="loc") w.data.location=b.dataset.val; rerender(); });
+  const days=document.getElementById("w_days"); if(days) days.oninput=()=>{ w.data.days=+days.value; document.querySelector("#wizBody .lbl b").textContent=days.value; };
+  // injuries
+  document.querySelectorAll("[data-area]").forEach(b=>b.onclick=()=>{ const a=b.dataset.area; const ex=w.data.injuries.find(i=>i.area===a);
+    if(ex) w.data.injuries=w.data.injuries.filter(i=>i.area!==a); else w.data.injuries.push({area:a,side:"",status:"",type:"",pain:0,symptoms:[]}); rerender(); });
+  const ni=document.querySelector("[data-noinj]"); if(ni) ni.onclick=()=>{ w.data.injuries=[]; rerender(); };
+  document.querySelectorAll("[data-editinj]").forEach(b=>b.onclick=()=>{ w.injDraft=w.data.injuries[+b.dataset.editinj]; rerender(); });
+  document.querySelectorAll("[data-delinj]").forEach(b=>b.onclick=()=>{ w.data.injuries.splice(+b.dataset.delinj,1); rerender(); });
+  const ph=document.querySelector("[data-physio]"); if(ph) ph.onclick=()=>{ w.data.physioPriority=!w.data.physioPriority; rerender(); };
+  // injury detail
+  document.querySelectorAll("[data-side]").forEach(b=>b.onclick=()=>{ w.injDraft.side=b.dataset.side; rerender(); });
+  document.querySelectorAll("[data-type]").forEach(b=>b.onclick=()=>{ w.injDraft.type=b.dataset.type; rerender(); });
+  document.querySelectorAll("[data-symp]").forEach(b=>b.onclick=()=>{ toggle(w.injDraft.symptoms,b.dataset.symp); rerender(); injRedFlag(); });
+  const injpain=document.querySelector("input[data-model=injpain]"); if(injpain) injpain.oninput=()=>{ w.injDraft.pain=+injpain.value; document.getElementById("injpain_v").textContent=injpain.value; injRedFlag(); };
+  const ib=document.querySelector("[data-injback]"); if(ib) ib.onclick=()=>{ w.injDraft=null; rerender(); };
+  const isave=document.querySelector("[data-injsave]"); if(isave) isave.onclick=()=>{ const dr=w.injDraft;
+    dr.status=val("inj_status"); dr.aggravate=val("inj_agg"); dr.comfortable=val("inj_comf"); dr.prohibited=val("inj_prohib"); dr.recommended=val("inj_rec");
+    w.injDraft=null; rerender(); toast("Injury detail saved","var(--violet)"); };
+  if(w.injDraft) injRedFlag();
+}
+function injRedFlag(){
+  const dr=S.wizard.injDraft; const box=document.getElementById("injSafety"); if(!box||!dr) return;
+  const flags=dr.symptoms.filter(s=>RED_FLAGS.includes(s));
+  if(flags.length||dr.pain>=8){
+    box.innerHTML=`<div class="safety red" style="margin-bottom:12px"><b class="tiny">${icon('info','ic')} Please seek professional evaluation.</b>
+      <div class="tiny subtle">You've flagged ${dr.pain>=8?'high pain':''}${dr.pain>=8&&flags.length?' and ':''}${flags.join(", ")}. Symptoms like new numbness, weakness or radiating pain should be assessed by a doctor or physiotherapist. This app won't generate aggressive training around them and never replaces medical care.</div></div>`;
+  } else box.innerHTML="";
+}
+function saveWizStep(){
+  const w=S.wizard;
+  if(w.step===0){ w.data.name=val("w_name")||w.data.name; w.data.age=+val("w_age")||w.data.age; w.data.sex=val("w_sex"); w.data.heightCm=val("w_h"); w.data.weightLb=val("w_w"); w.data.targetLb=val("w_t"); w.data.relationship=val("w_rel")||w.data.relationship; }
+}
+function finishWizard(){
+  const d=S.wizard.data;
+  if(!d.name){ toast("Please add a name","var(--coral)"); w0(); return; }
+  const mode=d.age>=70?"senior":(d.age&&d.age<16?"child":"standard");
+  const id="p"+Date.now();
+  const prof={
+    id,name:d.name,initials:(d.name[0]||'?').toUpperCase(),color:d.color,mode,relationship:d.relationship,
+    dob:"",age:d.age||30,sex:d.sex,heightCm:+d.heightCm||170,weightLb:+d.weightLb||150,targetLb:d.targetLb?+d.targetLb:null,
+    goals:d.goals.length?d.goals:["General fitness"],experience:d.experience||"Beginner",location:d.location||"Home",
+    equipment:d.equipment,daysPerWeek:d.days,duration:d.duration,injuries:d.injuries,physioPriority:d.physioPriority,
+    privacy:"Shared achievements only",readiness:80,painToday:d.injuries[0]?.pain||0,streak:0,
+    weightLog:Array(12).fill(+d.weightLb||150),volumeLog:mode==='senior'?Array(12).fill(0):Array(12).fill(4000),
+    today:{type:mode==='senior'?'mobility':'workout'},achievements:[],accessibility:mode==='senior'
+  };
+  S.profiles.push(prof);
+  // give new profile a basic plan + rehab if injured
+  PLANS[id]={workout:PLANS.priya.workout};
+  if(mode==='senior') PLANS[id]={workout:PLANS.dad.workout};
+  REHAB[id]=d.injuries.length?[{
+    id:"r1",name:d.injuries[0].area+" Recovery",area:d.injuries[0].area,stage:"Activation / Stability",stageIdx:1,
+    objective:"Build supporting strength and pain-free movement around the "+d.injuries[0].area.toLowerCase()+".",
+    painThreshold:"Keep working pain ≤ 3/10. Stop anything that sharpens or radiates.",weeks:6,weekNow:1,
+    session:{name:d.injuries[0].area+" — Starter Session",mins:15,ex:["bird_dog","dead_bug","glute_bridge"]},
+    milestones:[{t:"Pain-Free Daily Movement",done:false},{t:"Full Range of Motion",done:false},{t:"Return to Full Training",done:false}],
+    progress:[{wk:"W1",load:15}]
+  }]:[];
+  closeSheet();
+  S.activeProfile=id; go("today");
+  celebrate(`${d.name}'s profile is ready 🎉`);
+}
+function w0(){ S.wizard.step=0; document.querySelector("#sheet .sheet-bd").innerHTML=wizardBody(); bindWizard(); }
+
+/* ============================================================
+   SHEETS / TOAST / UTIL
+   ============================================================ */
+function openSheet(title,html,wizard){
+  closeSheet();
+  const s=document.createElement("div"); s.className="scrim"; s.id="scrim";
+  s.innerHTML=`<div class="sheet" id="sheet"><div class="grab"></div>
+    <div class="sheet-hd"><b style="flex:1">${title}</b><button class="iconbtn" id="sheetClose">${icon('close','ic')}</button></div>
+    <div class="sheet-bd">${html}</div></div>`;
+  document.body.appendChild(s);
+  s.onclick=e=>{ if(e.target===s) closeSheet(); };
+  document.getElementById("sheetClose").onclick=closeSheet;
+}
+function closeSheet(){ const s=document.getElementById("scrim"); if(s) s.remove(); }
+window.closeSheet=closeSheet;
+
+function toast(msg,color){ S.toast={msg,color:color||"var(--accent)"}; showToastEl(); }
+let toastTimer=null;
+function showToastEl(){
+  const old=document.getElementById("toastEl"); if(old) old.remove();
+  if(!S.toast) return;
+  const t=document.createElement("div"); t.className="toast"; t.id="toastEl";
+  t.innerHTML=`<span class="dot" style="background:${S.toast.color}"></span>${S.toast.msg}`;
+  document.body.appendChild(t);
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>{ t.remove(); S.toast=null; },2600);
+}
+function celebrate(msg){
+  const c=document.createElement("div"); c.className="scrim"; c.style.alignItems="center";
+  c.innerHTML=`<div class="card glass" style="max-width:360px;text-align:center;animation:pop .5s;margin:20px">
+    <div style="font-size:52px">🎉</div><h2 style="font-size:22px;margin:8px 0">${msg}</h2>
+    <button class="btn primary block lg" onclick="this.closest('.scrim').remove()">Nice!</button></div>`;
+  c.onclick=e=>{ if(e.target===c) c.remove(); };
+  document.body.appendChild(c);
+  haptic();
+}
+function quickLog(key){
+  const map={weight:["Log weight","⚖️"],pushup:["Log push-ups","💪"],pain:["Update pain level","🩹"],meal:["Log a meal","🍽️"],water:["Add water","💧"],photo:["Progress photo","📸"],steady:["Balance: steady 👍"],unsteady:["Balance noted ⚠️"]};
+  if(key==="pain"){
+    const p=P();
+    openSheet("Pain check-in",`${slider("Pain right now","qpain",p.painToday,0,10)}<div id="qSafety"></div><button class="btn primary block lg" id="qSave">Save</button>`);
+    setTimeout(()=>{ const inp=document.querySelector("input[data-model=qpain]"); inp.oninput=()=>{ document.getElementById("qpain_v").textContent=inp.value; const b=document.getElementById("qSafety"); b.innerHTML=+inp.value>=8?`<div class="safety red"><b class="tiny">${icon('info','ic')} High pain — consider rest and consult your clinician if new or worsening.</b></div>`:""; };
+      document.getElementById("qSave").onclick=()=>{ p.painToday=+inp.value; closeSheet(); render(); toast("Pain updated","var(--violet)"); }; },40);
+    return;
+  }
+  toast((map[key]?.[0]||"Logged")+" (demo)", "var(--accent)");
+}
+
+// utils
+function val(id){ const e=document.getElementById(id); return e?e.value:""; }
+function toggle(arr,v){ const i=arr.indexOf(v); if(i>=0) arr.splice(i,1); else arr.push(v); }
+function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+function fmtTime(s){ const m=Math.floor(s/60); const ss=s%60; return m>0?`${m}:${String(ss).padStart(2,'0')}`:`${ss}`; }
+function todayStr(){ return new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'}); }
+function haptic(){ if(navigator.vibrate) try{navigator.vibrate(12);}catch(e){} }
+function shade(hex,amt){
+  const c=hex.replace('#',''); const n=parseInt(c,16);
+  let r=(n>>16)+amt, g=((n>>8)&255)+amt, b=(n&255)+amt;
+  r=Math.max(0,Math.min(255,r)); g=Math.max(0,Math.min(255,g)); b=Math.max(0,Math.min(255,b));
+  return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);
+}
+
+// respect reduced motion preference
+if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches) document.body.classList.add("reduce-motion");
+
+render();
+</script>
+</body>
+</html>
