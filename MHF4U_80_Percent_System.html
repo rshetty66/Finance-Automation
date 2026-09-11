@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MHF4U — Advanced Functions to 80%</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --panel2:#1f232c; --border:#2a2f3a;
+    --text:#e8eaed; --muted:#9aa3b2; --accent:#6ea8fe; --accent2:#4fd1c5;
+    --good:#4caf50; --warn:#f5a623; --bad:#e05a5a;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg); color:var(--text); line-height:1.5;
+  }
+  header{
+    padding:28px 24px 18px; border-bottom:1px solid var(--border);
+    background:linear-gradient(180deg,#161922,#0f1115);
+  }
+  header h1{margin:0 0 6px; font-size:1.5rem}
+  header p{margin:0; color:var(--muted); font-size:.92rem; max-width:760px}
+  nav{
+    display:flex; gap:6px; flex-wrap:wrap; padding:14px 24px; border-bottom:1px solid var(--border);
+    background:var(--panel); position:sticky; top:0; z-index:10;
+  }
+  nav button{
+    background:transparent; border:1px solid var(--border); color:var(--muted);
+    padding:8px 14px; border-radius:8px; cursor:pointer; font-size:.85rem;
+  }
+  nav button.active{background:var(--accent); color:#0b0e14; border-color:var(--accent); font-weight:600}
+  main{max-width:980px; margin:0 auto; padding:24px}
+  section{display:none}
+  section.active{display:block}
+  .card{background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:18px 20px; margin-bottom:16px}
+  .card h2{margin-top:0; font-size:1.1rem}
+  .card h3{font-size:.95rem; color:var(--accent2); margin:18px 0 8px}
+  table{width:100%; border-collapse:collapse; font-size:.85rem}
+  th,td{text-align:left; padding:8px 10px; border-bottom:1px solid var(--border); vertical-align:top}
+  th{color:var(--muted); font-weight:600; font-size:.78rem; text-transform:uppercase; letter-spacing:.03em}
+  .pill{display:inline-block; padding:2px 9px; border-radius:999px; font-size:.72rem; font-weight:600}
+  .pill.easy{background:rgba(76,175,80,.15); color:var(--good)}
+  .pill.med{background:rgba(245,166,35,.15); color:var(--warn)}
+  .pill.hard{background:rgba(224,90,90,.15); color:var(--bad)}
+  .muted{color:var(--muted)}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  @media (max-width:700px){.grid2{grid-template-columns:1fr}}
+  .checklist label{display:flex; gap:10px; align-items:flex-start; padding:7px 0; border-bottom:1px dashed var(--border); font-size:.88rem; cursor:pointer}
+  .checklist label:last-child{border-bottom:none}
+  .checklist input{margin-top:3px}
+  .checklist .done{color:var(--muted); text-decoration:line-through}
+  button.action{
+    background:var(--accent); color:#0b0e14; border:none; padding:8px 14px;
+    border-radius:8px; font-weight:600; cursor:pointer; font-size:.85rem;
+  }
+  button.ghost{
+    background:transparent; border:1px solid var(--border); color:var(--text);
+    padding:8px 14px; border-radius:8px; cursor:pointer; font-size:.85rem;
+  }
+  button.small{padding:4px 10px; font-size:.75rem}
+  .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:10px 0}
+  input[type=text], textarea{
+    width:100%; background:var(--panel2); border:1px solid var(--border); color:var(--text);
+    padding:9px 10px; border-radius:8px; font-size:.85rem; font-family:inherit;
+  }
+  textarea{resize:vertical; min-height:56px}
+  .field{margin-bottom:10px}
+  .field label{display:block; font-size:.75rem; color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:.03em}
+  .agent-prompt{
+    background:var(--panel2); border:1px solid var(--border); border-radius:8px; padding:12px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.72rem;
+    white-space:pre-wrap; max-height:260px; overflow-y:auto; margin:10px 0;
+  }
+  .copied{color:var(--good); font-size:.78rem; margin-left:8px; opacity:0; transition:opacity .2s}
+  .copied.show{opacity:1}
+  .log-entry{background:var(--panel2); border:1px solid var(--border); border-radius:8px; padding:10px 12px; margin-bottom:8px; font-size:.85rem}
+  .log-entry .meta{color:var(--muted); font-size:.72rem; margin-top:4px; display:flex; justify-content:space-between}
+  .empty{color:var(--muted); font-style:italic; font-size:.85rem}
+  .steps ol{padding-left:20px; font-size:.88rem}
+  .steps li{margin-bottom:8px}
+  .note{background:rgba(245,166,35,.1); border:1px solid rgba(245,166,35,.35); border-radius:8px; padding:10px 12px; font-size:.83rem; color:#f5d089}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>MHF4U — Advanced Functions to 80%</h1>
+  <p>A learning system for the Ontario MHF4U course: the strategy, a weekly cadence tracker, a running error log, and three ready-to-use AI tutor agents you can run in Gemini/NotebookLM or any LLM.</p>
+</header>
+
+<nav id="nav"></nav>
+
+<main id="main"></main>
+
+<script>
+const UNITS = [
+  {n:1, name:"Polynomial functions", idea:"Graphs that are smooth curves. Degree tells you the shape, leading coefficient tells you which way the ends point.", diff:"easy", target:"85+"},
+  {n:2, name:"Polynomial equations & inequalities", idea:"Factor, find zeros, test intervals to see where it's above or below zero.", diff:"easy", target:"85+"},
+  {n:3, name:"Rational functions", idea:"A fraction with x on the bottom. The bottom can't be zero, so you get invisible walls (asymptotes).", diff:"med", target:"80"},
+  {n:4, name:"Exponential & logarithmic", idea:"A log is just \"what power do I raise this to?\" Logs undo exponents like division undoes multiplication.", diff:"med", target:"80+"},
+  {n:5, name:"Trigonometric functions", idea:"Sine and cosine are waves. Transformations stretch and shift the wave. Radians are just a different unit, like Celsius vs Fahrenheit.", diff:"med", target:"80"},
+  {n:6, name:"Trig identities & equations", idea:"Proving two trig expressions are the same thing in disguise.", diff:"hard", target:"65–70 is fine"},
+  {n:7, name:"Rates of change", idea:"How fast something is changing. Average = over a gap. Instantaneous = at one instant.", diff:"easy", target:"85+"},
+  {n:8, name:"Combining functions", idea:"Add, multiply, or nest functions inside each other.", diff:"easy", target:"85"},
+];
+
+const CATEGORIES = [
+  {cat:"Knowledge & Understanding", pct:"25–30%", tests:"Can you do the procedure? Factor it, apply the log law, convert to radians."},
+  {cat:"Application", pct:"25–30%", tests:"Can you use the procedure in a worded situation you have seen before?"},
+  {cat:"Thinking & Inquiry", pct:"20–25%", tests:"Novel problems, proofs, multi-step reasoning you have not seen."},
+  {cat:"Communication", pct:"10–15%", tests:"Notation, showing steps, labelling graphs, writing a sentence answer."},
+];
+
+const WEEKLY = [
+  {id:"w1", when:"Same day as the lesson (20 min)", what:"Redo the examples from class from scratch, book closed."},
+  {id:"w2", when:"Mid-week, session 1 (30 min)", what:"Homework — odd-numbered questions only, so you can self-check."},
+  {id:"w3", when:"Mid-week, session 2 (30 min)", what:"Homework — more odd-numbered questions."},
+  {id:"w4", when:"Weekend (40 min)", what:"One page of mixed questions from OLDER units, not the current one."},
+  {id:"w5", when:"Before each test (90 min)", what:"Redo every question you got wrong since the last test. Nothing new."},
+];
+
+const AGENTS = [
+{
+  title: "Agent 1 — The MHF4U Tutor",
+  desc: "Paste as the first message in a new chat and keep that chat for the whole semester.",
+  prompt: `You are my Advanced Functions (MHF4U, Ontario curriculum) tutor. I am a Grade 12
+student in the TDSB aiming for 80% in this course. I find math genuinely difficult
+and I have scored badly on math finals before. I am not looking for reassurance.
+I am looking for a method that works.
+
+HOW TO TEACH ME:
+1. Plain language first. Before any notation, explain the idea in a sentence a
+   twelve-year-old would understand, using a concrete comparison from ordinary life.
+2. Then show the notation, connecting each symbol back to that sentence.
+3. Then one fully worked example, with every single step written out. Never skip a
+   step as "obvious" — skipped steps are exactly where I get lost.
+4. Then give me one near-identical question to try myself, and WAIT for my answer.
+   Do not solve it for me.
+5. When I get it wrong, do not just give the correct solution. Tell me which specific
+   step broke and what rule I was missing, then give me another one of the same type.
+6. When I get it right, give me one slightly harder variation.
+
+RULES:
+- Never give me more than one new concept at a time.
+- Never write more than about 200 words before asking me something.
+- If I say "I don't get it," do not repeat the same explanation. Use a completely
+  different angle — a picture in words, a real-world version, or work backwards
+  from the answer.
+- Always tell me which of the four assessment categories a question belongs to:
+  Knowledge, Application, Thinking, or Communication.
+- At the end of every session, give me exactly three practice questions for tomorrow
+  and the answers in a separate block at the bottom so I can't peek early.
+
+START by asking me which unit I'm on and what today's lesson covered.`
+},
+{
+  title: "Agent 2 — The Ontario Admissions Strategist",
+  desc: "Update the bracketed line with your actual courses before pasting.",
+  prompt: `You are an Ontario university admissions strategist. You know the OUAC process, the
+Grade 12 course system, top-six average calculations, supplementary applications,
+and how Ontario business schools actually assess applicants.
+
+MY SITUATION:
+- Grade 12 student in the TDSB, applying for Fall 2027 entry.
+- Carrying MDM4U. [Update this line if you add MHF4U.]
+- Target field: business and commerce.
+- OUAC deadline: January 15, 2027.
+
+HOW TO ADVISE ME:
+1. Always calculate from my actual top-six average, not from vibes. Ask me for my
+   current marks if you need them.
+2. Always distinguish between the PREREQUISITE floor (a specific course at a minimum
+   mark) and the COMPETITIVE average (what admitted students actually have). These
+   are different numbers and confusing them causes bad decisions.
+3. Whenever you state an admission requirement, flag your confidence and tell me to
+   verify it on the university's own admissions page or OUInfo. Requirements change
+   every cycle and you may be out of date.
+4. When I ask "can I get in," give me a realistic three-tier answer: likely, possible,
+   reach — with the specific number I'd need for each.
+5. Never tell me a door is closed without naming the alternative route to the same
+   destination.
+
+Be direct. If a target is unrealistic with my current marks, say so plainly and
+immediately show me what would make it realistic.
+
+START by asking me for my current Grade 12 courses and marks so far.`
+},
+{
+  title: "Agent 3 — The Career Pathfinder",
+  desc: "A five-question interview, then five ranked career paths.",
+  prompt: `You are a career exploration guide for a Grade 12 student deciding what to study.
+I am strong in language, writing, reasoning and working with people. I find abstract
+mathematics genuinely difficult. I am interested in business but I do not yet know
+which part of it.
+
+WHAT I WANT FROM YOU:
+1. Help me find careers that use my actual strengths rather than careers I "should"
+   want. Do not steer me toward or away from anything because of my math background —
+   map it honestly, including the math each path really requires day to day.
+2. For each career you suggest, tell me concretely:
+   - What a Tuesday actually looks like in that job
+   - What university path leads there, and whether calculus is genuinely required
+   - Entry-level salary range in Canada and the realistic ceiling
+   - Whether the field is growing or shrinking, and why
+   - One thing about it that people usually don't find out until they're in it
+3. Push back on me. If I say I want something for a reason that doesn't hold up,
+   tell me.
+4. Suggest one small thing I could do in the next month to test whether I'd actually
+   like a path — a person to talk to, a free course, a project, a part-time job.
+
+Start with a short interview: ask me five questions about what I enjoy, what I'm
+good at, what I dislike, how I want to spend my days, and what I want my life to
+look like at thirty. Then suggest five paths, ranked by fit, and explain the ranking.`
+},
+];
+
+const TABS = ["Strategy","Weekly Planner","Error Log","AI Agents","NotebookLM Setup"];
+
+let state = load();
+
+function load(){
+  try{
+    return JSON.parse(localStorage.getItem("mhf4u_state")) || {weekly:{}, errors:[], tab:0};
+  }catch(e){ return {weekly:{}, errors:[], tab:0}; }
+}
+function save(){
+  try{ localStorage.setItem("mhf4u_state", JSON.stringify(state)); }catch(e){}
+}
+
+function renderNav(){
+  const nav = document.getElementById("nav");
+  nav.innerHTML = TABS.map((t,i)=>`<button data-i="${i}" class="${state.tab===i?'active':''}">${t}</button>`).join("");
+  nav.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{
+    state.tab = +b.dataset.i; save(); render();
+  }));
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+function renderStrategy(){
+  return `
+  <div class="card">
+    <h2>Your mark is four categories, not one number</h2>
+    <p class="muted">Own Knowledge, Application and Communication completely. Accept partial credit on Thinking. Perfect K/A/C with half marks on Thinking lands around 88. Strong-but-imperfect K/A/C with weak Thinking still lands near 80.</p>
+    <table>
+      <thead><tr><th>Category</th><th>Weight</th><th>What it tests</th></tr></thead>
+      <tbody>
+        ${CATEGORIES.map(c=>`<tr><td><strong>${c.cat}</strong></td><td>${c.pct}</td><td class="muted">${c.tests}</td></tr>`).join("")}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>The eight units</h2>
+    <table>
+      <thead><tr><th>#</th><th>Unit</th><th>Idea</th><th>Difficulty</th><th>Target</th></tr></thead>
+      <tbody>
+        ${UNITS.map(u=>`<tr>
+          <td>${u.n}</td>
+          <td><strong>${u.name}</strong></td>
+          <td class="muted">${u.idea}</td>
+          <td><span class="pill ${u.diff}">${u.diff==='easy'?'Manageable':u.diff==='med'?'Medium':'Hardest'}</span></td>
+          <td>${u.target}</td>
+        </tr>`).join("")}
+      </tbody>
+    </table>
+    <p class="muted" style="margin-top:10px">Unit 6 (Trig identities) is where most averages die. Plan around it — score 68 there and 85 everywhere else, and you still finish above 80.</p>
+  </div>
+
+  <div class="card">
+    <h2>Test-day mechanics worth 5–8 marks</h2>
+    <ul style="font-size:.88rem">
+      <li>Write the formula before you use it — arithmetic errors still earn the method mark.</li>
+      <li>Never leave blank. Partial credit is real and generous.</li>
+      <li>Do Knowledge first, then Application, then Thinking. Bank the certain marks first.</li>
+      <li>State restrictions and domains every time — free Communication marks.</li>
+      <li>Leave 5 minutes to check signs and label graphs.</li>
+    </ul>
+  </div>`;
+}
+
+function renderWeekly(){
+  return `
+  <div class="card">
+    <h2>Two hours a week, four 30-minute blocks</h2>
+    <p class="muted">Four short sessions beat one long one for retention. Check off this week's blocks as you go, then reset for next week.</p>
+    <div class="checklist">
+      ${WEEKLY.map(w=>`
+        <label>
+          <input type="checkbox" data-id="${w.id}" ${state.weekly[w.id]?'checked':''}>
+          <span class="${state.weekly[w.id]?'done':''}"><strong>${w.when}</strong><br><span class="muted">${w.what}</span></span>
+        </label>`).join("")}
+    </div>
+    <div class="row">
+      <button class="ghost" id="resetWeek">Reset for new week</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Build the error log on day one</h3>
+    <p class="muted">One document, three columns: the question, what you did wrong, the rule you forgot. Most lost marks come from a small number of repeating errors — once you can see the pattern, it stops happening. Use the Error Log tab to build it.</p>
+  </div>`;
+}
+
+function renderErrorLog(){
+  const rows = state.errors.length
+    ? state.errors.slice().reverse().map((e,idx)=>{
+        const realIdx = state.errors.length-1-idx;
+        return `<div class="log-entry">
+          <div><strong>Q:</strong> ${escapeHtml(e.question)}</div>
+          <div><strong>Mistake:</strong> ${escapeHtml(e.mistake)}</div>
+          <div><strong>Rule forgotten:</strong> ${escapeHtml(e.rule)}</div>
+          <div class="meta"><span>${e.unit ? 'Unit: '+escapeHtml(e.unit) : ''} · ${new Date(e.ts).toLocaleDateString()}</span>
+          <button class="ghost small" data-del="${realIdx}">Delete</button></div>
+        </div>`;
+      }).join("")
+    : `<p class="empty">No entries yet. Add your first mistake below — this list becomes your highest-value practice material before every test.</p>`;
+
+  return `
+  <div class="card">
+    <h2>Add an entry</h2>
+    <div class="field"><label>Unit (optional)</label><input type="text" id="f-unit" placeholder="e.g. Unit 3 — Rational functions"></div>
+    <div class="field"><label>The question</label><textarea id="f-question" placeholder="What was the question?"></textarea></div>
+    <div class="field"><label>What I did wrong</label><textarea id="f-mistake" placeholder="Describe the specific error"></textarea></div>
+    <div class="field"><label>The rule I forgot</label><textarea id="f-rule" placeholder="The rule / procedure to remember next time"></textarea></div>
+    <button class="action" id="addEntry">Add to error log</button>
+  </div>
+  <div class="card">
+    <div class="row" style="justify-content:space-between">
+      <h2 style="margin:0">Error log (${state.errors.length})</h2>
+      <div class="row" style="margin:0">
+        <button class="ghost small" id="exportMd">Export as Markdown</button>
+        <button class="ghost small" id="exportCsv">Export as CSV</button>
+      </div>
+    </div>
+    ${rows}
+  </div>`;
+}
+
+function renderAgents(){
+  return AGENTS.map((a,i)=>`
+    <div class="card">
+      <h2>${a.title}</h2>
+      <p class="muted">${a.desc}</p>
+      <div class="agent-prompt" id="agent-${i}">${escapeHtml(a.prompt)}</div>
+      <button class="action small" data-copy="${i}">Copy prompt</button>
+      <span class="copied" id="copied-${i}">Copied ✓</span>
+    </div>`).join("");
+}
+
+function renderNotebook(){
+  return `
+  <div class="note">
+    Google has not published a public API for NotebookLM, so this app cannot push sources into your notebook automatically.
+    What it <em>can</em> do: generate a ready-to-upload source file, pre-loaded with the strategy and all three agent
+    prompts, so setup is copy-paste rather than retyping.
+  </div>
+  <div class="card">
+    <h2>Set it up in NotebookLM</h2>
+    <div class="steps">
+      <ol>
+        <li>Create a notebook called <strong>MHF4U</strong>.</li>
+        <li>Upload as sources: your course outline, textbook chapters or teacher handouts as PDFs, your class notes (photographed and converted), and every test you get back — including the ones that went badly.</li>
+        <li>Download the source pack below and add it as a text source, so the notebook knows the strategy and has all three agent prompts on hand.</li>
+        <li>Use the Audio Overview feature on a single unit's notes before a test.</li>
+        <li>Ask it things only it can answer, e.g. <em>"Across all my returned tests, what type of question do I lose the most marks on?"</em> — that's the whole error log, automated.</li>
+        <li>Add your returned tests to the notebook as you get them. By Unit 5 it will know your weak points better than you do.</li>
+      </ol>
+    </div>
+    <button class="action" id="downloadPack">Download NotebookLM source pack (.md)</button>
+  </div>
+  <div class="card">
+    <h2>Your error log as a NotebookLM source</h2>
+    <p class="muted">Since NotebookLM can't be reached automatically, export your current error log (Error Log tab) as Markdown or CSV and upload that file directly as a source — do this each time you add a batch of entries.</p>
+  </div>`;
+}
+
+function buildSourcePack(){
+  let md = `# MHF4U — 80% Strategy (source for NotebookLM)\n\n`;
+  md += `## Assessment categories\n\n`;
+  CATEGORIES.forEach(c=> md += `- **${c.cat}** (${c.pct}): ${c.tests}\n`);
+  md += `\n## The eight units\n\n`;
+  UNITS.forEach(u=> md += `${u.n}. **${u.name}** — ${u.idea} (Difficulty: ${u.diff}, Target: ${u.target})\n`);
+  md += `\n## Weekly cadence\n\n`;
+  WEEKLY.forEach(w=> md += `- ${w.when}: ${w.what}\n`);
+  md += `\n## AI agent prompts\n\n`;
+  AGENTS.forEach(a=>{
+    md += `### ${a.title}\n\n\`\`\`\n${a.prompt}\n\`\`\`\n\n`;
+  });
+  return md;
+}
+
+function download(filename, text){
+  const blob = new Blob([text], {type:"text/plain;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function attachHandlers(){
+  const tab = state.tab;
+  if(tab===1){
+    document.querySelectorAll('.checklist input[type=checkbox]').forEach(cb=>{
+      cb.addEventListener('change', ()=>{
+        state.weekly[cb.dataset.id] = cb.checked; save(); render();
+      });
+    });
+    const rb = document.getElementById('resetWeek');
+    if(rb) rb.addEventListener('click', ()=>{ state.weekly = {}; save(); render(); });
+  }
+  if(tab===2){
+    const add = document.getElementById('addEntry');
+    if(add) add.addEventListener('click', ()=>{
+      const q = document.getElementById('f-question').value.trim();
+      const m = document.getElementById('f-mistake').value.trim();
+      const r = document.getElementById('f-rule').value.trim();
+      const u = document.getElementById('f-unit').value.trim();
+      if(!q && !m && !r) return;
+      state.errors.push({question:q, mistake:m, rule:r, unit:u, ts:Date.now()});
+      save(); render();
+    });
+    document.querySelectorAll('[data-del]').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        state.errors.splice(+b.dataset.del,1); save(); render();
+      });
+    });
+    const emd = document.getElementById('exportMd');
+    if(emd) emd.addEventListener('click', ()=>{
+      let md = "# MHF4U Error Log\n\n| Question | What I did wrong | Rule forgotten | Unit | Date |\n|---|---|---|---|---|\n";
+      state.errors.forEach(e=>{
+        md += `| ${e.question.replace(/\|/g,'/')} | ${e.mistake.replace(/\|/g,'/')} | ${e.rule.replace(/\|/g,'/')} | ${e.unit||''} | ${new Date(e.ts).toLocaleDateString()} |\n`;
+      });
+      download("mhf4u_error_log.md", md);
+    });
+    const ecsv = document.getElementById('exportCsv');
+    if(ecsv) ecsv.addEventListener('click', ()=>{
+      const esc = s => `"${String(s).replace(/"/g,'""')}"`;
+      let csv = "Question,What I did wrong,Rule forgotten,Unit,Date\n";
+      state.errors.forEach(e=>{
+        csv += [e.question,e.mistake,e.rule,e.unit||'',new Date(e.ts).toLocaleDateString()].map(esc).join(",")+"\n";
+      });
+      download("mhf4u_error_log.csv", csv);
+    });
+  }
+  if(tab===3){
+    document.querySelectorAll('[data-copy]').forEach(b=>{
+      b.addEventListener('click', async ()=>{
+        const i = b.dataset.copy;
+        const text = AGENTS[i].prompt;
+        try{
+          await navigator.clipboard.writeText(text);
+        }catch(e){
+          const ta = document.createElement('textarea');
+          ta.value = text; document.body.appendChild(ta); ta.select();
+          document.execCommand('copy'); document.body.removeChild(ta);
+        }
+        const c = document.getElementById('copied-'+i);
+        c.classList.add('show');
+        setTimeout(()=>c.classList.remove('show'), 1500);
+      });
+    });
+  }
+  if(tab===4){
+    const dp = document.getElementById('downloadPack');
+    if(dp) dp.addEventListener('click', ()=> download("mhf4u_notebooklm_source_pack.md", buildSourcePack()));
+  }
+}
+
+function render(){
+  renderNav();
+  const main = document.getElementById("main");
+  const renderers = [renderStrategy, renderWeekly, renderErrorLog, renderAgents, renderNotebook];
+  main.innerHTML = `<section class="active">${renderers[state.tab]()}</section>`;
+  attachHandlers();
+}
+
+render();
+</script>
+</body>
+</html>
