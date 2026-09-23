@@ -14,6 +14,9 @@ Usage::
     rudra run "Design a COA for our multi-entity structure"
     rudra benchmarks list
     rudra benchmarks get days_to_close
+    rudra memory brief --project bcar
+    rudra memory add "CET1 floor confirmed at 7%" --project bcar --kind fact
+    rudra memory recall "intercompany eliminations" --project sprott-erp
 """
 
 from __future__ import annotations
@@ -79,6 +82,71 @@ def main() -> None:
     std_parser.add_argument("--category", type=str, default=None, choices=["IFRS", "US_GAAP"])
     std_parser.add_argument("-k", type=int, default=5)
 
+    # --- memory ---
+    mem_parser = subparsers.add_parser("memory", help="Cross-project agent memory")
+    mem_parser.add_argument("--db", type=str, default=None, help="Memory DB path (default: RUDRA_MEMORY_DB or ~/.rudra/memory.db)")
+    mem_sub = mem_parser.add_subparsers(dest="mem_action")
+
+    mem_proj = mem_sub.add_parser("project", help="Register or update a project")
+    mem_proj.add_argument("project_id", type=str)
+    mem_proj.add_argument("name", type=str)
+    mem_proj.add_argument("--client", type=str, default="")
+    mem_proj.add_argument("--description", type=str, default="")
+    mem_proj.add_argument("--tags", type=str, default="", help="Comma-separated")
+    mem_proj.add_argument("--status", type=str, default="active")
+
+    mem_sub.add_parser("projects", help="List projects")
+
+    mem_add = mem_sub.add_parser("add", help="Remember something")
+    mem_add.add_argument("content", type=str)
+    mem_add.add_argument("--project", type=str, default=None, help="Omit for a global memory")
+    mem_add.add_argument("--kind", type=str, default="fact",
+                         choices=["fact", "decision", "lesson", "preference", "question", "summary"])
+    mem_add.add_argument("--tags", type=str, default="", help="Comma-separated")
+    mem_add.add_argument("--importance", type=float, default=0.5)
+    mem_add.add_argument("--pin", action="store_true")
+
+    mem_recall = mem_sub.add_parser("recall", help="Top memories for a query")
+    mem_recall.add_argument("query", type=str)
+    mem_recall.add_argument("--project", type=str, default=None)
+    mem_recall.add_argument("-k", type=int, default=8)
+    mem_recall.add_argument("--budget", type=int, default=2000, help="Token budget")
+    mem_recall.add_argument("--min-score", type=float, default=0.15)
+
+    mem_brief = mem_sub.add_parser("brief", help="Session-start memory brief")
+    mem_brief.add_argument("--project", type=str, default=None)
+    mem_brief.add_argument("--query", type=str, default="")
+
+    mem_start = mem_sub.add_parser("start", help="Start a session and print its brief")
+    mem_start.add_argument("project_id", type=str)
+    mem_start.add_argument("--agent", type=str, default="")
+    mem_start.add_argument("--query", type=str, default="")
+
+    mem_end = mem_sub.add_parser("end", help="End a session with a summary")
+    mem_end.add_argument("session_id", type=str)
+    mem_end.add_argument("summary", type=str)
+
+    mem_forget = mem_sub.add_parser("forget", help="Delete a memory by id")
+    mem_forget.add_argument("memory_id", type=int)
+
+    mem_compact = mem_sub.add_parser("compact", help="Keep top-N memories verbatim, drop the rest")
+    mem_compact.add_argument("--project", type=str, default=None, help="Omit to compact global memories")
+    mem_compact.add_argument("--keep", type=int, default=200)
+    mem_compact.add_argument("--dry-run", action="store_true")
+
+    mem_dec = mem_sub.add_parser("decisions", help="List typed decisions and cost by resolver")
+    mem_dec.add_argument("--project", type=str, default=None)
+    mem_dec.add_argument("--type", type=str, default=None, choices=["choice", "noul", "score"])
+
+    mem_export = mem_sub.add_parser("export", help="Export to JSONL")
+    mem_export.add_argument("path", type=str)
+    mem_import = mem_sub.add_parser("import", help="Merge a JSONL export")
+    mem_import.add_argument("path", type=str)
+
+    mem_hook = mem_sub.add_parser("session-start", help="Hook entry: seed from JSONL if empty, print portfolio brief")
+    mem_hook.add_argument("--seed", type=str, default="memory/portfolio.jsonl")
+    mem_hook.add_argument("--project", type=str, default=None)
+
     args = parser.parse_args()
 
     logging.basicConfig(
@@ -102,6 +170,8 @@ def main() -> None:
         _handle_benchmarks(args)
     elif args.command == "standards":
         _handle_standards(args)
+    elif args.command == "memory":
+        _handle_memory(args)
 
 
 def _handle_agents(args) -> None:
@@ -225,6 +295,65 @@ def _handle_standards(args) -> None:
     for r in results:
         print(f"\n[{r.get('category', '?')}] {r['standard']}   {r['topic']}")
         print(f"  {r['key_rules'][:200]}...")
+
+
+def _handle_memory(args) -> None:
+    from rudra.memory.project_memory import ProjectMemory
+
+    def _split(tags: str) -> list[str]:
+        return [t.strip() for t in tags.split(",") if t.strip()]
+
+    with ProjectMemory(args.db) as mem:
+        action = args.mem_action
+        if action == "project":
+            mem.register_project(args.project_id, args.name, args.client, args.description,
+                                 _split(args.tags), args.status)
+            print(f"Registered project {args.project_id}")
+        elif action == "projects":
+            print(f"\n{'ID':<22} {'Name':<45} {'Status':<10} {'Last active'}")
+            print("=" * 95)
+            for p in mem.list_projects():
+                print(f"{p['id']:<22} {p['name'][:44]:<45} {p['status']:<10} {p['last_active'][:10]}")
+        elif action == "add":
+            mid = mem.remember(args.content, project=args.project, kind=args.kind, tags=_split(args.tags),
+                               importance=args.importance, pinned=args.pin, source="cli")
+            print(f"Remembered #{mid}")
+        elif action == "recall":
+            for m in mem.recall(args.query, project=args.project, k=args.k, token_budget=args.budget,
+                                  min_score=args.min_score):
+                print(f"#{m.id:<5} {m.score:.3f}  [{m.kind} · {m.project_id or 'global'}] {m.content}")
+        elif action == "brief":
+            print(mem.brief(args.project, query=args.query))
+        elif action == "start":
+            sid = mem.start_session(args.project_id, agent_id=args.agent)
+            print(f"Session: {sid}\n")
+            print(mem.brief(args.project_id, query=args.query))
+        elif action == "end":
+            mem.end_session(args.session_id, args.summary)
+            print(f"Ended {args.session_id}")
+        elif action == "forget":
+            print("Forgotten" if mem.forget(args.memory_id) else "Not found")
+        elif action == "compact":
+            dropped = mem.compact(args.project, keep=args.keep, dry_run=args.dry_run)
+            verb = "Would drop" if args.dry_run else "Dropped"
+            print(f"{verb} {len(dropped)} memories: {dropped}")
+        elif action == "decisions":
+            for d in mem.list_decisions(args.project, args.type):
+                print(f"{d['created_at'][:16]}  {d['decision_type']:<6} {d['answer']:<10} "
+                      f"by {d['resolved_by']:<8} {d['question']}")
+            print("\nBy resolver:", json.dumps(mem.decision_cost(args.project), indent=2))
+        elif action == "export":
+            print(f"Exported {mem.export_jsonl(args.path)} records to {args.path}")
+        elif action == "import":
+            print(f"Imported {mem.import_jsonl(args.path)} records from {args.path}")
+        elif action == "session-start":
+            seed = Path(args.seed)
+            if mem.is_empty() and seed.exists():
+                mem.import_jsonl(seed)
+            print(mem.brief(args.project))
+        else:
+            print("Usage: rudra memory {project,projects,add,recall,brief,start,end,forget,"
+                  "compact,decisions,export,import,session-start}")
 
 
 if __name__ == "__main__":

@@ -42,6 +42,7 @@ class MemoryConfig:
     max_context_tokens: int = 100_000
     max_agent_tokens: int = 16_000
     session_dir: str = ".rudra/sessions"
+    memory_db: str = "~/.rudra/memory.db"  # cross-project store; override with RUDRA_MEMORY_DB
 
 
 @dataclass(frozen=True)

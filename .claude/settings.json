@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && python3 -m rudra.cli memory session-start 2>/dev/null || true"
+          }
+        ]
+      }
+    ]
+  }
+}
