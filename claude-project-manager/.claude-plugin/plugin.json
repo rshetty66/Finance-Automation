@@ -1,0 +1,8 @@
+{
+  "name": "project-manager",
+  "version": "0.1.2",
+  "description": "AI agent for full-cycle project management: document generation, monitoring, coordination, and scheduled reporting based on PMBoK 8 + Agile hybrid methodology. Covers all 32 PM tasks across 6 project phases — from initiation to closure.",
+  "author": {
+    "name": "Kir Ruglov"
+  }
+}

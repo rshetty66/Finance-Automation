@@ -1,0 +1,33 @@
+# macOS
+.DS_Store
+**/.DS_Store
+.AppleDouble
+.LSOverride
+
+# Evals (internal dev files, not for distribution)
+evals.json
+evals/
+**/evals.json
+**/evals/
+
+# Plugin archives (compiled, not source)
+*.plugin
+*.zip
+
+# Internal dev specs (Russian source specs)
+skill-spec-ru.md
+**/skill-spec-ru.md
+
+# Environment
+.env
+.env.*
+
+# Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+desktop.ini
