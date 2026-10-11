@@ -1,0 +1,18 @@
+{
+  "extraKnownMarketplaces": {
+    "pm-skills": {
+      "source": { "source": "github", "repo": "phuryn/pm-skills" }
+    }
+  },
+  "enabledPlugins": {
+    "pm-toolkit@pm-skills": true,
+    "pm-product-strategy@pm-skills": true,
+    "pm-product-discovery@pm-skills": true,
+    "pm-market-research@pm-skills": true,
+    "pm-data-analytics@pm-skills": true,
+    "pm-marketing-growth@pm-skills": true,
+    "pm-go-to-market@pm-skills": true,
+    "pm-execution@pm-skills": true,
+    "pm-ai-shipping@pm-skills": true
+  }
+}
