@@ -1,0 +1,38 @@
+{
+  "name": "volt-agentic-app",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "VOLT Agentic Console: React UI + Claude-powered multi-agent orchestrator over the volt_deploy agent, workflow and skill catalog",
+  "scripts": {
+    "dev": "concurrently -n api,web -c blue,magenta \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:api": "tsx watch server/index.ts",
+    "dev:web": "vite",
+    "build": "tsc -p tsconfig.json && vite build",
+    "start": "NODE_ENV=production tsx server/index.ts",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "export-catalog": "python -I scripts/export_volt_catalog.py"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.134.0",
+    "express": "^5.3.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
+    "zod": "^4.6.7",
+    "tsx": "^4.23.15"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "concurrently": "^10.0.6",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.4",
+    "vitest": "^5.0.5"
+  }
+}
