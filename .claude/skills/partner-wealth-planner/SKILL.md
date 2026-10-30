@@ -52,6 +52,19 @@ Ask only for what's missing. Use defaults and say so.
    - Portfolio at life expectancy if the salary draw continues
 4. Give the recommendation and the 3 to 5 assumptions that would flip it.
 
+### Pension later vs cash now
+
+When the choice is a pension from retirement versus cash paid over the
+next few years (e.g. a buyout, a higher base or a commuted value), run:
+```
+python scripts/pension_vs_cash.py --age <now> --pension <amt> --pension-start <age> \
+    --cash <amt> --cash-start <age> --cash-end <age> [--cola 0.02] [--life 90]
+```
+It reports present value, value at life expectancy, the cash expressed as
+an equivalent pension, and the break-even return, plus how the break-even
+moves with age at death and pension indexing. Compare the break-even with
+an after-tax, after-fee return, not a headline market return.
+
 Model conventions (state them in every answer):
 
 - Nominal, pre-tax. No inflation, corporate tax, personal tax on salary or
