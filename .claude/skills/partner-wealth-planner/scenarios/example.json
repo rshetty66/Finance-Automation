@@ -1,0 +1,30 @@
+{
+  "assumptions": {
+    "current_age": 50,
+    "life_expectancy": 90,
+    "snapshot_age": 62,
+    "monthly_salary": 20000,
+    "return_rate": 0.05,
+    "opening_balance": 0
+  },
+  "scenarios": {
+    "Firm A (units)": {
+      "units": 300,
+      "unit_value": 3500,
+      "earnings_growth": 0.04,
+      "retirement_age": 60,
+      "pension": {"annual": 180000, "cola": 0.0}
+    },
+    "Firm B (base)": {
+      "base_earnings": 1000000,
+      "earnings_growth": 0.05,
+      "retirement_age": 62,
+      "pension": {
+        "annual": 100000,
+        "grows_until_retirement": true,
+        "pre_retirement_growth": 0.05,
+        "cola": 0.0
+      }
+    }
+  }
+}
